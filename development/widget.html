@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>挂件开发 - 思源笔记二次开发指南</title>
+    <link rel="stylesheet" href="../assets/themes/daylight.css">
     <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
     <header>
         <h1>挂件 (Widget) 开发指南</h1>
-        <nav>
-            <a href="../index.html">返回主页</a>
-        </nav>
     </header>
 
-    <main>
+    <div id="main-nav-placeholder"></div>
+
+    <main class="b3-typography">
         <section id="definition">
             <h2>什么是挂件？</h2>
             <p>挂件是嵌入在思源笔记文档中的、可通过 <code>iframe</code> 加载的**静态网页 (static webpage)**。它更侧重于**内容块的扩展 (content block extension)**，允许开发者创建可交互、可展示特定信息的小型应用模块，而不是像插件那样扩展整个程序的功能。</p>
@@ -24,7 +24,7 @@
         <section id="structure">
             <h2>挂件包结构</h2>
             <p>每个挂件都以一个文件夹的形式存在，安装在工作空间的 <code>data/widgets/</code> 目录下。文件夹的名称即为该挂件的唯一标识符 (<code>name</code>)。一个典型的挂件包结构如下：</p>
-            <pre><code>your-widget-name/       # 文件夹名即为挂件 name
+            <pre class="code-block"><code>your-widget-name/       # 文件夹名即为挂件 name
 ├── widget.json         # 必需：挂件描述文件
 ├── index.html          # 必需：挂件入口 HTML 文件
 ├── style.css           # 可选：挂件的 CSS 样式
@@ -76,7 +76,7 @@
             </ul>
             <p><strong>注意：</strong> 挂件的唯一标识符 <code>name</code> 由其文件夹名称决定，**不需要**在 `widget.json` 文件中指定。</p>
             <p>示例 <code>widget.json</code>:</p>
-            <pre><code>{
+            <pre class="code-block"><code>{
   "author": "Your Name",
   "url": "https://github.com/your-repo/your-widget-name",
   "version": "0.1.0",
@@ -119,8 +119,8 @@
         </section>
     </main>
 
-    <footer>
-        <!-- 页脚内容 -->
-    </footer>
+    <div id="main-footer-placeholder"></div>
+
+    <script src="../assets/js/main.js" defer></script>
 </body>
 </html>

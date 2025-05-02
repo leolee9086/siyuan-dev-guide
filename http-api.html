@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTTP API - 思源笔记二次开发指南</title>
+    <link rel="stylesheet" href="assets/themes/daylight.css">
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <header>
+        <h1>HTTP API 使用 (入口)</h1>
+        <p>了解如何通过 HTTP API 与思源内核交互，实现自动化、集成或开发复杂扩展。</p>
+    </header>
+
+    <div id="main-nav-placeholder"></div>
+
+    <main class="b3-typography">
+        <section id="api-introduction">
+            <h2>概述</h2>
+            <p>思源笔记内核提供了一套丰富的 HTTP API，允许外部程序或扩展通过网络请求与运行中的思源笔记进行交互。这为自动化工作流、与其他应用集成以及开发具有复杂后端逻辑的插件和挂件提供了强大的基础。</p>
+            <p>几乎所有在思源笔记界面上能进行的操作，理论上都可以通过调用相应的 API 来完成。</p>
+            <p class="b3-typography__warning">
+                <strong>重要提示：</strong> 本页面仅提供 API 的基本概念和入口信息。
+                详细的 API 接口列表、参数说明、返回值及在线测试功能，请访问独立的：
+                <br>
+                <a href="https://leolee9086.github.io/siyuan-kernelApi-docs/index.html" target="_blank" rel="noopener noreferrer"><strong>思源笔记内核 API 文档站 ↗</strong></a>
+            </p>
+        </section>
+
+        <section id="basic-info">
+            <h2>基本信息</h2>
+            <ul>
+                <li><strong>基础 URL</strong>: <code>http://127.0.0.1:6806</code> (默认端口为 6806，可在设置中修改)</li>
+                <li><strong>请求方法</strong>: 除非特别说明，所有 API 均使用 <code>POST</code> 方法。</li>
+                <li><strong>请求体格式</strong>: 通常为 JSON 格式 (<code>Content-Type: application/json</code>)。</li>
+                <li><strong>响应体格式</strong>: 通常为 JSON 格式，包含 <code>code</code> (0 代表成功), <code>msg</code> (提示信息), <code>data</code> (实际返回数据) 等字段。</li>
+            </ul>
+            <pre class="code-block"><code>// 示例响应结构
+{
+  "code": 0,
+  "msg": "",
+  "data": { ... } // 具体数据
+}</code></pre>
+        </section>
+
+        <section id="authentication">
+            <h2>认证 (API Token)</h2>
+            <p>出于安全考虑，访问 HTTP API 需要进行认证。思源笔记使用 Token 进行认证。</p>
+            <ol>
+                <li>在思源笔记的 <strong>设置 > 关于</strong> 界面底部，找到 "API Token" 并复制它。</li>
+                <li>在每次发送 API 请求时，在 HTTP 请求头 (Header) 中添加 <code>Authorization</code> 字段，格式为 <code>Token YOUR_API_TOKEN</code> (将 <code>YOUR_API_TOKEN</code> 替换为你复制的 Token)。</li>
+            </ol>
+            <pre class="code-block"><code>// 使用 fetch 发送带认证的请求示例
+fetch('http://127.0.0.1:6806/api/system/getVersion', {
+    method: 'POST',
+    headers: {
+        'Authorization': 'Token your-api-token', // 在这里填入你的 Token
+        'Content-Type': 'application/json'
+    },
+    // 对于不需要参数的 POST 请求，可以发送一个空对象或省略 body
+    body: JSON.stringify({})
+})
+.then(response => response.json())
+.then(data => {
+    if (data.code === 0) {
+        console.log('Siyuan Version:', data.data.version);
+    } else {
+        console.error('API Error:', data.msg);
+    }
+})
+.catch(error => console.error('Fetch Error:', error));</code></pre>
+            <p class="b3-typography__tip">请妥善保管你的 API Token，不要泄露给他人。</p>
+        </section>
+
+        <section id="next-steps">
+            <h2>下一步：探索详细 API</h2>
+            <p>了解了基础概念和认证方式后，下一步就是去探索具体的 API 接口了。</p>
+            <p>再次强调，请访问以下站点获取最详细、可交互的 API 文档：</p>
+            <p style="text-align: center; font-size: 1.2em; margin-top: 20px;">
+                <a href="https://leolee9086.github.io/siyuan-kernelApi-docs/index.html" target="_blank" rel="noopener noreferrer" class="b3-button b3-button--outline">
+                    前往思源笔记内核 API 详细文档站 ↗
+                </a>
+            </p>
+        </section>
+
+    </main>
+
+    <div id="main-footer-placeholder"></div>
+
+    <script src="assets/js/main.js" defer></script>
+</body>
+</html>
