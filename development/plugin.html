@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>插件开发 - 思源笔记二次开发指南</title>
+    <link rel="stylesheet" href="../assets/themes/daylight.css">
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+    <header>
+        <h1>插件开发</h1>
+        <p>学习如何通过 JavaScript 扩展思源功能并与 UI 集成。</p>
+    </header>
+
+    <div id="main-nav-placeholder"></div>
+
+    <main class="b3-typography">
+        <section id="plugin-basics">
+            <h2>插件基础</h2>
+            <p>（后续补充插件的基本概念、生命周期、API 等）</p>
+            <ul>
+                <li><code>plugin.json</code> 文件结构</li>
+                <li>前端入口 (frontend) 和后端入口 (backend)</li>
+                <li>事件监听</li>
+                <li>调用思源 API (<code>fetchSyncPost</code>, <code>fetchPost</code>)</li>
+            </ul>
+        </section>
+
+        <section id="building-plugin-ui">
+            <h2>构建插件界面</h2>
+            <p>插件可以通过多种方式向用户提供界面，例如添加顶栏按钮、状态栏图标、设置面板、自定义 Tab 页等。</p>
+            <p>无论采用哪种方式，强烈建议遵循 <a href="../best-practices.html#plugin-ui-guidelines">插件 UI 组件开发指导原则</a>，特别是优先使用思源的 CSS 变量 (<code>--b3-*</code>) 和工具类 (<code>fn__*</code>, <code>ft__*</code>) 来确保风格统一和主题适应性。</p>
+
+            <h3>参考原生界面实现 (以设置界面为例)</h3>
+            <p>通过分析思源自身代码（如设置界面的实现 <code>app/src/config/about.ts</code>），我们可以学习到原生 UI 的构建模式：</p>
+            <ul>
+                <li><strong>基本结构</strong>: 采用生成 HTML 字符串 + 绑定事件的模式较为常见 (尤其在配置类界面)。</li>
+                <li><strong>样式与布局</strong>:
+                    <ul>
+                        <li><strong>高度依赖工具类</strong>: 大量使用 <code>fn__flex</code>, <code>fn__flex-1</code>, <code>fn__space</code>, <code>fn__hr</code>, <code>ft__on-surface</code> 等进行布局、间距和文本样式控制。</li>
+                        <li><strong>标准设置项布局</strong>:
+                            <ul>
+                                <li>常用 <code>&lt;div class="fn__flex b3-label config__item"&gt;</code> 或 <code>&lt;label class="fn__flex b3-label"&gt;</code> 作为容器。</li>
+                                <li>左侧使用 <code>.fn__flex-1</code> 包含标题和描述 (<code>.b3-label__text</code>)。</li>
+                                <li>右侧放置交互控件。</li>
+                                <li>使用 <code>.fn__space</code> 和 <code>.fn__hr</code> 控制间距和分隔。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li><strong>组件使用</strong>:
+                    <ul>
+                        <li>直接在 HTML 字符串中使用思源的原生 CSS 类名来构建标准组件：
+                            <ul>
+                                <li><code>b3-button</code>, <code>b3-button--outline</code> (按钮)</li>
+                                <li><code>b3-switch</code> (开关)</li>
+                                <li><code>b3-select</code> (下拉选择框)</li>
+                                <li><code>b3-text-field</code> (文本/数字输入框)</li>
+                                <li><code>b3-label</code>, <code>.b3-label__text</code> (设置项容器与文本)</li>
+                            </ul>
+                        </li>
+                        <li>图标使用标准 SVG <code>&lt;use&gt;</code> 标签: <code>&lt;svg&gt;&lt;use xlink:href="#icon..."&gt;&lt;/use&gt;&lt;/svg&gt;</code>。</li>
+                    </ul>
+                </li>
+                <li><strong>数据与逻辑</strong>:
+                    <ul>
+                        <li>通过 <code>window.siyuan.config</code> 读取配置，<code>window.siyuan.languages</code> 读取本地化文本。</li>
+                        <li>事件监听器通过 <code>fetchPost</code> 调用后端 API 来保存设置。</li>
+                        <li>使用思源提供的对话框 (<code>Dialog</code>, <code>confirmDialog</code>) 和消息提示 (<code>showMessage</code>) 进行交互反馈。</li>
+                    </ul>
+                </li>
+            </ul>
+            <p><strong>结论</strong>: 插件 UI 开发应积极模仿这种模式，优先复用 CSS 变量、工具类和原生组件的类名及结构，以实现与原生环境的最佳融合。</p>
+            
+            <p>（后续补充具体 UI API 示例，如添加顶栏图标、打开设置面板等）</p>
+        </section>
+
+        <section id="plugin-examples">
+            <h2>插件示例</h2>
+            <p>（后续提供一些简单的插件示例代码）</p>
+        </section>
+    </main>
+
+    <div id="main-footer-placeholder"></div>
+
+    <script src="../assets/js/main.js" defer></script>
+</body>
+</html>

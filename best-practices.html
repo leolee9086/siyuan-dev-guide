@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>最佳实践 - 思源笔记二次开发指南</title>
+    <link rel="stylesheet" href="assets/themes/daylight.css">
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <header>
+        <h1>最佳实践</h1>
+        <p>遵循这些实践可以帮助你编写出更健壮、高效且与思源笔记风格一致的扩展。</p>
+    </header>
+
+    <div id="main-nav-placeholder"></div>
+
+    <main class="b3-typography">
+        <section id="plugin-ui-guidelines">
+            <h2>插件 UI 组件开发指导原则 (v20250502)</h2>
+            <p><strong>目标受众</strong>: 希望开发与思源笔记原生界面风格统一、体验一致的插件 UI 组件的开发者。</p>
+            <p><strong>核心目标</strong>: 实现插件 UI 与思源笔记环境的无缝融合，提供符合用户习惯的视觉和交互体验。</p>
+
+            <div class="fn__hr"></div>
+
+            <h3>1. 设计理念：融入而非突兀</h3>
+            <p>插件 UI 不应追求过度个性化，而应以融入思源整体风格为首要目标。尽可能复用思源已有的设计模式、交互逻辑和视觉元素。</p>
+
+            <h3>2. 核心原则：优先复用思源资源</h3>
+
+            <h4>2.1 CSS 变量：主题适应性的基石 (<code>var(--b3-...)</code>)</h4>
+            <p><strong>必须</strong> 优先、广泛地使用思源定义的 <code>--b3-*</code> CSS 变量。这是确保组件能自动适应思源不同主题（浅色、深色、自定义）的 <strong>最关键手段</strong>。</p>
+            <ul>
+                <li><strong>定义位置</strong>: 思源主题的核心 CSS 变量通常定义在主题包（如 <code>daylight</code>, <code>midnight</code>）的 <code>theme.css</code> 文件内的 <code>:root</code> 选择器下。</li>
+                <li><strong>禁止</strong>:
+                    <ul>
+                        <li>在 CSS 中硬编码任何颜色值 (如 <code>#FFFFFF</code>, <code>rgb(0,0,0)</code>, <code>blue</code>)。</li>
+                        <li>硬编码具体的字号、边距、圆角等尺寸值 (除非有充分理由且经过仔细测试)。</li>
+                    </ul>
+                </li>
+                <li><strong>必须</strong>: 使用相应的 <code>--b3-*</code> 变量。</li>
+            </ul>
+
+            <h5>变量分类与示例:</h5>
+            <ul>
+                <li><strong>核心颜色 (Core Colors)</strong>:
+                    <ul>
+                        <li>主色调: <code>--b3-theme-primary</code>, <code>--b3-theme-primary-light</code>, <code>--b3-theme-primary-lighter</code>, <code>--b3-theme-primary-lightest</code> (通常用于状态变化)。</li>
+                        <li>次色调: <code>--b3-theme-secondary</code>。</li>
+                        <li>背景: <code>--b3-theme-background</code> (页面/主要背景)。</li>
+                        <li>表面: <code>--b3-theme-surface</code>, <code>--b3-theme-surface-light</code>, <code>--b3-theme-surface-lighter</code> (卡片、菜单、工具栏等组件背景)。</li>
+                        <li>前景/文字 (<code>On-*</code>): <code>--b3-theme-on-primary</code>, <code>--b3-theme-on-secondary</code>, <code>--b3-theme-on-background</code>, <code>--b3-theme-on-surface</code>, <code>--b3-theme-on-surface-light</code> (对应背景上的文字/图标颜色)。</li>
+                        <li>状态: <code>--b3-theme-error</code>, <code>--b3-theme-success</code>, <code>--b3-theme-on-error</code>。</li>
+                    </ul>
+                </li>
+                <li><strong>字体 (Fonts)</strong>:
+                    <ul>
+                        <li>基础: <code>--b3-font-family</code> (根据 <code>:root:lang(...)</code> 会有不同), <code>--b3-font-size</code> (基础字号，通常 14px)。</li>
+                        <li>特定场景: <code>--b3-font-family-protyle</code> (编辑器), <code>--b3-font-family-code</code> (代码), <code>--b3-font-family-graph</code> (关系图), <code>--b3-font-family-emoji</code>。</li>
+                    </ul>
+                </li>
+                <li><strong>尺寸与形状 (Sizing & Shape)</strong>:
+                    <ul>
+                        <li>圆角: <code>--b3-border-radius</code> (默认 6px), <code>--b3-border-radius-s</code> (小圆角 3px), <code>--b3-border-radius-b</code> (大圆角 12px)。</li>
+                        <li>边框颜色: <code>--b3-border-color</code>。</li>
+                    </ul>
+                </li>
+                <li><strong>组件相关 (Components)</strong>: (变量名通常包含组件名)
+                    <ul>
+                        <li>工具栏: <code>--b3-toolbar-background</code>, <code>--b3-toolbar-color</code>, <code>--b3-toolbar-hover</code>。</li>
+                        <li>列表: <code>--b3-list-hover</code>。</li>
+                        <li>菜单: <code>--b3-menu-background</code>。</li>
+                        <li>提示: <code>--b3-tooltips-background</code>, <code>--b3-tooltips-color</code>。</li>
+                        <li>下拉: <code>--b3-select-background</code> (包含 SVG 图标)。</li>
+                        <li>开关: <code>--b3-switch-background</code>, <code>--b3-switch-checked</code>, <code>--b3-switch-checked-background</code>。</li>
+                        <li>表格: <code>--b3-table-even-background</code>。</li>
+                        <li>代码块: <code>--b3-protyle-code-background</code>。</li>
+                    </ul>
+                </li>
+                <li><strong>效果 (Effects)</strong>:
+                    <ul>
+                        <li>阴影: <code>--b3-dialog-shadow</code>, <code>--b3-button-shadow</code>, <code>--b3-point-shadow</code>。</li>
+                        <li>过渡: <code>--b3-transition</code> (通用), <code>--b3-width-transition</code>, <code>--b3-color-transition</code>, <code>--b3-background-transition</code>。</li>
+                        <li>高亮: <code>--b3-highlight-color</code>, <code>--b3-highlight-background</code>, <code>--b3-highlight-current-background</code>。</li>
+                    </ul>
+                </li>
+                <li><strong>自定义文字/背景</strong>: 提供 13 对预设变量 (<code>--b3-font-color1</code> ~ <code>--b3-font-color13</code> 和 <code>--b3-font-background1</code> ~ <code>--b3-font-background13</code>)，方便用户在内容中自定义。</li>
+                <li><strong>注意</strong>: 上述仅为部分示例，实际变量非常多。</li>
+            </ul>
+
+            <h5>变量引用:</h5>
+            <p>思源的 CSS 变量之间存在引用关系 (如 <code>--b3-toolbar-background: var(--b3-theme-surface);</code>)。这意味着修改基础变量可能会影响多个组件。</p>
+
+            <h5>如何查找变量:</h5>
+            <ol>
+                <li><strong>首选</strong>: 使用浏览器开发者工具 (F12) 检查思源 <strong>目标原生 UI 元素</strong>，查看其应用的 CSS 规则和 <code>var(--b3-...)</code>。这是最准确的方法。</li>
+                <li><strong>次选</strong>: 参考 <strong>默认主题</strong> 的 <code>theme.css</code> 文件 (如 <code>daylight/theme.css</code>)，了解变量的完整列表和默认值。</li>
+                <li><strong>辅助</strong>: 参考思源核心 SCSS 文件，理解变量在组件样式中的应用逻辑，但注意 SCSS 中的变量名可能与最终 CSS 变量名不同。</li>
+            </ol>
+
+            <h4>2.2 工具类：效率与一致性的保障 (<code>fn__*</code>, <code>ft__*</code>)</h4>
+            <p>思源提供了大量原子化的 CSS 工具类，应优先使用它们来快速实现常见的布局、间距和文本样式，保证风格统一并减少冗余代码。</p>
+            <ul>
+                <li><strong>布局 (Flexbox)</strong>: <code>fn__flex</code> (启用 flex), <code>fn__flex-1</code> (占据剩余空间), <code>fn__flex-column</code> (垂直排列), <code>fn__flex-wrap</code> (换行), <code>fn__flex-center</code> (子项居中) 等。</li>
+                <li><strong>间距</strong>:
+                    <ul>
+                        <li>水平: <code>fn__space</code> (8px), <code>fn__space--small</code> (4px)</li>
+                        <li>垂直: <code>fn__hr</code> (8px), <code>fn__hr--small</code> (4px), <code>fn__hr--b</code> (16px)</li>
+                    </ul>
+                </li>
+                <li><strong>显隐控制</strong>: <code>fn__none</code> (<code>display: none</code>), <code>fn__hidden</code> (<code>visibility: hidden</code>)。</li>
+                <li><strong>文本与字体</strong>:
+                    <ul>
+                        <li><code>ft__smaller</code> (12px 字号), <code>ft__center</code> (居中对齐)</li>
+                        <li><code>ft__on-background</code>, <code>ft__on-surface</code> (使用对应背景上的文字颜色变量)</li>
+                        <li><code>ft__primary</code>, <code>ft__error</code>, <code>ft__success</code> (使用对应主题色变量)</li>
+                        <li><code>fn__ellipsis</code> (单行省略), <code>fn__code</code> (代码样式), <code>fn__kbd</code> (键盘按键样式)</li>
+                    </ul>
+                </li>
+                <li><strong>其他常用</strong>: <code>fn__pointer</code> (手型光标), <code>fn__hidescrollbar</code> (隐藏滚动条), <code>fn__block</code> (<code>width: 100%</code>) 等。</li>
+                <li><strong>使用原则</strong>: 通过在 HTML 元素上组合应用这些类来构建样式，避免为这些常见效果编写自定义 CSS。</li>
+            </ul>
+
+            <h3>3. 组件实现：结构、样式与行为</h3>
+
+            <h4>3.1 DOM 结构</h4>
+            <ul>
+                <li><strong>语义化</strong>: 尽可能使用语义化的 HTML 标签 (如 <code>&lt;button&gt;</code>, <code>&lt;input&gt;</code>, <code>&lt;ul&gt;</code>, <code>&lt;li&gt;</code>)。</li>
+                <li><strong>简洁性</strong>: 保持 DOM 结构层级尽可能浅，避免不必要的 <code>&lt;div&gt;</code> 包裹。利用 Flexbox 工具类进行布局。</li>
+                <li><strong>参考原生</strong>: 研究思源类似原生组件的 DOM 结构，模仿其模式。例如，列表项通常使用 <code>.b3-list-item</code>，内部可能包含图标、文本、操作按钮等。</li>
+                <li><strong>图标规范</strong>: 如果使用图标，参考原生图标的尺寸 (常见为 16px) 和与文本的间距 (常见为 4px)。</li>
+            </ul>
+
+            <h4>3.2 CSS 样式与命名</h4>
+            <ul>
+                <li><strong>命名空间</strong>:
+                    <ul>
+                        <li>为插件的所有自定义组件和样式定义一个 <strong>独特且一致的前缀</strong> (如 <code>sac-</code>)，以避免与思源核心 (<code>b3-</code>, <code>fn__</code>, <code>ft__</code>) 及其他插件冲突。</li>
+                        <li><strong>禁止</strong> 使用 <code>b3-</code> 作为自定义组件的主要类名或前缀。</li>
+                    </ul>
+                </li>
+                <li><strong>BEM-like</strong>: 推荐使用类似 BEM 的风格组织内部样式类： <code>prefix-block__element--modifier</code> (如 <code>sac-button__icon</code>, <code>sac-button--disabled</code>)。</li>
+                <li><strong>样式实现</strong>:
+                    <ol>
+                        <li>为组件根元素添加 <code>prefix-{component-name}</code> 类。</li>
+                        <li><strong>仔细研究</strong> 思源原生对应组件 (<code>b3-{component-name}</code>) 的 SCSS 实现或通过开发者工具检查其样式。</li>
+                        <li>在 <code>prefix-{component-name}</code> 的 CSS 规则中，<strong>严格使用相同的 <code>--b3-*</code> CSS 变量</strong> 和 CSS 属性/值，来模拟原生组件的视觉外观，包括基础样式和各种状态（hover, focus, active, disabled 等）。务必测试浅色和深色模式。</li>
+                        <li>对于 <code>:hover</code>, <code>:focus</code>, <code>:active</code>, <code>:disabled</code> 等状态，<strong>必须</strong> 实现对应的样式变化，并 <strong>同样使用 <code>--b3-*</code> 变量</strong> (参考原生组件如何处理状态变化，通常是改变背景色 (<code>--b3-theme-primary-lighter</code>, <code>--b3-list-hover</code> 等)、文字颜色 (<code>--b3-theme-on-surface-light</code>)、阴影、透明度或边框颜色)。</li>
+                        <li><strong>谨慎组合</strong>: 可以尝试在 <code>prefix-</code> 组件上组合添加 <code>fn__*</code> 或 <code>ft__*</code> 工具类。<strong>不推荐</strong> 直接添加 <code>b3-</code> 基础类，除非明确知道其效果且不会导致冲突。</li>
+                    </ol>
+                </li>
+                <li><strong>样式注入</strong>: 如果使用 JS 注入 CSS (如某些组件库的方案)，确保 CSS 选择器都基于插件的独特前缀，保证样式隔离。</li>
+            </ul>
+
+            <h4>3.3 交互行为</h4>
+            <ul>
+                <li>模仿思源原生组件的交互反馈，如点击效果、过渡动画 (使用 <code>--b3-transition</code>)。</li>
+                <li>考虑键盘导航和操作。</li>
+            </ul>
+
+            <h3>4. 处理自定义样式 (当思源资源不足时)</h3>
+            <p>虽然应极力避免，但有时确实需要实现思源变量或工具类未覆盖的特定样式。此时应遵循：</p>
+            <ul>
+                <li><strong>最小化原则</strong>: 仅对无法通过复用思源资源实现的部分编写自定义 CSS。</li>
+                <li><strong>基于变量</strong>: 尝试从现有的 <code>--b3-*</code> 变量派生。例如，需要一个比 <code>--b3-theme-primary</code> 稍浅的颜色，可以尝试寻找 <code>--b3-theme-primary-lighter</code> 或类似变量，而不是直接硬编码新颜色。如果需要计算尺寸，也优先基于 <code>--b3-font-size</code> 等基础变量。</li>
+                <li><strong>严格命名空间</strong>: 所有自定义 CSS 规则必须包含插件的独特前缀，以限制作用域，防止全局污染。
+                    <pre class="code-block"><code class="language-css">/* 好：明确作用域 */
+.sac-my-custom-widget {
+  border-left: 3px solid var(--b3-theme-primary); /* 仍然优先使用变量 */
+}
+.sac-my-custom-widget__header {
+  font-weight: bold; /* 假设无对应变量 */
+}
+
+/* 坏：可能污染全局 */
+.header-highlight {
+  font-weight: bold;
+}</code></pre>
+                </li>
+                <li><strong>主题测试</strong>: 自定义样式 <strong>必须</strong> 在思源的浅色和深色模式下进行充分测试，确保视觉效果协调。如果涉及颜色，要考虑其在不同背景下的对比度。</li>
+                <li><strong>文档记录</strong>: 在代码注释或 <code>AInote.md</code> 中记录为什么需要自定义样式，以及它是如何与思源系统协调的。</li>
+            </ul>
+
+            <h3>5. 可访问性 (Accessibility)</h3>
+            <ul>
+                <li>开发组件时应始终考虑可访问性。</li>
+                <li>使用正确的 HTML 语义标签。</li>
+                <li>为交互元素提供清晰的视觉焦点状态。</li>
+                <li>在需要时添加 ARIA 属性 (如 <code>role</code>, <code>aria-label</code>, <code>aria-disabled</code> 等) 来增强屏幕阅读器的兼容性。</li>
+            </ul>
+
+            <div class="fn__hr"></div>
+
+            <p><strong>遵循这些原则，有助于构建出与思源笔记高度整合、体验流畅的插件 UI。</strong></p>
+        </section>
+    </main>
+
+    <div id="main-footer-placeholder"></div>
+
+    <script src="assets/js/main.js" defer></script>
+</body>
+</html>

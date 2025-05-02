@@ -1,0 +1,22 @@
+{
+  "name": "siyuan-dev-guide",
+  "version": "1.0.0",
+  "description": "思源笔记二次开发指南",
+  "main": "index.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sync-styles": "node scripts/sync-styles.js"
+  },
+  "keywords": [
+    "siyuan",
+    "plugin",
+    "theme",
+    "widget",
+    "guide"
+  ],
+  "author": "",
+  "license": "ISC"
+}

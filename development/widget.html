@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>挂件开发 - 思源笔记二次开发指南</title>
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+    <header>
+        <h1>挂件 (Widget) 开发指南</h1>
+        <nav>
+            <a href="../index.html">返回主页</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="definition">
+            <h2>什么是挂件？</h2>
+            <p>挂件是嵌入在思源笔记文档中的、可通过 <code>iframe</code> 加载的**静态网页 (static webpage)**。它更侧重于**内容块的扩展 (content block extension)**，允许开发者创建可交互、可展示特定信息的小型应用模块，而不是像插件那样扩展整个程序的功能。</p>
+            <p>挂件通过思源笔记内核 (Kernel) 提供服务，并通过 <a href="../http-api.html">HTTP API</a> 与笔记数据进行交互。</p>
+        </section>
+
+        <section id="structure">
+            <h2>挂件包结构</h2>
+            <p>每个挂件都以一个文件夹的形式存在，安装在工作空间的 <code>data/widgets/</code> 目录下。文件夹的名称即为该挂件的唯一标识符 (<code>name</code>)。一个典型的挂件包结构如下：</p>
+            <pre><code>your-widget-name/       # 文件夹名即为挂件 name
+├── widget.json         # 必需：挂件描述文件
+├── index.html          # 必需：挂件入口 HTML 文件
+├── style.css           # 可选：挂件的 CSS 样式
+├── script.js           # 可选：挂件的 JavaScript 逻辑
+├── icon.png            # 可选，推荐：显示在集市和菜单中的图标 (例如 64x64)
+├── preview.png         # 可选，推荐：显示在集市中的预览图 (例如 436x232)
+└── README.md           # 可选，推荐：详细说明文档
+</code></pre>
+            <p>内核会通过 <code>/widgets/your-widget-name/</code> URL 来加载挂件，因此入口 HTML 文件（通常命名为 <code>index.html</code>）是必需的。</p>
+        </section>
+
+        <section id="manifest">
+            <h2>描述文件 <code>widget.json</code></h2>
+            <p><code>widget.json</code> 是每个挂件包根目录下**必需**的描述文件，使用 JSON 格式定义了挂件的元数据。这些信息会被集市和思源内核读取。</p>
+            <p>主要字段说明（对应 Go 后端 <code>kernel/bazaar/package.go</code> 中的 <code>Package</code> struct）：</p>
+            <ul>
+                <li><code>author</code>: (必需) 作者名称。</li>
+                <li><code>url</code>: (可选) 项目主页或源码仓库 URL。</li>
+                <li><code>version</code>: (必需) 版本号，遵循 <a href="https://semver.org/lang/zh-CN/" target="_blank">SemVer</a> 规范 (例如 "1.0.0")。</li>
+                <li><code>minAppVersion</code>: (可选) 兼容的最低思源笔记版本号 (例如 "2.9.0")。</li>
+                <li><code>displayName</code>: (必需) 显示名称，可以是一个包含不同语言翻译的对象，或一个默认字符串。
+                    <pre><code>// 对象形式 (推荐)
+"displayName": {
+  "default": "My Cool Widget",
+  "zh_CN": "我的酷挂件"
+}
+// 字符串形式
+"displayName": "My Cool Widget"</code></pre>
+                </li>
+                <li><code>description</code>: (必需) 功能描述，同样可以提供多语言版本。
+                    <pre><code>"description": {
+  "default": "This widget shows cool stuff.",
+  "zh_CN": "这个挂件能展示酷东西。"
+}</code></pre>
+                </li>
+                <li><code>readme</code>: (可选) 说明文档的文件路径 (相对于 `widget.json`)，可以提供多语言版本。
+                    <pre><code>"readme": {
+  "default": "README.md",
+  "zh_CN": "README_zh_CN.md"
+}</code></pre>
+                </li>
+                <li><code>funding</code>: (可选) 资助信息，可以是一个对象或对象数组。
+                    <pre><code>"funding": {
+  "type": "github",
+  "url": "https://github.com/sponsors/yourname"
+}</code></pre>
+                </li>
+                 <li><code>keywords</code>: (可选) 描述挂件功能的关键词数组，有助于在集市中被搜索到，例如 <code>["chart", "visualization", "data"]</code>。</li>
+            </ul>
+            <p><strong>注意：</strong> 挂件的唯一标识符 <code>name</code> 由其文件夹名称决定，**不需要**在 `widget.json` 文件中指定。</p>
+            <p>示例 <code>widget.json</code>:</p>
+            <pre><code>{
+  "author": "Your Name",
+  "url": "https://github.com/your-repo/your-widget-name",
+  "version": "0.1.0",
+  "minAppVersion": "2.10.0",
+  "displayName": {
+    "default": "Cool Data Widget",
+    "zh_CN": "酷数据挂件"
+  },
+  "description": {
+    "default": "Display cool data visualizations.",
+    "zh_CN": "展示酷炫的数据可视化图表。"
+  },
+  "readme": "README.md",
+  "keywords": ["data", "chart", "visualization"]
+}</code></pre>
+        </section>
+
+        <section id="development-tips">
+            <h2>开发技巧与注意事项</h2>
+            <ul>
+                <li><strong>技术选择</strong>: 挂件本质是静态网页，可以使用任何能生成静态 HTML/CSS/JS 的技术栈。</li>
+                <li><strong>保持轻量</strong>: 挂件嵌入文档流，应尽量减小体积，优化资源加载，避免复杂计算，保证思源整体性能。</li>
+                <li><strong>API 交互</strong>: 主要通过 <a href="../http-api.html">HTTP API</a> 与思源数据交互。注意处理 API Token 鉴权。</li>
+                <li><strong><code>iframe</code> 环境</strong>: 挂件运行在沙箱化的 <code>iframe</code> 中，无法直接访问主窗口对象和 DOM。</li>
+                <li><strong>样式隔离</strong>: <code>iframe</code> 提供了天然的样式隔离，无需担心 CSS 冲突。可以考虑通过 API 获取当前主题信息来适配亮暗模式。</li>
+                <li><strong>调试</strong>: 使用浏览器开发者工具，切换到对应的 <code>iframe</code> 上下文进行调试。</li>
+            </ul>
+        </section>
+
+        <section id="contribution">
+            <h2>贡献到社区集市</h2>
+            <p>开发完成后，可以将你的挂件提交到思源笔记的社区集市，供其他用户发现和安装。</p>
+            <p>具体的提交方式和要求，请参考官方的 <a href="https://github.com/siyuan-note/bazaar" target="_blank">社区集市仓库 (siyuan-note/bazaar)</a> 中的说明文档。</p>
+            <p>通常流程包括：</p>
+            <ol>
+                <li>将你的挂件代码托管在公开的代码仓库（如 GitHub）。</li>
+                <li>确保挂件包结构完整，包含有效的 <code>widget.json</code>、入口 HTML 以及推荐的图标和预览图。</li>
+                <li>按照社区仓库的要求，通过提交 Pull Request 或 Issue 的方式，将你的挂件信息添加到集市索引中。</li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <!-- 页脚内容 -->
+    </footer>
+</body>
+</html>

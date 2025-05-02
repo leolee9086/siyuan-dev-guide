@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>主题开发 - 思源笔记二次开发指南</title>
+    <link rel="stylesheet" href="../assets/themes/daylight.css">
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+    <header>
+        <h1>主题开发</h1>
+        <p>学习如何创建自定义主题来改变思源笔记的外观。</p>
+    </header>
+
+    <div id="main-nav-placeholder"></div>
+
+    <main class="b3-typography">
+        <section id="theme-structure">
+            <h2>理解思源主题结构 (基于默认主题分析)</h2>
+            <p>思源笔记的主题系统允许用户通过自定义 CSS 来改变界面的外观。理解默认主题的结构是开发自定义主题的基础。</p>
+
+            <h3>核心文件</h3>
+            <p>一个思源主题包通常包含以下核心文件，位于 <code>工作空间/conf/appearance/themes/主题名称/</code> 目录下：</p>
+            <ul>
+                <li><strong><code>theme.json</code> (必需)</strong>: 定义主题的元数据。</li>
+                <li><strong><code>theme.css</code> (必需)</strong>: 定义主题的核心样式和 CSS 变量。</li>
+                <li><code>icon.png</code> (可选): 主题在集市中显示的图标。</li>
+                <li><code>preview.png</code> / <code>preview1.png</code> ... (可选): 主题预览图。</li>
+                <li><code>README.md</code> (可选): 主题说明文档。</li>
+                <li><code>theme.js</code> (可选): 用于通过 JavaScript 实现更复杂的主题逻辑 (不推荐新手使用)。</li>
+            </ul>
+
+            <h3><code>theme.json</code> 文件详解</h3>
+            <p>这个 JSON 文件用于描述主题的基本信息：</p>
+            <pre class="code-block"><code class="language-json">{
+  "name": "daylight", // 主题的唯一标识符 (与文件夹名称一致)
+  "author": "SiYuan", // 作者名
+  "url": "https://b3log.org/siyuan", // 相关链接
+  "version": "1.0.0", // 主题版本号
+  "modes": ["light"], // 适配的颜色模式 ("light", "dark", 或两者皆可)
+  "displayName": {
+    "default": "Daylight",
+    "zh_CN": "日间"
+  },
+  "description": {
+    "default": "Default light theme",
+    "zh_CN": "默认浅色主题"
+  }
+}</code></pre>
+            <ul>
+                <li><code>name</code>: 必须与主题文件夹名称完全一致。</li>
+                <li><code>modes</code>: 声明该主题适用于浅色模式 (light) 还是深色模式 (dark)。</li>
+                <li><code>displayName</code> / <code>description</code>: 可以提供多语言版本，用于在设置界面显示。</li>
+            </ul>
+
+            <h3><code>theme.css</code> 文件：CSS 变量的核心</h3>
+            <p>这是主题的灵魂所在。它通过定义大量的 CSS 自定义属性 (CSS Variables) 来控制思源 UI 的方方面面。核心规则是：</p>
+            <ul>
+                <li><strong>在 <code>:root</code> 选择器下定义变量</strong>: 所有核心样式变量都以 <code>--b3-</code> 开头，定义在 <code>:root</code> 下。</li>
+                <li><strong>变量覆盖范围广</strong>: 包括核心颜色、字体、尺寸、形状、组件样式、效果、编辑器样式等。</li>
+                <li><strong>日夜模式差异</strong>: <code>daylight</code> 和 <code>midnight</code> 主题中的同名变量具有不同的值，从而实现颜色模式切换。</li>
+                <li><strong>变量引用</strong>: 变量之间可以相互引用 (<code>var(...)</code>)。</li>
+            </ul>
+            <p><strong>极其重要</strong>: 自定义主题时，主要工作就是覆盖这些 <code>--b3-*</code> 变量的值。直接修改或添加其他 CSS 规则应谨慎，并优先考虑是否可以通过修改变量达到目的。</p>
+            <p>关于如何利用这些变量和思源提供的工具类进行开发，请参考 <a href="../best-practices.html#plugin-ui-guidelines">插件 UI 组件开发指导原则</a>。</p>
+
+            <h4>关于 SCSS 结构</h4>
+            <p>虽然主题包里直接提供的是 <code>theme.css</code>，但思源笔记自身的样式系统是使用 SCSS 构建的。其源代码位于 <code>siyuan/app/src/assets/scss/</code> 目录下，采用了模块化的组织方式 (例如 <code>util/</code>, <code>component/</code>, <code>business/</code>)。了解这个结构对于深入定制或贡献代码有帮助，但对于仅制作主题而言，理解并覆盖 <code>theme.css</code> 中的 CSS 变量通常已足够。</p>
+        </section>
+
+        <section id="creating-a-theme">
+            <h2>创建你的第一个主题</h2>
+            <p>（后续补充具体步骤和示例）</p>
+            <ul>
+                <li>复制一个现有主题作为模板。</li>
+                <li>修改 <code>theme.json</code> 中的信息。</li>
+                <li>修改 <code>theme.css</code> 中的 <code>--b3-*</code> 变量值。</li>
+                <li>将主题文件夹放入 <code>工作空间/conf/appearance/themes/</code>。</li>
+                <li>在思源设置中启用新主题。</li>
+            </ul>
+        </section>
+    </main>
+
+    <div id="main-footer-placeholder"></div>
+
+    <script src="../assets/js/main.js" defer></script>
+</body>
+</html>
