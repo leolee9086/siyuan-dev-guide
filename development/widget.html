@@ -41,6 +41,7 @@
             <p><code>widget.json</code> 是每个挂件包根目录下**必需**的描述文件，使用 JSON 格式定义了挂件的元数据。这些信息会被集市和思源内核读取。</p>
             <p>主要字段说明（对应 Go 后端 <code>kernel/bazaar/package.go</code> 中的 <code>Package</code> struct）：</p>
             <ul>
+                <li><code>name</code>: (必需) 挂件的唯一标识符，必须与其所在的文件夹名称完全一致。</li>
                 <li><code>author</code>: (必需) 作者名称。</li>
                 <li><code>url</code>: (可选) 项目主页或源码仓库 URL。</li>
                 <li><code>version</code>: (必需) 版本号，遵循 <a href="https://semver.org/lang/zh-CN/" target="_blank">SemVer</a> 规范 (例如 "1.0.0")。</li>
@@ -74,9 +75,10 @@
                 </li>
                  <li><code>keywords</code>: (可选) 描述挂件功能的关键词数组，有助于在集市中被搜索到，例如 <code>["chart", "visualization", "data"]</code>。</li>
             </ul>
-            <p><strong>注意：</strong> 挂件的唯一标识符 <code>name</code> 由其文件夹名称决定，**不需要**在 `widget.json` 文件中指定。</p>
+            <p><strong>注意：</strong> 挂件的唯一标识符 <code>name</code> 必须在 `widget.json` 中指定，且必须与文件夹名称一致。</p>
             <p>示例 <code>widget.json</code>:</p>
             <pre class="code-block"><code>{
+  "name": "your-widget-name",
   "author": "Your Name",
   "url": "https://github.com/your-repo/your-widget-name",
   "version": "0.1.0",
