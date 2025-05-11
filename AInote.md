@@ -72,4 +72,36 @@
 *   依赖辅助脚本进行文档结构的校验、链接检查等。
 
 **下一步行动**:
-*   开始执行上述步骤，可以先从创建一个小的 API 分类（如 `account/`）的迁移作为试点。 
+*   开始执行上述步骤，可以先从创建一个小的 API 分类（如 `account/`）的迁移作为试点。
+
+## 2025-05-12 01:05 - 运行链接检查脚本 `check_all_links.js`
+
+*   **时间戳 (北京时间):**
+    *   脚本启动: 2025-05-12 01:04:41 CST (大约)
+    *   脚本结束: 2025-05-12 01:05:15 CST
+*   **操作**: 应哥哥要求，运行 `siyuan-dev-guide/scripts/check_all_links.js` 脚本。
+*   **命令**: `node scripts/check_all_links.js` (在 `siyuan-dev-guide` 目录下执行)
+*   **结果**:
+    *   脚本成功执行 (退出码 0)。
+    *   发现大量内部相对链接断裂问题，主要存在于 `kernel-api/` 目录下的 HTML 文件以及其他一些关联项目/子模块的 HTML 文件中。这些链接指向的 CSS, JS, 导航页和图片资源在预期路径下未找到。
+    *   `_includes/nav.html` 中的导航链接也存在目标不存在的问题。
+    *   脚本收集了 217 个唯一的外部绝对链接，并将报告保存到 `absolute_links_report.md`。
+*   **后续**:
+    *   需要检查 `absolute_links_report.md` 以了解外部链接状况。
+    *   需要修复项目中的内部断链问题。
+    *   此条记录应同步到思源笔记。
+
+## 2025-05-12 01:11 - 优化链接检查脚本 `check_all_links.js` 处理逻辑
+
+*   **时间戳 (北京时间):** 2025-05-12 01:11:44 CST
+*   **操作**: 根据哥哥的反馈和对 `broken_links_report.md` 的分析，优化 `siyuan-dev-guide/scripts/check_all_links.js` 脚本。
+*   **问题分析**: 原脚本在检查链接目标文件是否存在时，未移除链接中的 URL 片段 (如 `#section`) 和查询参数 (如 `?param=val`)，导致会尝试查找带有这些片段和参数的文件名，从而产生误报（即使基础文件存在，也会因片段/参数不匹配而被报为损坏）。
+*   **修改内容**:
+    *   在从 HTML 内容中提取到 `linkUrl` 后，增加一步处理：`const cleanLinkForChecking = linkUrl.split('#')[0].split('?')[0];`。此操作会移除 URL 片段和查询参数，得到一个纯净的、用于文件系统检查的链接。
+    *   后续进行路径解析 (`path.resolve`) 和文件存在性检查 (`fs.access`) 时，均使用这个 `cleanLinkForChecking`。
+    *   判断链接是否为根相对链接 (`startsWith('/')`) 时，也基于 `cleanLinkForChecking` 进行。
+    *   生成的损坏链接报告中，`link` 字段仍保留原始的完整 `linkUrl`，而 `resolvedPath` 字段则反映基于 `cleanLinkForChecking` 解析得到的实际检查路径。
+*   **目的**: 提高内部链接检查的准确性，避免因 URL 片段或查询参数导致对实际存在文件的误报，使 `broken_links_report.md` 更能真实反映项目中断链情况。
+*   **后续**:
+    *   建议重新运行优化后的 `check_all_links.js` 脚本以生成更准确的损坏链接报告。
+    *   此条记录应同步到思源笔记。

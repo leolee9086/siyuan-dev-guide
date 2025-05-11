@@ -7,10 +7,10 @@ const { execSync } = require('child_process'); // <-- 引入 execSync 用于执�
 
 // --- 本地路径配置 ---
 // 使用 path.resolve 确保路径正确，相对于当前脚本文件 (__dirname)
-// 注意：这里假设 siyuan-kernelApi-docs 和 siyuan 在同一个父目录下
-const siyuanRepoPath = path.resolve(__dirname, '../../siyuan'); // <-- 思源主仓库路径
+// 注意：这里假设 siyuan-dev-guide 和 siyuan 在同一个父目录下 (例如 D:/siyuan/)
+const siyuanRepoPath = path.resolve(__dirname, '../../../siyuan'); // <-- 思源主仓库路径 (D:/siyuan/siyuan)
 const routerGoPath = path.join(siyuanRepoPath, 'kernel/api/router.go'); // <-- router.go 路径
-const apiDocBasePath = path.resolve(__dirname, '../'); // <-- API 文档根目录 (siyuan-kernelApi-docs)
+const apiDocBasePath = path.resolve(__dirname, '../'); // <-- API 文档根目录 (现在是 siyuan-dev-guide/kernel-api/)
 
 // --- API 路径清理函数 ---
 function cleanApiPath(apiPath) {

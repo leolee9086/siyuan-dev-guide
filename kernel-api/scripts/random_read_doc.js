@@ -3,8 +3,8 @@
 const fs = require('fs').promises;
 const path = require('path');
 
-const apiDocBasePath = path.resolve(__dirname, '../'); // API 文档根目录 (siyuan-kernelApi-docs)
-const excludedDirs = new Set(['scripts', 'common', '.git', '.github', 'node_modules']); // 需要排除的目录名称
+const apiDocBasePath = path.resolve(__dirname, '../'); // API 文档根目录 (现在指向 siyuan-dev-guide/kernel-api/)
+const excludedDirs = new Set(['scripts', '.git', '.github', 'node_modules']); // 'common' 已被移除，因为它不在 apiDocBasePath 下了
 const excludedFiles = new Set(['index.html']); // 需要排除的文件名
 
 async function getAllHtmlFiles(dir) {

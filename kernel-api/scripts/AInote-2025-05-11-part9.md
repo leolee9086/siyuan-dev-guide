@@ -476,3 +476,275 @@
     *   包含接口描述、请求参数（包括设置和清除示例）、成功/失败响应、认证授权详情、重要备注，以及一个需要输入当前Token和新Token的在线测试表单。
 
 **下一步:** 运行 `check_docs.js` 以确定下一个缺失的 API。 
+
+# 这个区段由开发者编写,未经允许禁止AI修改
+
+---
+## API: /api/system/getCaptcha
+*   **时间**: Sun May 11 2025 21:31:31 GMT+0800 (中国标准时间)
+*   **操作**: 创建 API 文档
+*   **文件**: `system/getCaptcha.html`
+*   **分析**:
+    *   通过 `check_docs.js` 确认此 API 缺失文档。
+    *   `grep_search` 定位 `router.go` 中定义: `ginServer.Handle("GET", "/api/system/getCaptcha", model.GetCaptcha)`。
+    *   HTTP 方法: `GET`，无需认证。
+    *   处理函数: `model.GetCaptcha`，在 `siyuan/kernel/model/session.go` 中实现。
+    *   功能: 生成一个 100x26 像素的图片验证码，并将验证码文本 (字符集 `ABCDEFGHKLMNPQRSTUVWXYZ23456789`) 存入用户会话 (`workspaceSession.Captcha`)。
+    *   请求: 无参数。
+    *   响应: 成功时返回验证码图片 (e.g., `image/png`)，失败时返回 500。
+    *   HTML 文档中添加了在线测试功能，可以通过按钮刷新验证码图片。
+*   **后续**: 更新 AInote 索引，将此条目同步到思源笔记，然后继续处理下一个缺失的 API。 
+
+### API: /api/system/setDownloadInstallPkg
+
+*   **时间戳 (北京时间):**
+    *   开始分析此 API (确认 `check_docs.js` 输出后): 2025-05-11 22:50:05
+    *   `router.go` 阅读开始: 2025-05-11 22:50:22
+    *   `system.go` 源码阅读完成 (setDownloadInstallPkg): 2025-05-11 22:50:58
+    *   HTML 文档创建完成: 2025-05-11 22:51:29
+    *   AInote 更新开始: 2025-05-11 22:51:29
+*   **API 端点**: `/api/system/setDownloadInstallPkg`
+*   **`check_docs.js` 状态**: 执行前剩余 8 个 API，下一个是 `/api/system/setDownloadInstallPkg`。执行后剩余 7 个。
+*   **HTTP 方法**: `POST`
+*   **Go 函数名**: `setDownloadInstallPkg`
+*   **源码位置**: `kernel/api/system.go` (L700)
+*   **认证与授权**: `model.CheckAuth`, `model.CheckAdminRole`, `model.CheckReadonly`
+*   **功能描述**: 设置思源笔记是否在检测到新版本后自动下载安装包。
+*   **请求参数**:
+    *   JSON Body: `{ "downloadInstallPkg": boolean }` (必需)
+        *   `true`: 允许自动下载。
+        *   `false`: 禁止自动下载。
+*   **响应体 (成功)**:
+    ```json
+    {
+        "code": 0,
+        "msg": "",
+        "data": null
+    }
+    ```
+*   **HTML 文档**: `siyuan-kernelApi-docs/system/setDownloadInstallPkg.html`
+*   **关键实现点**:
+    *   从 `router.go` 确认了方法、路径、中间件和处理函数 `setDownloadInstallPkg`。
+    *   `setDownloadInstallPkg` 函数位于 `kernel/api/system.go`，逻辑简单：读取请求体中的 `downloadInstallPkg` (boolean) 参数，并更新 `model.Conf.System.DownloadInstallPkg`，然后保存配置。
+    *   HTML 页面包含了接口描述、请求参数 (示例为 true/false)、成功/失败响应示例、认证说明、备注，以及一个包含 API Token 输入框和布尔值选择 (是/否) 的在线测试表单。
+*   **下一步**: 运行 `check_docs.js` 确认下一个待处理 API。
+
+### API: /api/system/uiproc
+
+*   **时间戳 (北京时间):**
+    *   开始分析此 API (确认 `check_docs.js` 输出后): 2025-05-11 22:52:06
+    *   `router.go` 阅读开始: 2025-05-11 22:52:26
+    *   `system.go` 源码阅读完成 (addUIProcess): 2025-05-11 22:52:54
+    *   HTML 文档创建完成: 2025-05-11 22:58:21
+    *   AInote 更新开始: 2025-05-11 22:58:21
+*   **API 端点**: `/api/system/uiproc`
+*   **`check_docs.js` 状态**: 执行前剩余 7 个 API，下一个是 `/api/system/uiproc`。执行后剩余 6 个。
+*   **HTTP 方法**: `POST`
+*   **Go 函数名**: `addUIProcess`
+*   **源码位置**: `kernel/api/system.go` (L738)
+*   **认证与授权**: 无需认证。
+*   **功能描述**: 注册 UI 进程的 PID。内核将接收到的 PID 存储在 `util.UIProcessIDs` (一个 `sync.Map`)。
+*   **请求参数**:
+    *   URL Query: `pid` (string, 必需) - UI 进程的标识符。
+    *   请求体: 无。
+*   **响应体**: HTTP 200 OK，响应体为空。
+*   **HTML 文档**: `siyuan-kernelApi-docs/system/uiproc.html`
+*   **关键实现点**:
+    *   从 `router.go` 确认了方法、路径、无中间件和处理函数 `addUIProcess`。
+    *   `addUIProcess` 函数位于 `kernel/api/system.go`，逻辑非常简单：从 URL query 获取 `pid` 并存入 `util.UIProcessIDs`。
+    *   由于此 API 不返回 JSON，在线测试部分主要关注请求的 HTTP 状态码和响应头，并尝试显示可能为空的响应体。
+*   **下一步**: 更新主 AInote.md 索引，将此记录同步到思源笔记，然后运行 `check_docs.js` 确认下一个待处理 API。
+
+### API: /api/ui/reloadAttributeView
+
+*   **时间戳 (北京时间):**
+    *   开始分析此 API (确认 `check_docs.js` 输出后): 2025-05-11 22:59:18
+    *   `router.go` 阅读完成 (ui 分组): 2025-05-11 22:59:40
+    *   `ui.go` 源码阅读完成 (reloadAttributeView): 2025-05-11 23:00:27
+    *   HTML 文档创建完成: 2025-05-11 23:01:00
+    *   AInote 更新开始: 2025-05-11 23:01:00
+*   **API 端点**: `/api/ui/reloadAttributeView`
+*   **`check_docs.js` 状态**: 执行前剩余 6 个 API，下一个是 `/api/ui/reloadAttributeView` (ui 分组第一个)。执行后剩余 5 个。
+*   **HTTP 方法**: `POST`
+*   **Go 函数名**: `reloadAttributeView`
+*   **源码位置**: `kernel/api/ui.go` (L54)
+*   **认证与授权**: `model.CheckAuth`, `model.CheckAdminRole`, `model.CheckReadonly`.
+*   **功能描述**: 通知前端重载指定块的属性面板视图。内核通过 WebSocket 推送 `reloadattrview` 事件。
+*   **请求参数**:
+    *   JSON Body: `{"id": "string"}` (块 ID, 必需)
+*   **响应体 (成功)**:
+    ```json
+    {
+        "code": 0,
+        "msg": "",
+        "data": null
+    }
+    ```
+*   **HTML 文档**: `siyuan-kernelApi-docs/ui/reloadAttributeView.html`
+*   **关键实现点**:
+    *   从 `router.go` 确认了方法、路径、中间件和处理函数。
+    *   `reloadAttributeView` 函数位于 `kernel/api/ui.go`，读取请求体中的 `id` 参数，调用 `model.ReloadAttrView(id)`。
+    *   HTML 页面包含了接口描述、请求参数 (示例)、成功/失败响应示例、认证说明、备注，以及在线测试表单。
+*   **下一步**: 更新主 AInote.md 索引，将此记录同步到思源笔记，然后继续处理 `ui` 分组的下一个 API `/api/ui/reloadFiletree`。
+
+### API: /api/ui/reloadFiletree
+
+*   **时间戳 (北京时间):**
+    *   开始分析此 API (接续 reloadAttributeView): 2025-05-11 23:02:02
+    *   `ui.go` 源码已阅读 (reloadFiletree L32)。
+    *   HTML 文档创建完成: 2025-05-11 23:02:35
+    *   AInote 更新开始: 2025-05-11 23:02:35
+*   **API 端点**: `/api/ui/reloadFiletree`
+*   **`check_docs.js` 状态**: 执行前剩余 5 个 API，下一个是 `/api/ui/reloadFiletree`。执行后预计剩余 4 个。
+*   **HTTP 方法**: `POST`
+*   **Go 函数名**: `reloadFiletree`
+*   **源码位置**: `kernel/api/ui.go` (L32)
+*   **认证与授权**: `model.CheckAuth`, `model.CheckAdminRole`, `model.CheckReadonly`.
+*   **功能描述**: 通知前端重载文件树视图。内核通过 WebSocket 推送 `reloadfiletree` 事件。
+*   **请求参数**: 无 (可发送空 JSON `{}`)
+*   **响应体 (成功)**:
+    ```json
+    {
+        "code": 0,
+        "msg": "",
+        "data": null
+    }
+    ```
+*   **HTML 文档**: `siyuan-kernelApi-docs/ui/reloadFiletree.html`
+*   **关键实现点**:
+    *   `reloadFiletree` 函数调用 `model.ReloadFiletree()`。
+    *   HTML 页面包含了接口描述、空请求参数说明、成功响应示例、认证说明、备注，以及在线测试表单 (仅需 Token)。
+*   **下一步**: 更新主 AInote.md 索引，将此记录同步到思源笔记，然后继续处理 `ui` 分组的下一个 API `/api/ui/reloadProtyle`。
+
+### API: /api/ui/reloadProtyle
+
+*   **时间戳 (北京时间):**
+    *   开始分析此 API (接续 reloadFiletree): 2025-05-11 23:03:25
+    *   `ui.go` 源码已阅读 (reloadProtyle L41)。
+    *   HTML 文档创建完成: 2025-05-11 23:04:03
+    *   AInote 更新开始: 2025-05-11 23:04:03
+*   **API 端点**: `/api/ui/reloadProtyle`
+*   **`check_docs.js` 状态**: 执行前剩余 4 个 API，下一个是 `/api/ui/reloadProtyle`。执行后预计剩余 3 个。
+*   **HTTP 方法**: `POST`
+*   **Go 函数名**: `reloadProtyle`
+*   **源码位置**: `kernel/api/ui.go` (L41)
+*   **认证与授权**: `model.CheckAuth`, `model.CheckAdminRole`, `model.CheckReadonly`.
+*   **功能描述**: 通知前端重载指定文档/块 ID 对应的 Protyle 编辑器。内核通过 WebSocket 推送 `reloadprotyle` 事件。
+*   **请求参数**: JSON Body: `{"id": "string"}` (文档/块 ID, 必需)
+*   **响应体 (成功)**:
+    ```json
+    {
+        "code": 0,
+        "msg": "",
+        "data": null
+    }
+    ```
+*   **HTML 文档**: `siyuan-kernelApi-docs/ui/reloadProtyle.html`
+*   **关键实现点**:
+    *   `reloadProtyle` 函数读取请求体中的 `id` 参数，调用 `model.ReloadProtyle(id)`。
+    *   HTML 页面包含了接口描述、请求参数 (示例)、成功/失败响应示例、认证说明、备注，以及在线测试表单。
+*   **下一步**: 更新主 AInote.md 索引，将此记录同步到思源笔记，然后继续处理 `ui` 分组的下一个 API `/api/ui/reloadTag`。
+
+### API: /api/ui/reloadTag
+
+*   **时间戳 (北京时间):**
+    *   开始分析此 API (接续 reloadProtyle): 2025-05-11 23:05:57
+    *   `ui.go` 源码已阅读 (reloadTag L25)。
+    *   HTML 文档创建完成: 2025-05-11 23:06:28
+    *   AInote 更新开始: 2025-05-11 23:06:28
+*   **API 端点**: `/api/ui/reloadTag`
+*   **`check_docs.js` 状态**: 执行前剩余 3 个 API，下一个是 `/api/ui/reloadTag`。执行后预计剩余 2 个 (只剩 `/api/ui/reloadUI`，但它已有文档 `system/reloadUI.html`，及孤立文件)。
+*   **HTTP 方法**: `POST`
+*   **Go 函数名**: `reloadTag`
+*   **源码位置**: `kernel/api/ui.go` (L25)
+*   **认证与授权**: `model.CheckAuth`, `model.CheckAdminRole`, `model.CheckReadonly`.
+*   **功能描述**: 通知前端重载标签树视图。内核通过 WebSocket 推送 `reloadtag` 事件。
+*   **请求参数**: 无 (可发送空 JSON `{}`)
+*   **响应体 (成功)**:
+    ```json
+    {
+        "code": 0,
+        "msg": "",
+        "data": null
+    }
+    ```
+*   **HTML 文档**: `siyuan-kernelApi-docs/ui/reloadTag.html`
+*   **关键实现点**:
+    *   `reloadTag` 函数调用 `model.ReloadTag()`。
+    *   HTML 页面包含了接口描述、空请求参数说明、成功响应示例、认证说明、备注，以及在线测试表单 (仅需 Token)。
+*   **下一步**: 更新主 AInote.md 索引，将此记录同步到思源笔记。然后运行 `check_docs.js` 确认 `/api/ui/reloadUI` 是否已因 `system/reloadUI.html` 的存在而被正确处理，并处理孤立文件。
+
+### API: /api/transactions
+
+*   **时间戳 (北京时间):**
+    *   开始分析此 API (确认 `check_docs.js` 输出后): 2025-05-11 23:10:10
+    *   `router.go` 阅读完成 (定位 performTransactions): 2025-05-11 23:10:10 (复用之前已读内容)
+    *   `transaction.go` 源码阅读完成: 2025-05-11 23:11:07
+    *   HTML 文档创建完成: 2025-05-11 23:12:10
+    *   AInote 更新开始: 2025-05-11 23:12:10
+*   **API 端点**: `/api/transactions`
+*   **`check_docs.js` 状态**: 执行前剩余 1 个 API，即 `/api/transactions`。执行后预计剩余 0 个。
+*   **HTTP 方法**: `POST`
+*   **Go 函数名**: `performTransactions`
+*   **源码位置**: `kernel/api/transaction.go` (L30)
+*   **认证与授权**: `model.CheckAuth`, `model.CheckAdminRole`, `model.CheckReadonly`.
+*   **功能描述**: 核心接口，用于批量执行一系列数据修改"事务 (transactions)"。每个事务包含多个"操作 (operations)"，如块的增删改、属性设置等。
+*   **请求参数 (主要)**:
+    *   JSON Body: `{
+        "transactions": [ { "doOperations": [ { "action": "...", "id": "...", "data": "...", ... } ], "undoOperations": [] } ],
+        "reqId": 1678886400000,
+        "app": "SiYuan",
+        "session": "wsClientId"
+    }`
+    *   `action` 和 `data` 结构多样，需参考具体操作。
+*   **响应体 (成功)**:
+    ```json
+    {
+        "code": 0,
+        "msg": "",
+        "data": [ /* 处理后的 transactions 数组，operation 内含 retData */ ]
+    }
+    ```
+    *   响应头包含 `Server-Timing`。
+*   **HTML 文档**: `siyuan-kernelApi-docs/transactions/transactions.html`
+*   **关键实现点**:
+    *   从 `router.go` 确认了方法、路径、中间件和处理函数。
+    *   `performTransactions` 函数位于 `kernel/api/transaction.go`，解析请求，调用 `model.PerformTransactions()`，并通过 WebSocket 推送 `transactions` 事件。
+    *   HTML 页面详细描述了接口功能、通用请求/响应结构，并列举了 updateBlock, insertBlock, setBlockAttrs, deleteBlock, moveBlock 等常见 action 作为示例，提供了可交互的在线测试区域，包含预加载示例的功能。
+*   **下一步**: 更新主 AInote.md 索引，将此记录同步到思源笔记。然后运行 `check_docs.js` 做最终确认，希望看到 0 个缺失 API！
+
+### 修正 check_docs.js 对特殊 API 路径的误判
+
+*   **时间戳 (北京时间):**
+    *   开始分析 `check_docs.js` 源码: 2025-05-11 23:38:12
+    *   定位问题并提出修改方案: 2025-05-11 23:38:32
+    *   应用修改到 `check_docs.js`: 2025-05-11 23:38:53
+    *   验证修改后脚本运行结果: 2025-05-11 23:39:19
+    *   AInote 更新开始: 2025-05-11 23:39:42
+*   **问题描述**: `check_docs.js` 脚本将 `siyuan-kernelApi-docs/transactions/transactions.html` 文件误报为孤立文件。原因是该 API 的路径为 `/api/transactions`，其分类名 (`transactions`) 与最终的端点名 (`transactions.html` 的文件名部分) 相同。脚本在推断文件对应的 API 路径时，未能正确处理这种情况，生成了如 `/api/transactions/transactions` 的错误推断路径。
+*   **修改内容**:
+    *   在 `siyuan-kernelApi-docs/scripts/check_docs.js` 的 `checkApiFileStructure` 函数中，修改了推断文件对应 API 路径 (`possibleApiPaths`) 的逻辑。
+    *   新增了一个判断：如果根据文件路径提取的 `categoryName` 和 `fileNameWithoutExt` 相同，则额外将 `/api/${categoryName}` 和 `/ws/${categoryName}` 添加到 `possibleApiPaths` 数组中。
+    *   修改位置大约在原脚本的 L145 - L150 之间。
+*   **验证结果**: 修改后再次运行 `node check_docs.js`，脚本输出显示：`🎉🎉🎉 完美！所有 API 定义都有对应的文档文件，所有分组索引都正确，没有发现任何孤立文件或索引！`，误报问题已解决。
+*   **下一步**: 为文档完善工作创建随机阅读脚本。
+
+### 完善 API 文档: /api/clipboard/readFilePaths
+
+*   **时间戳 (北京时间):**
+    *   `random_read_doc.js` 选中此文档: 2025-05-11 23:45:38
+    *   开始分析并完善此文档: 2025-05-11 23:50:09
+    *   `router.go` 和 `clipboard.go` 源码分析完成: 2025-05-11 23:51:22
+    *   HTML 文档更新完成: 2025-05-11 23:51:33
+    *   AInote 更新开始: 2025-05-11 23:52:06
+*   **背景**: 此文档由 `random_read_doc.js` 脚本随机选中，发现其为较早的社区贡献格式。
+*   **主要修改内容**:
+    *   **元数据**: 添加了 `siyuan-api-endpoint` meta 标签。
+    *   **样式与导航**: 更新了 CSS 文件链接，修正了导航链接到标准首页和分类页。
+    *   **认证与授权**: 根据 `router.go` (`model.CheckAuth`, `model.CheckAdminRole`) 添加了此章节，并指出无 `CheckReadonly`。
+    *   **请求参数**: 确认并明确了无需请求参数。
+    *   **响应体**: 详细说明了 `code` 始终为 0，以及 Linux 环境下 `data` 为空数组的情况。
+    *   **备注**: 补充了 Linux 限制的 GitHub Issue 链接，并说明了对外部库的依赖。
+    *   **在线测试**: 替换了旧的通用测试区，加入了与我们最近创建的文档一致的、包含 API Token 输入框的专用测试表单和 JS 逻辑。
+*   **结果**: `siyuan-kernelApi-docs/clipboard/readFilePaths.html` 已更新至当前最新的文档规范。
+*   **下一步**: 创建一个脚本，用于检查所有 API 文档是否包含标准的"认证与授权"说明区块。 
