@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>重置本地仓库密钥 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+    
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/repo/resetRepo</span>
+    </div>
+    
+    <h1>重置本地仓库密钥</h1>
+    
+    <div class="auth-tags">
+        <span class="chip auth-required">需要认证</span>
+        <span class="chip admin-required">需要管理员</span>
+        <span class="chip readonly-checked">检查只读模式</span>
+    </div>
+    
+    <h2>接口描述</h2>
+    <p><strong class="warning">警告：这是一个非常危险的操作！</strong></p>
+    <p>此接口用于重置当前本地工作空间（仓库）的加密密钥。执行此操作将导致：</p>
+    <ul>
+        <li>所有现存的本地历史快照均会失效，因为它们是用旧密钥加密的。</li>
+        <li>如果已配置云端同步，需要重新设置和初始化云端同步仓库，因为云端数据与本地密钥不再匹配。</li>
+    </ul>
+    <p>在执行此操作前，请务必理解其后果，并确保已备份所有重要数据。此操作通常仅在密钥泄露或需要彻底更换仓库加密策略时使用。</p>
+    <p>在只读模式下，此操作会被禁止。</p>
+    
+    <h2>请求参数</h2>
+    <p>此接口不需要参数。</p>
+    
+    <h2>返回值</h2>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>code</td>
+                <td>number</td>
+                <td>返回码，0 表示成功</td>
+            </tr>
+            <tr>
+                <td>msg</td>
+                <td>string</td>
+                <td>错误信息，成功时为空字符串。失败时会提供具体错误，例如 "reset repo failed: ..." 并附带语言包中索引为 146 的提示。</td>
+            </tr>
+            <tr>
+                <td>data</td>
+                <td>null or object</td>
+                <td>成功时为 <code>null</code>。失败时可能返回一个包含 <code>{"closeTimeout": 5000}</code> 的对象，提示客户端在一段时间后关闭相关消息提示。</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="example-tab">请求示例</div>
+            <div class="tab" data-target="response-tab">返回示例</div>
+        </div>
+        
+        <div id="example-tab" class="tab-content active">
+            <h3>请求示例</h3>
+            <pre><code>POST /api/repo/resetRepo HTTP/1.1
+Host: 127.0.0.1:6806
+Content-Type: application/json
+Authorization: Token YOUR_API_TOKEN_HERE
+
+{}</code></pre>
+        </div>
+        
+        <div id="response-tab" class="tab-content">
+            <h3>返回示例 (成功)</h3>
+            <pre><code>{
+  "code": 0,
+  "msg": "",
+  "data": null
+}</code></pre>
+            <h3>返回示例 (失败 - 例如只读模式)</h3>
+            <pre><code>{
+  "code": -1,
+  "msg": "[405]Readonly mode, Prohibited POST /api/repo/resetRepo",
+  "data": {
+    "closeTimeout": 5000
+  }
+}</code></pre>
+            <h3>返回示例 (失败 - 其他错误)</h3>
+            <pre><code>{
+  "code": -1,
+  "msg": "重置历史快照仓库失败: an unexpected error occurred",
+  "data": {
+    "closeTimeout": 5000
+  }
+}</code></pre>
+        </div>
+    </div>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+
+<div class="test-area">
+    <h3>在线测试</h3>
+    <form id="api-test-form">
+        <div class="form-group">
+            <label for="api-token">API Token:</label>
+            <input type="text" id="api-token" placeholder="在思源笔记的 设置-关于 中查看 API Token">
+        </div>
+        
+        <div class="form-group">
+            <label for="api-endpoint">接口地址:</label>
+            <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/repo/resetRepo">
+        </div>
+        
+        <div class="form-group">
+            <label for="api-method">请求方法:</label>
+            <input type="text" id="api-method" value="POST" readonly>
+        </div>
+        
+        <div class="form-group">
+            <label for="api-params">请求参数 (JSON):</label>
+            <textarea id="api-params">{}</textarea>
+        </div>
+        
+        <button type="submit" class="btn">发送请求</button>
+    </form>
+    
+    <div id="api-result" class="result"></div>
+</div>
+
+<script src="../api-tester.js"></script>
+
+</body>
+</html> 

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/system/ignoreAddMicrosoftDefenderExclusion">
+    <title>忽略添加 Defender 排除项 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../common/css/styles.css">
+</head>
+<body>
+    <header class="api-header">
+        <h1>忽略添加 Microsoft Defender 排除项 (ignoreAddMicrosoftDefenderExclusion)</h1>
+        <nav>
+            <a href="../index.html">首页</a> |
+            <a href="index.html">System API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/system.go" target="_blank">GitHub Source (api/system.go)</a>
+        </nav>
+        <div class="endpoint-container">
+            <span class="endpoint">POST /api/system/ignoreAddMicrosoftDefenderExclusion</span>
+        </div>
+    </header>
+    <main>
+        <section id="description">
+            <h2>接口描述</h2>
+            <p>此 API 端点 <code>POST /api/system/ignoreAddMicrosoftDefenderExclusion</code> 用于设置一个配置项，标记用户已选择忽略"将思源笔记添加到 Microsoft Defender 排除项"的建议。</p>
+            <p><b>注意：此接口仅在 Windows 操作系统上有效。</b>在其他操作系统上调用此接口不会执行任何操作，但仍会返回成功响应。</p>
+            <p>此接口需要管理员权限，并且在只读模式下可能无法成功保存配置。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>此 API 不需要任何请求参数。发送一个空的 JSON 对象 <code>{}</code> 即可。</p>
+            <p><strong>请求示例 (空JSON对象):</strong></p>
+            <pre><code class="language-json">{}</code></pre>
+        </section>
+
+        <section id="response-body">
+            <h2>响应体</h2>
+            <p>在所有情况下 (包括非 Windows 系统，或 Windows 系统上操作成功)，API 均返回标准的成功 JSON 响应结构：</p>
+            <ul>
+                <li><code>code</code> (number): 状态码，始终为 0 表示操作（或尝试操作）被接受。</li>
+                <li><code>msg</code> (string): 状态信息，通常为空字符串。</li>
+                <li><code>data</code> (null): 通常为 <code>null</code>。</li>
+            </ul>
+            <p><strong>标准响应示例:</strong></p>
+            <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": null
+}</code></pre>
+            <p><em>注意：即使在只读模式下配置保存失败，或者在非 Windows 系统上调用，此 API 仍然返回 <code>code: 0</code>。实际的配置是否成功写入依赖于后端日志和具体环境。</em></p>
+        </section>
+
+        <section id="authentication">
+            <h2>认证与授权</h2>
+            <p>此 API 需要有效的用户认证和管理员权限：</p>
+            <ul>
+                <li>必须在 HTTP Header 中提供 <code>Authorization</code> 字段，其值为 API Token。</li>
+                <li>调用者必须具有管理员角色 (<code>model.CheckAdminRole</code>)。</li>
+                <li>接口会尝试修改配置，因此在只读模式 (<code>model.CheckReadonly</code>) 下，配置保存可能失败。</li>
+            </ul>
+            <p>如果认证失败或权限不足，服务器通常会返回相应的错误状态码 (如 HTTP 401 Unauthorized 或 403 Forbidden) 和错误信息，此时响应的 <code>code</code> 可能不为 0。</p>
+        </section>
+
+        <section id="notes">
+            <h2>备注</h2>
+            <ul>
+                <li>此接口主要用于思源笔记内部，当用户在 Windows 系统上选择"不再提示"或"忽略"关于添加 Microsoft Defender 排除项的建议时调用。</li>
+                <li>调用后，相关的配置项 <code>conf.System.MicrosoftDefenderExcluded</code> 会被设置为 <code>true</code> 并尝试保存。</li>
+            </ul>
+        </section>
+
+        <div class="test-area">
+            <h2>在线测试</h2>
+            <p>您可以使用下面的按钮来测试此 API。请确保您已在浏览器中以管理员身份登录思源笔记，或者在请求头中正确设置了有效的管理员 API Token。</p>
+            <p><b>提醒:</b> 此操作会修改您的思源配置（如果运行在 Windows 上）。</p>
+            <form id="ignoreDefenderForm">
+                <button type="button" onclick="sendRequest('ignoreDefenderForm', '/api/system/ignoreAddMicrosoftDefenderExclusion', 'POST', '{}', true)">发送请求 (需要管理员认证, 仅 Windows 有效)</button>
+            </form>
+            <h3>响应:</h3>
+            <pre><code id="ignoreDefenderResponse" class="language-json">点击发送请求查看响应</code></pre>
+        </div>
+    </main>
+    <blockquote>
+        <p>感谢您对思源笔记的关注与支持！</p>
+        <p><a href="https://afdian.com/a/leolee9086?tab=feed" target="_blank">在爱发电上赞助我们</a></p>
+    </blockquote>
+    <footer>
+        <p>&copy; 2024 <a href="https://b3log.org/siyuan">思源笔记 B3log.org</a>. All rights reserved.</p>
+    </footer>
+    <script src="../common/js/api-tester.js"></script>
+    <script src="../common/js/theme-toggle.js"></script>
+</body>
+</html> 

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>打开笔记本 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/notebook/openNotebook</span>
+    </div>
+
+    <h1>打开笔记本</h1>
+
+    <div class="auth-tags">
+        <span class="chip auth-admin-readonly">需要认证 (管理员权限，检查只读模式)</span>
+    </div>
+
+    <h2>接口描述</h2>
+    <p>根据提供的笔记本 ID 打开（挂载）一个笔记本。如果笔记本已经是打开状态，此接口依然会尝试执行挂载操作并返回笔记本信息。</p>
+    <p class="note">此接口需要管理员权限，并且会在只读模式下受限（用户指南除外）。</p>
+
+    <h2>请求参数</h2>
+    <p>请求体为一个 JSON 对象，包含以下字段：</p>
+    <table class="request-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>必需</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>notebook</td>
+                <td>string</td>
+                <td>是</td>
+                <td>要打开的笔记本的 ID。</td>
+            </tr>
+            <tr>
+                <td>app</td>
+                <td>string</td>
+                <td>否</td>
+                <td>内部参数，通常用于用户指南打开后的特定应用跳转，一般用户可忽略。</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>返回值</h2>
+    <p>返回标准的 JSON 结构：</p>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>code</td>
+                <td>number</td>
+                <td>返回码，0 表示成功，其他表示失败。</td>
+            </tr>
+            <tr>
+                <td>msg</td>
+                <td>string</td>
+                <td>错误信息，成功时为空字符串。</td>
+            </tr>
+            <tr>
+                <td>data</td>
+                <td>object</td>
+                <td>成功时，包含打开的笔记本信息。</td>
+            </tr>
+            <tr>
+                <td class="nested-param">data.box</td>
+                <td>object</td>
+                <td>已打开的笔记本对象。包含笔记本的 ID、名称、图标、配置、是否关闭、排序号等详细信息。其结构与 <code>/api/notebook/lsNotebooks</code> 返回的笔记本对象类似。
+                </td>
+            </tr>
+            <tr>
+                <td class="nested-param">data.existed</td>
+                <td>boolean</td>
+                <td>表示此笔记本在本次打开操作之前是否已经被挂载过。<code>true</code> 表示之前已挂载，<code>false</code> 表示本次操作前未挂载。</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="example-tab">请求示例</div>
+            <div class="tab" data-target="response-tab">返回示例</div>
+        </div>
+
+        <div id="example-tab" class="tab-content active">
+            <h3>请求示例 (JSON)</h3>
+            <pre><code>{
+  "notebook": "20200812220409-rng0qan"
+}</code></pre>
+        </div>
+
+        <div id="response-tab" class="tab-content">
+            <h3>成功返回示例 (首次打开)</h3>
+            <pre><code>{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "box": {
+      "id": "20200812220409-rng0qan",
+      "name": "我的笔记本",
+      "icon": "1f4d4",
+      "sort": 0,
+      "closed": false,
+      "conf": { /* ...笔记本详细配置... */ },
+      // ... 其他笔记本属性
+    },
+    "existed": false
+  }
+}</code></pre>
+            <h3>成功返回示例 (笔记本已打开)</h3>
+            <pre><code>{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "box": { /* ...笔记本对象... */ },
+    "existed": true
+  }
+}</code></pre>
+            <h3>失败返回示例 (例如，笔记本ID不存在)</h3>
+            <pre><code>{
+  "code": -1,
+  "msg": "Failed to mount box [non-existent-id]: box [non-existent-id] not found",
+  "data": null
+}</code></pre>
+            <h3>失败返回示例 (只读模式)</h3>
+            <pre><code>{
+  "code": -1,
+  "msg": "只读模式下无法执行该操作",
+  "data": {
+    "closeTimeout": 5000
+  }
+}</code></pre>
+        </div>
+    </div>
+
+    <blockquote class="important-note">
+        <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+        <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+    </blockquote>
+
+     <script src="../api-tester.js"></script>
+</body>
+
+</html>

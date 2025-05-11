@@ -1,0 +1,110 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/system/getMobileWorkspaces"> <!-- API Endpoint Meta Tag -->
+    <title>获取移动端工作空间列表 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .platform-note {
+            background-color: #e3f2fd; /* Light blue background */
+            border-left: 5px solid #2196f3; /* Blue left border */
+            padding: 10px 15px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>获取移动端工作空间列表 (getMobileWorkspaces)</h1>
+        <nav>
+            <a href="../index.html">首页</a> | 
+            <a href="index.html">System API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/workspace.go#L191" target="_blank">GitHub Source (workspace.go)</a>
+        </nav>
+    </header>
+    <main>
+        <section id="platform-info">
+             <div class="platform-note">
+                <strong>注意：</strong> 此 API 仅在移动端 (iOS/Android) 环境下有效。在桌面端调用此 API 将不会返回任何数据。
+            </div>
+        </section>
+
+        <section id="description">
+            <h2>功能描述</h2>
+            <p>此 API 端点 <code>POST /api/system/getMobileWorkspaces</code> 用于获取当前工作空间所在父目录下，所有看起来可能是思源工作空间的目录列表。</p>
+            <p>它通过扫描当前工作空间的同级目录，并根据目录名称的合法性进行筛选，旨在方便移动端用户发现和切换同一层级的其他工作空间。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>此 API 不需要任何请求参数。发送一个空的 JSON 对象 <code>{}</code> 或不发送请求体即可。</p>
+            <p><strong>请求示例:</strong></p>
+            <pre><code class="language-json">
+{}
+            </code></pre>
+        </section>
+
+        <section id="response-format">
+            <h2>响应结果</h2>
+            <p>成功的请求将返回一个 JSON 对象，<code>code</code> 为 0，<code>data</code> 是一个包含扫描到的潜在工作空间目录绝对路径的字符串数组。</p>
+            <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": [
+    "/path/to/parent/workspace1",
+    "/path/to/parent/another_workspace",
+    "/path/to/parent/current_workspace" 
+    // ... more paths
+  ]
+}
+            </code></pre>
+            <p>如果在非移动端环境调用，或者读取目录时发生错误，将返回非 0 的 <code>code</code> 和具体的错误信息 <code>msg</code>（或者在非移动端环境下直接返回空数据）。</p>
+            <pre><code class="language-json">
+{
+  "code": -1,
+  "msg": "read dir [/path/to/parent] failed: permission denied", // 示例错误信息
+  "data": null
+}
+            </code></pre>
+             <p>如果没有找到其他符合条件的目录，<code>data</code> 数组可能只包含当前工作空间路径，或者为空数组。</p>
+        </section>
+
+        <section id="online-testing">
+            <h2>在线测试</h2>
+            <p>您可以在下方直接点击"发送请求"进行在线测试。<strong>请注意，此测试仅在思源笔记移动端环境下有意义。</strong></p>
+            <div class="api-tester">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="请输入您的 API Token (可选)" value=""><br>
+
+                <label for="endpoint">Endpoint:</label>
+                <input type="text" id="endpoint" value="/api/system/getMobileWorkspaces" readonly=""><br>
+
+                <label for="method">Method:</label>
+                <input type="text" id="method" value="POST" readonly=""><br>
+
+                <label for="params">Parameters (JSON):</label><br>
+                <textarea id="params" rows="2" placeholder="{}" readonly="">{}</textarea><br>
+
+                <button onclick="sendRequest()">发送请求</button>
+
+                <h3>响应结果:</h3>
+                <pre id="response-output"></pre>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>思源笔记 API 文档 | 最后更新时间：<span id="last-updated"></span></p>
+    </footer>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        // 更新最后更新时间
+        document.getElementById('last-updated').textContent = new Date().toLocaleString();
+    </script>
+
+ </body></html>

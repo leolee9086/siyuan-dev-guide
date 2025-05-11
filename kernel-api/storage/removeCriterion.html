@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>删除搜索/替换条件 (removeCriterion)</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>删除搜索/替换条件 (removeCriterion)</h1>
+        <p class="api-path">POST /api/storage/removeCriterion</p>
+
+        <h2 id="认证与权限">认证与权限</h2>
+        <p>需要身份验证 (通过 API Token)。</p>
+        <p>需要管理员权限。</p>
+        <p>此操作在只读模式下不可用。</p>
+
+        <h2 id="接口描述">接口描述</h2>
+        <p>此接口用于删除一个已保存的搜索/替换条件。条件是通过其唯一的名称来指定的。</p>
+        <p>操作成功后，对应的条件将从 <code>data/storage/criteria.json</code> 文件中移除。</p>
+
+        <h2 id="请求体参数">请求体参数</h2>
+        <p>请求体为一个 JSON 对象，包含以下字段：</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>参数</th>
+                    <th>类型</th>
+                    <th>必需</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>name</code></td>
+                    <td>string</td>
+                    <td>是</td>
+                    <td>要删除的搜索/替换条件的名称。</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="请求体示例">请求体示例</h2>
+        <pre><code class="language-json">
+{
+    "name": "我不再需要的搜索条件"
+}
+        </code></pre>
+
+        <h2 id="响应体说明">响应体说明</h2>
+        <p>标准的思源笔记 API 响应结构：</p>
+        <pre><code class="language-json">
+{
+    "code": 0,     // 0 表示成功，非 0 表示失败
+    "msg": "",      // 成功时为空，失败时为错误信息
+    "data": null   // 成功时固定为 null
+}
+        </code></pre>
+        <p>如果提供的 <code>name</code> 对应的条件不存在，接口仍然可能返回成功 (<code>code: 0</code>)，因为目标状态（该名称的条件不存在）已经达成。具体的错误（如文件读写错误）会通过非零 <code>code</code> 和 <code>msg</code> 反映。</p>
+
+        <h2 id="cURL调用示例">cURL 调用示例</h2>
+        <pre><code class="language-bash">
+curl -X POST \
+  http://127.0.0.1:6806/api/storage/removeCriterion \
+  -H 'Authorization: Token YOUR_API_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "要删除的条件名称"
+  }'
+        </code></pre>
+
+        <h2 id="JavaScript调用示例">JavaScript 调用示例</h2>
+        <pre><code class="language-javascript">
+async function removeSiyuanCriterion(criterionName) {
+    const requestBody = {
+        name: criterionName
+    };
+
+    try {
+        const response = await fetch('/api/storage/removeCriterion', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token YOUR_API_TOKEN' // 如果配置了API Token
+            },
+            body: JSON.stringify(requestBody)
+        });
+        const result = await response.json();
+
+        if (result.code === 0) {
+            console.log(`搜索/替换条件 "${criterionName}" 删除成功。`);
+            document.getElementById('apiResponse').textContent = `条件 "${criterionName}" 删除成功。`;
+        } else {
+            console.error(`删除条件 "${criterionName}" 失败:`, result.msg);
+            document.getElementById('apiResponse').textContent = `错误 ${result.code}: ${result.msg}`;
+        }
+        return result;
+    } catch (error) {
+        console.error('请求过程中发生错误:', error);
+        document.getElementById('apiResponse').textContent = `请求错误: ${error.message}`;
+        return null;
+    }
+}
+
+// 示例：先通过 /api/storage/getCriteria 获取现有条件列表，然后选择一个名称进行删除
+// getSiyuanCriteria().then(criteria => {
+//     if (criteria && criteria.length > 0) {
+//         const nameToRemove = criteria[0].name; // 假设删除第一个
+//         // removeSiyuanCriterion(nameToRemove);
+//     } else {
+//         console.log('没有可供删除的条件。');
+//     }
+// });
+        </code></pre>
+        
+        <h2 id="在线测试">在线测试</h2>
+        <form id="removeCriterionForm">
+            <div class="form-group">
+                <label for="criterionNameToRemove">要删除的条件名称:</label>
+                <input type="text" id="criterionNameToRemove" required placeholder="例如：我的旧搜索">
+            </div>
+            <button type="submit">发送删除请求</button>
+        </form>
+        <h3>响应:</h3>
+        <pre id="apiResponse">此处将显示API的响应结果。</pre>
+        
+        <p style="margin-top: 20px;"><strong>提示:</strong> 你可以先使用 <a href="./getCriteria.html">/api/storage/getCriteria</a> 接口获取当前所有已保存条件的列表，以确定要删除的条件名称。</p>
+
+    </div>
+    <script src="../js/scripts.js"></script>
+    <script>
+        // 填充 Token
+        const storedToken = localStorage.getItem('siyuanApiToken');
+        if (storedToken) {
+            const jsExampleElement = document.querySelector('code.language-javascript');
+            if (jsExampleElement) {
+                jsExampleElement.textContent = jsExampleElement.textContent.replace('YOUR_API_TOKEN', storedToken);
+            }
+            const curlExampleElement = document.querySelector('code.language-bash');
+            if (curlExampleElement) {
+                curlExampleElement.textContent = curlExampleElement.textContent.replace('YOUR_API_TOKEN', storedToken);
+            }
+        }
+
+        document.getElementById('removeCriterionForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const criterionName = document.getElementById('criterionNameToRemove').value;
+            if (!criterionName) {
+                document.getElementById('apiResponse').textContent = '请输入要删除的条件名称。';
+                return;
+            }
+            await removeSiyuanCriterion(criterionName);
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API: /api/setting/addVirtualBlockRefInclude</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../script.js" defer></script>
+</head>
+<body>
+    <header>
+        <div class="logo_title">
+            <img src="../logo.png" alt="Logo" class="logo">
+            <h1>思源笔记 Kernel API</h1>
+        </div>
+        <nav>
+            <a href="https://b3log.org/siyuan" target="_blank">官网</a>
+            <a href="https://github.com/siyuan-note/siyuan" target="_blank">GitHub</a>
+            <a href="../index.html">API 索引</a>
+        </nav>
+    </header>
+    <main>
+        <div class="content">
+            <h1>/api/setting/addVirtualBlockRefInclude</h1>
+            <p class="api-path">POST /api/setting/addVirtualBlockRefInclude</p>
+
+            <div class="api-section">
+                <h2>认证状态</h2>
+                <p><span class="label auth">需要认证</span> <span class="label admin">需要管理员权限</span> <span class="label readonly">检查只读模式</span></p>
+                <p>此接口需要用户登录，并且当前用户必须拥有管理员权限。在工作空间或笔记本被设置为只读模式时，此接口的操作将被禁止。</p>
+            </div>
+
+            <div class="api-section">
+                <h2>接口描述</h2>
+                <p>添加一批关键词到虚拟块引用的"包含"列表中。此功能用于帮助用户更精确地控制和优化虚拟引用的结果，使其更符合预期。</p>
+                <p>操作成功后，系统会广播一个 <code>setConf</code> 事件，以通知客户端配置已更新。</p>
+            </div>
+
+            <div class="api-section">
+                <h2>请求体 (JSON)</h2>
+                <p>请求体需要包含一个 JSON 对象，其中包含以下字段：</p>
+                <pre><code class="language-json">
+{
+    "keywords": ["string", "string", "..."]
+}
+                </code></pre>
+                <ul>
+                    <li><code>keywords</code> (string[], 必需): 一个字符串数组，代表要添加到虚拟块引用包含列表中的关键词。</li>
+                </ul>
+            </div>
+
+            <div class="api-section">
+                <h2>响应体 (JSON)</h2>
+                <p>接口会返回一个标准的 JSON 对象，其结构如下：</p>
+                <pre><code class="language-json">
+{
+    "code": 0,
+    "msg": "",
+    "data": null
+}
+                </code></pre>
+                <ul>
+                    <li><code>code</code> (number): 返回码，<code>0</code> 表示成功，其他值表示失败。</li>
+                    <li><code>msg</code> (string): 返回消息，通常在失败时提供额外信息。</li>
+                    <li><code>data</code> (null): 成功时，此字段为 <code>null</code>。</li>
+                </ul>
+            </div>
+
+            <div class="api-section">
+                <h2>请求示例</h2>
+                <p>假设我们要将关键词 "项目A" 和 "核心技术" 添加到虚拟块引用的包含列表中。</p>
+                <pre><code class="language-json">
+POST /api/setting/addVirtualBlockRefInclude
+Host: 127.0.0.1:6806
+Content-Type: application/json
+Authorization: Token YOUR_API_TOKEN
+
+{
+    "keywords": ["项目A", "核心技术"]
+}
+                </code></pre>
+            </div>
+
+            <div class="api-section">
+                <h2>响应示例 (成功)</h2>
+                <pre><code class="language-json">
+{
+    "code": 0,
+    "msg": "",
+    "data": null
+}
+                </code></pre>
+            </div>
+
+            <div class="api-section">
+                <h2>响应示例 (失败 - 例如未提供关键词)</h2>
+                <pre><code class="language-json">
+{
+    "code": -1,
+    "msg": "keywords is required",
+    "data": null
+}
+                </code></pre>
+                 <p class="note">注意: 具体的错误码和消息可能因实际情况而异。</p>
+            </div>
+
+            <div class="api-section test-area">
+                <h2>在线测试</h2>
+                <p>服务器地址: <input type="text" id="serverAddr" value="http://127.0.0.1:6806"></p>
+                <p>API Token: <input type="text" id="apiToken" value=""></p>
+                <p>请求体 (JSON):</p>
+                <textarea id="payload" rows="5" cols="50">{
+    "keywords": []
+}</textarea>
+                <br>
+                <button onclick="sendRequest('/api/setting/addVirtualBlockRefInclude', 'POST')">发送请求</button>
+                <h3>响应:</h3>
+                <pre id="responseArea"></pre>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2024 B3log Team. All rights reserved.</p>
+        <p><a href="https://ld246.com/sponsor" target="_blank" class="sponsor-link">赞助我们</a></p>
+    </footer>
+</body>
+</html> 

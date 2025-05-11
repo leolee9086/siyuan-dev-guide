@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/clipboard/readFilePaths">
+    <title>读取剪贴板文件路径 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../common/css/styles.css">
+</head>
+<body>
+    <header class="api-header">
+        <h1>读取剪贴板文件路径 (readFilePaths)</h1>
+        <nav>
+            <a href="../index.html">首页</a> |
+            <a href="index.html">Clipboard API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/clipboard.go#L24" target="_blank">GitHub Source (api/clipboard.go L24)</a>
+        </nav>
+        <div class="endpoint-container">
+            <span class="endpoint">POST /api/clipboard/readFilePaths</span>
+        </div>
+    </header>
+    <main>
+        <section id="description">
+            <h2>接口描述</h2>
+            <p>此 API 端点 <code>POST /api/clipboard/readFilePaths</code> 用于尝试从系统剪贴板中读取文件路径列表。这通常用于处理用户从操作系统的文件管理器复制文件后，在思源笔记中进行粘贴操作的场景，以便获取这些文件的本地路径。</p>
+        </section>
+
+        <section id="authentication">
+            <h2>认证与授权</h2>
+            <p>调用此 API 端点需要有效的用户认证，并通过 <code>Authorization</code> HTTP 头部传递 API Token。</p>
+            <p>此外，执行此操作需要：</p>
+            <ul>
+                <li><strong>管理员角色 (<code>model.CheckAdminRole</code>)</strong></li>
+            </ul>
+            <p><em>注意：此接口没有 <code>model.CheckReadonly</code> 中间件，理论上可在只读模式下调用。</em></p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>此接口不需要任何请求参数。可以发送一个空的 JSON 对象 <code>{}</code> 作为请求体，或者不包含请求体。</p>
+        </section>
+
+        <section id="response-body">
+            <h2>响应体</h2>
+            <p>响应体为 JSON 格式。接口总是返回 HTTP 200 OK 状态码，响应体中的 <code>code</code> 字段始终为 <code>0</code>。</p>
+            <p><strong>成功响应 (剪贴板有文件路径，非 Linux 环境):</strong></p>
+            <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": [
+        "/path/to/your/file1.txt",
+        "/another/path/to/image.png"
+    ]
+}</code></pre>
+            <p><strong>成功响应 (剪贴板无文件路径，或在 Linux 环境下调用):</strong></p>
+            <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": []
+}</code></pre>
+            <p><code>data</code> 字段是一个包含从剪贴板读取到的文件绝对路径的字符串数组。如果剪贴板中没有文件路径，或者在 Linux 系统上调用此接口，则返回空数组 <code>[]</code>。</p>
+        </section>
+        
+        <section id="notes">
+            <h2>备注</h2>
+            <ul>
+                <li>此功能在 Linux 系统上会直接返回空数组，因为 Linux 端不再支持在"粘贴为纯文本"操作时处理文件绝对路径。相关讨论见 <a href="https://github.com/siyuan-note/siyuan/issues/5825" target="_blank">GitHub Issue #5825</a>。</li>
+                <li>此接口依赖于外部库 <code>github.com/88250/clipboard</code> 来实现跨平台的剪贴板文件路径读取。</li>
+                <li>即使底层库读取失败，该接口通常也会返回 <code>"data": []</code> 而不是错误码。</li>
+            </ul>
+        </section>
+
+        <div class="test-area">
+            <h2>在线测试</h2>
+            <p>您可以使用下面的表单来测试此 API。请先在您的操作系统中复制一些文件 (例如，在文件管理器中选中文件后按 Ctrl+C 或 Cmd+C)，然后点击发送请求按钮。</p>
+            <form id="readFilePathsForm">
+                <div>
+                    <label for="apiTokenForRFP">API Token (用于授权):</label>
+                    <input type="password" id="apiTokenForRFP" name="apiTokenForRFP" required>
+                </div>
+                <button type="button" onclick="sendReadFilePathsRequest()">读取剪贴板文件路径</button>
+            </form>
+            <h3>响应:</h3>
+            <pre><code id="readFilePathsResponse" class="language-json">点击按钮查看响应</code></pre>
+        </div>
+    </main>
+    <blockquote>
+        <p>感谢您对思源笔记的关注与支持！</p>
+        <p><a href="https://afdian.com/a/leolee9086?tab=feed" target="_blank">在爱发电上赞助我们</a></p>
+    </blockquote>
+    <footer>
+        <p>&copy; 2024-2025 <a href="https://b3log.org/siyuan">思源笔记 B3log.org</a>. All rights reserved.</p>
+    </footer>
+    <script>
+        async function sendReadFilePathsRequest() {
+            const apiTokenInput = document.getElementById('apiTokenForRFP');
+            const responseCode = document.getElementById('readFilePathsResponse');
+
+            const apiToken = apiTokenInput.value;
+            if (!apiToken) {
+                alert('请输入 API Token 以授权此操作！');
+                responseCode.textContent = JSON.stringify({ code: -1, msg: '操作取消：未提供 API Token。', data: null }, null, 2);
+                return;
+            }
+
+            responseCode.textContent = '正在请求读取剪贴板文件路径...';
+
+            try {
+                const response = await fetch('/api/clipboard/readFilePaths', {
+                    method: 'POST',
+                    headers: {
+                        // 通常 POST 请求即使没有 body 也建议发送 Content-Type
+                        'Content-Type': 'application/json', 
+                        'Authorization': 'Token ' + apiToken
+                    },
+                    body: JSON.stringify({}) // 发送空 JSON 对象
+                });
+                const result = await response.json();
+                responseCode.textContent = JSON.stringify(result, null, 2);
+                
+                if (result.code === 0) {
+                    if (result.data && result.data.length > 0) {
+                        alert('成功从剪贴板读取到 ' + result.data.length + ' 个文件路径。');
+                    } else {
+                        alert('请求成功，但剪贴板中没有文件路径 (或在 Linux 环境下)。');
+                    }
+                } else {
+                    // 理论上此 API code 总是 0，但以防万一
+                    alert('请求似乎未成功: ' + result.msg);
+                }
+            } catch (error) {
+                console.error('Error during readFilePaths request:', error);
+                responseCode.textContent = JSON.stringify({ code: -1, msg: '请求失败: ' + error.message, data:null }, null, 2);
+                alert('请求失败: ' + error.message);
+            }
+        }
+    </script>
+    <script src="../common/js/theme-toggle.js"></script>
+    <script src="../common/js/api-tester.js"></script> <!-- 如果 api-tester.js 有通用逻辑则保留 -->
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>API: /api/sync/setSyncProvider</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../script.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>思源笔记 API 文档</h1>
+    </header>
+    <nav>
+        <a href="../index.html">返回首页</a>
+        <a href="index.html">返回 sync 分类</a>
+    </nav>
+    <main>
+        <h2>/api/sync/setSyncProvider</h2>
+        <p><strong>方法:</strong> POST</p>
+        <p><strong>认证:</strong> `model.CheckAuth`, `model.CheckAdminRole`, `model.CheckReadonly` (需要登录，管理员权限，非只读模式)</p>
+        <p><strong>功能:</strong> 设置当前使用的云同步服务提供商。</p>
+        <p>选择后，后续的同步操作将针对此提供商进行。具体的提供商配置（如S3的秘钥、WebDAV的地址等）需要通过各自独立的API进行设置 (例如 <code>/api/sync/setSyncProviderS3</code>, <code>/api/sync/setSyncProviderWebDAV</code>, <code>/api/sync/setSyncProviderLocal</code>)。</p>
+
+        <h3>请求参数 (JSON Body)</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>参数名</th>
+                    <th>类型</th>
+                    <th>是否必需</th>
+                    <th>描述</th>
+                    <th>可选值与含义</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>provider</code></td>
+                    <td>number</td>
+                    <td>是</td>
+                    <td>云同步服务提供商的标识数字。</td>
+                    <td>
+                        <ul>
+                            <li><code>0</code>: SiYuan (思源官方云端服务)</li>
+                            <li><code>2</code>: S3 (S3 协议对象存储)</li>
+                            <li><code>3</code>: WebDAV (WebDAV 协议服务)</li>
+                            <li><code>4</code>: Local (本地文件系统)</li>
+                        </ul>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>请求示例</h3>
+        <pre><code class="language-json">
+{
+    "provider": 2 // 设置为 S3 服务
+}
+        </code></pre>
+        <pre><code class="language-json">
+{
+    "provider": 0 // 设置为思源官方服务
+}
+        </code></pre>
+
+        <h3>响应结果</h3>
+        <p>成功时，返回的 JSON 对象中 <code>code</code> 为 0，<code>msg</code> 为空字符串，<code>data</code> 为 <code>null</code>。</p>
+        <pre><code class="language-json">
+{
+    "code": 0,
+    "msg": "",
+    "data": null
+}
+        </code></pre>
+        <p>失败时 (例如，provider 值无效或设置过程中发生错误)，<code>code</code> 非 0，<code>msg</code> 包含错误信息，<code>data</code> 可能包含 <code>{"closeTimeout": 5000}</code>。</p>
+        <pre><code class="language-json">
+{
+    "code": -1,
+    "msg": "siyuan cloud sync has not been enabled yet", // 示例错误：未开启思源云同步
+    "data": {
+        "closeTimeout": 5000
+    }
+}
+        </code></pre>
+
+        <h3>在线测试</h3>
+        <div class="test-area">
+            <label for="param-provider">provider (number):</label>
+            <select id="param-provider">
+                <option value="0">0 (SiYuan)</option>
+                <option value="2" selected>2 (S3)</option>
+                <option value="3">3 (WebDAV)</option>
+                <option value="4">4 (Local File System)</option>
+            </select>
+            <br><br>
+            <button onclick="testAPI()">发送请求</button>
+            <h4>请求体:</h4>
+            <pre id="request-body-display"></pre>
+            <h4>响应:</h4>
+            <pre id="response-output"></pre>
+        </div>
+
+        <script>
+            function buildRequestBody() {
+                const provider = parseInt(document.getElementById('param-provider').value, 10);
+                const body = { provider };
+                document.getElementById('request-body-display').textContent = JSON.stringify(body, null, 2);
+                return body;
+            }
+
+            async function testAPI() {
+                const requestBody = buildRequestBody();
+                const responseOutput = document.getElementById('response-output');
+                responseOutput.textContent = '正在请求...';
+
+                try {
+                    const response = await fetch('/api/sync/setSyncProvider', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // 'Authorization': 'Token YOUR_API_TOKEN_HERE' // 如果需要认证
+                        },
+                        body: JSON.stringify(requestBody)
+                    });
+                    const result = await response.json();
+                    responseOutput.textContent = JSON.stringify(result, null, 2);
+                } catch (error) {
+                    console.error('API 测试失败:', error);
+                    responseOutput.textContent = '发生错误，请查看控制台。\n' + error.message;
+                }
+            }
+            // 初始化请求体显示
+            buildRequestBody();
+            // 监听输入变化实时更新请求体
+            document.getElementById('param-provider').addEventListener('change', buildRequestBody);
+        </script>
+    </main>
+    <footer>
+        <p>本文档由 AI 自动生成，可能存在不准确之处，请以实际 API 行为为准。</p>
+    </footer>
+</body>
+</html> 

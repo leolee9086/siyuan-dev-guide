@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>/api/setting/setExport - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../style.min.css?20231218">
+    <link rel="icon" type="image/png" href="../favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="../favicon-16x16.png" sizes="16x16">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/setting/setExport</span>
+    </div>
+    <h1>设置导出配置</h1>
+    <div class="auth-tags">
+        <span class="chip chip-auth">需要认证</span>
+        <span class="chip chip-admin">管理员权限</span>
+        <span class="chip chip-readonly">非只读模式</span>
+    </div>
+    <h2>接口描述</h2>
+    <p>更新导出相关的配置信息。这些配置项对应于思源笔记"设置 - 导出"面板中的选项。</p>
+    <p>成功调用此接口后，相关配置将保存到 <code>conf.json</code> 文件中的 <code>export</code> 部分，并返回更新后的配置对象。</p>
+
+    <h2>请求参数 (JSON Body)</h2>
+    <p>请求体需要包含一个完整的 <code>Export</code> 配置对象。以下是该对象的字段说明：</p>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+                <th>默认值 (参考 <code>conf.NewExport()</code>)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>paragraphBeginningSpace</code></td>
+                <td>boolean</td>
+                <td>导出 Markdown 时，是否在段落开头添加两个空格（模拟中文首行缩进）。</td>
+                <td><code>false</code></td>
+            </tr>
+            <tr>
+                <td><code>addTitle</code></td>
+                <td>boolean</td>
+                <td>导出时是否添加文档标题。</td>
+                <td><code>true</code></td>
+            </tr>
+            <tr>
+                <td><code>blockRefMode</code></td>
+                <td>number</td>
+                <td>内容块<strong>引用</strong>的导出模式：<br>
+                    <code>2</code>: 锚文本指向原始块（形如：源块内容 (siyuan://blocks/块ID "可选悬浮提示")）。<br>
+                    <code>3</code>: 仅锚文本（形如：源块内容）。<br>
+                    <code>4</code>: 块引转为 Markdown 脚注形式，并附带锚点哈希（形如：<sup>[[块ID 前几位哈希](siyuan://blocks/块ID "可选悬浮提示")]</sup>）。
+                </td>
+                <td><code>4</code></td>
+            </tr>
+            <tr>
+                <td><code>blockEmbedMode</code></td>
+                <td>number</td>
+                <td>内容块<strong>嵌入</strong>的导出模式：<br>
+                    <code>0</code>: 使用原始文本（将嵌入块的内容直接插入）。<br>
+                    <code>1</code>: 使用 Markdown Blockquote 形式（将嵌入块内容作为引用块）。
+                </td>
+                <td><code>1</code></td>
+            </tr>
+            <tr>
+                <td><code>blockRefTextLeft</code></td>
+                <td>string</td>
+                <td>内容块引用导出时，锚文本左侧添加的符号。</td>
+                <td>空字符串 <code>""</code></td>
+            </tr>
+            <tr>
+                <td><code>blockRefTextRight</code></td>
+                <td>string</td>
+                <td>内容块引用导出时，锚文本右侧添加的符号。</td>
+                <td>空字符串 <code>""</code></td>
+            </tr>
+            <tr>
+                <td><code>tagOpenMarker</code></td>
+                <td>string</td>
+                <td>标签开始标记符。</td>
+                <td><code>#</code></td>
+            </tr>
+            <tr>
+                <td><code>tagCloseMarker</code></td>
+                <td>string</td>
+                <td>标签结束标记符。</td>
+                <td><code>#</code></td>
+            </tr>
+            <tr>
+                <td><code>fileAnnotationRefMode</code></td>
+                <td>number</td>
+                <td>文件标注引用的导出模式：<br>
+                    <code>0</code>: 文件名 - 页码 - 锚文本。<br>
+                    <code>1</code>: 仅锚文本。
+                </td>
+                <td><code>0</code></td>
+            </tr>
+            <tr>
+                <td><code>pandocBin</code></td>
+                <td>string</td>
+                <td>Pandoc 可执行文件的绝对路径。如果提供，思源会校验其有效性。若无效，则会使用内置或已配置的 Pandoc 路径。</td>
+                <td>空字符串 <code>""</code> (表示使用思源自动检测或内置的 Pandoc)</td>
+            </tr>
+            <tr>
+                <td><code>markdownYFM</code></td>
+                <td>boolean</td>
+                <td>Markdown 导出时是否添加 YAML Front Matter。</td>
+                <td><code>false</code></td>
+            </tr>
+            <tr>
+                <td><code>pdfFooter</code></td>
+                <td>string</td>
+                <td>PDF 导出时的页脚内容。可以使用 <code>%page</code> 代表当前页码，<code>%pages</code> 代表总页数。</td>
+                <td><code>"%page / %pages"</code></td>
+            </tr>
+            <tr>
+                <td><code>docxTemplate</code></td>
+                <td>string</td>
+                <td>导出为 Docx 格式时使用的自定义模板文件（<code>.docx</code>）的绝对路径。</td>
+                <td>空字符串 <code>""</code> (表示使用默认模板)</td>
+            </tr>
+            <tr>
+                <td><code>pdfWatermarkStr</code></td>
+                <td>string</td>
+                <td>PDF 导出时添加的水印文本内容，或者指向包含水印图片的文件的绝对路径。</td>
+                <td>空字符串 <code>""</code></td>
+            </tr>
+            <tr>
+                <td><code>pdfWatermarkDesc</code></td>
+                <td>string</td>
+                <td>PDF 导出时水印的描述信息，通常为 JSON 字符串，包含位置（如 <code>type</code>: "diagonal", "center", "header", "footer"），大小，透明度（<code>opacity</code>: 0-1），颜色（<code>color</code>: "#RRGGBB"）等。具体格式需参考 Pandoc 相关配置。</td>
+                <td>空字符串 <code>""</code></td>
+            </tr>
+            <tr>
+                <td><code>imageWatermarkStr</code></td>
+                <td>string</td>
+                <td>图片导出时添加的水印文本内容，或者指向包含水印图片的文件的绝对路径。</td>
+                <td>空字符串 <code>""</code></td>
+            </tr>
+            <tr>
+                <td><code>imageWatermarkDesc</code></td>
+                <td>string</td>
+                <td>图片导出时水印的描述信息，格式类似 <code>pdfWatermarkDesc</code>。</td>
+                <td>空字符串 <code>""</code></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>返回值</h2>
+    <p>操作成功时，返回包含更新后 <code>Export</code> 对象的标准响应结构：</p>
+    <div class="language-json HIDE">
+    <pre class="highlight"><code><span class="p">{</span>
+    <span class="nt">"code"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">"msg"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+    <span class="nt">"data"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">"paragraphBeginningSpace"</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+        <span class="nt">"addTitle"</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="nt">"blockRefMode"</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+        <span class="nt">"blockEmbedMode"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">"blockRefTextLeft"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+        <span class="nt">"blockRefTextRight"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+        <span class="nt">"tagOpenMarker"</span><span class="p">:</span> <span class="s2">"#"</span><span class="p">,</span>
+        <span class="nt">"tagCloseMarker"</span><span class="p">:</span> <span class="s2">"#"</span><span class="p">,</span>
+        <span class="nt">"fileAnnotationRefMode"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nt">"pandocBin"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+        <span class="nt">"markdownYFM"</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+        <span class="nt">"pdfFooter"</span><span class="p">:</span> <span class="s2">"%page / %pages"</span><span class="p">,</span>
+        <span class="nt">"docxTemplate"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+        <span class="nt">"pdfWatermarkStr"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+        <span class="nt">"pdfWatermarkDesc"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+        <span class="nt">"imageWatermarkStr"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+        <span class="nt">"imageWatermarkDesc"</span><span class="p">:</span> <span class="s2">""</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+    </div>
+    <p>如果操作失败（例如 Pandoc路径无效），<code>code</code> 将是非零值，<code>msg</code> 中会包含错误信息，<code>data</code> 可能包含 <code>{"closeTimeout": 5000}</code>。</p>
+
+    <h2>在线测试</h2>
+    <p>
+        <label>API Token: (从思源"设置-关于"中获取)<br>
+            <input type="text" id="apiTokenInput" style="width: 100%;" placeholder="粘贴你的 API Token">
+        </label>
+    </p>
+    <p>
+        <label>请求参数 (Export JSON 对象):<br>
+            <textarea id="requestBody" rows="20" style="width: 100%;">
+{
+    "paragraphBeginningSpace": false,
+    "addTitle": true,
+    "blockRefMode": 4,
+    "blockEmbedMode": 1,
+    "blockRefTextLeft": "",
+    "blockRefTextRight": "",
+    "tagOpenMarker": "#",
+    "tagCloseMarker": "#",
+    "fileAnnotationRefMode": 0,
+    "pandocBin": "",
+    "markdownYFM": false,
+    "pdfFooter": "%page / %pages",
+    "docxTemplate": "",
+    "pdfWatermarkStr": "",
+    "pdfWatermarkDesc": "",
+    "imageWatermarkStr": "",
+    "imageWatermarkDesc": ""
+}
+            </textarea>
+        </label>
+    </p>
+    <p><button onclick="loadCurrentConfig()">从 /api/system/getConf 加载当前导出配置</button> <button onclick="testAPI()">发送请求</button></p>
+    <p><label>响应:<br><textarea id="responseArea" rows="15" style="width: 100%;" readonly></textarea></label></p>
+
+<script>
+    let currentToken = localStorage.getItem('siyuanUserToken') || '';
+    if (currentToken) {
+        document.getElementById('apiTokenInput').value = currentToken;
+    }
+
+    document.getElementById('apiTokenInput').addEventListener('input', (event) => {
+        currentToken = event.target.value;
+        localStorage.setItem('siyuanUserToken', currentToken);
+    });
+    
+    function getToken() {
+        const storedToken = localStorage.getItem('siyuanUserToken');
+        const inputToken = document.getElementById('apiTokenInput').value;
+        if (inputToken && inputToken !== storedToken) {
+            localStorage.setItem('siyuanUserToken', inputToken);
+            return inputToken;
+        }
+        return storedToken || inputToken;
+    }
+
+    async function loadCurrentConfig() {
+        const token = getToken();
+        if (!token) {
+            document.getElementById('responseArea').value = '错误：请先提供 API Token。';
+            return;
+        }
+        try {
+            const response = await fetch('/api/system/getConf', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Token ' + token,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({}) 
+            });
+            const data = await response.json();
+            if (data.code === 0 && data.data && data.data.conf && data.data.conf.export) {
+                document.getElementById('requestBody').value = JSON.stringify(data.data.conf.export, null, 4);
+                document.getElementById('responseArea').value = '当前导出配置已加载到请求参数区域。';
+            } else {
+                document.getElementById('responseArea').value = '加载当前导出配置失败或未设置: ' + JSON.stringify(data, null, 2);
+            }
+        } catch (error) {
+            document.getElementById('responseArea').value = '加载配置请求失败: ' + error;
+        }
+    }
+
+    async function testAPI() {
+        const token = getToken();
+        if (!token) {
+            document.getElementById('responseArea').value = '错误：API Token 未设置。';
+            return;
+        }
+
+        const requestBodyStr = document.getElementById('requestBody').value;
+        let parsedBody;
+        try {
+            parsedBody = JSON.parse(requestBodyStr);
+        } catch (e) {
+            document.getElementById('responseArea').value = '错误：请求参数不是有效的 JSON 对象。\n' + e;
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/setting/setExport', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Token ' + token
+                },
+                body: JSON.stringify(parsedBody)
+            });
+            const data = await response.json();
+            document.getElementById('responseArea').value = JSON.stringify(data, null, 4);
+            if(data.code === 0) {
+                alert("导出配置已更新！");
+            }
+        } catch (error) {
+            document.getElementById('responseArea').value = '请求失败：\n' + error;
+        }
+    }
+</script>
+<script src="../style.js?20231218"></script>
+</body>
+</html> 

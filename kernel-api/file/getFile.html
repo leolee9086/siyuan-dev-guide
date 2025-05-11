@@ -1,0 +1,160 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>获取文件 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+    
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/file/getFile</span>
+    </div>
+    
+    <h1>获取文件</h1>
+    
+    <div class="auth-tags">
+        <span class="chip auth-required">需要认证</span>
+    </div>
+    
+    <main>
+        <section id="description">
+    <h2>接口描述</h2>
+            <p>获取工作空间中指定文件的内容。</p>
+            <p class="important-note"><strong>注意:</strong> 路径参数相对于工作空间根目录。要获取 <code>data</code> 目录下的文件，路径必须以 <code>data/</code> 开头。要获取临时目录 <code>temp</code> 下的文件，路径必须以 <code>temp/</code> 开头。</p>
+            <p>出于安全原因，无法直接获取 <code>conf.json</code> 文件内容（除非是管理员）。</p>
+        </section>
+    
+        <section id="request">
+    <h2>请求参数</h2>
+    <table class="param-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>必选</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                        <td>`path`</td>
+                <td>string</td>
+                        <td>是</td>
+                        <td>要获取的文件路径，相对于工作空间根目录。例如 <code>data/assets/image.png</code> 或 <code>temp/downloaded.zip</code>。<strong>必须包含正确的路径前缀 (如 <code>data/</code> 或 <code>temp/</code>)。</strong></td>
+            </tr>
+        </tbody>
+    </table>
+            <h3>请求示例</h3>
+             <p>获取数据目录下的图片文件:</p>
+            <pre><code class="language-json">{
+    "path": "data/assets/image.png"
+}</code></pre>
+             <p>获取临时目录下的 zip 文件:</p>
+             <pre><code class="language-json">{
+    "path": "temp/downloaded.zip"
+}</code></pre>
+        </section>
+    </main>
+    
+    <h2>返回值</h2>
+    <p>如果请求成功，会直接返回文件内容，Content-Type 会根据文件类型自动设置。</p>
+    <p>如果请求失败，会返回错误信息，格式如下：</p>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>code</td>
+                <td>number</td>
+                <td>返回码，-1表示参数错误，403表示禁止访问，404表示文件不存在，500表示服务器错误</td>
+            </tr>
+            <tr>
+                <td>msg</td>
+                <td>string</td>
+                <td>错误信息</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="example-tab">请求示例</div>
+            <div class="tab" data-target="response-tab">返回示例</div>
+        </div>
+        
+        <div id="example-tab" class="tab-content active">
+            <h3>请求示例</h3>
+            <pre><code>POST /api/file/getFile HTTP/1.1
+Host: 127.0.0.1:6806
+Content-Type: application/json
+Authorization: Token your-api-token
+
+{
+  "path": "/data/assets/image.png"
+}</code></pre>
+        </div>
+        
+        <div id="response-tab" class="tab-content">
+            <h3>返回示例</h3>
+            <p>成功时返回文件内容（二进制数据）</p>
+            <p>失败时返回错误信息：</p>
+            <pre><code>{
+  "code": 404,
+  "msg": "stat /data/assets/image.png: no such file or directory"
+}</code></pre>
+        </div>
+    </div>
+    
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<div class="test-area">
+        <h3>在线测试</h3>
+        <form id="api-test-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记中的" 设置-关于"中查看api="" token"="">
+            </div>
+            
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/file/getFile">
+            </div>
+            
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly="">
+            </div>
+            
+            <div class="form-group">
+                <label for="api-params">请求参数 (JSON):</label>
+                <textarea id="api-params">{
+  "path": "/data/assets/image.png"
+}</textarea>
+            </div>
+            
+            <button type="submit" class="btn">发送请求</button>
+        </form>
+        
+        <div id="api-result" class="result"></div>
+    </div>
+    
+    <div class="nav-links">
+        <a href="../index.html">返回首页</a>
+        <a href="../pages/file.html">返回 File API</a>
+        <a href="../template/docSaveAsTemplate.html">上一个接口: 文档保存为模板</a>
+        <a href="putFile.html">下一个接口: 写入文件</a>
+    </div>
+    
+    <script src="../api-tester.js"></script>
+
+ </body></html>

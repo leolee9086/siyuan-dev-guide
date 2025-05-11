@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/system/reloadUI">
+    <title>重新加载UI - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../common/css/styles.css">
+</head>
+<body>
+    <header class="api-header">
+        <h1>重新加载UI (reloadUI)</h1>
+        <nav>
+            <a href="../index.html">首页</a> |
+            <a href="index.html">System API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/ui.go#L67" target="_blank">GitHub Source (api/ui.go L67)</a>
+        </nav>
+        <div class="endpoint-container">
+            <span class="endpoint">POST /api/system/reloadUI</span>
+        </div>
+    </header>
+    <main>
+        <section id="description">
+            <h2>接口描述</h2>
+            <p>此 API 端点 <code>POST /api/system/reloadUI</code> 用于触发思源笔记前端用户界面的完全重新加载。</p>
+            <p>调用此接口后，后端会通过相应的机制 (例如 WebSocket) 通知前端执行刷新操作，效果类似于在浏览器中按下 Ctrl+R 或 F5。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>此 API 不需要任何请求参数。发送一个空的 JSON 对象 <code>{}</code> 即可。</p>
+            <p><strong>请求示例 (空JSON对象):</strong></p>
+            <pre><code class="language-json">{}</code></pre>
+        </section>
+
+        <section id="response-body">
+            <h2>响应体</h2>
+            <p><strong>成功响应 (HTTP 200 OK):</strong></p>
+            <p>API 成功接收请求并已安排UI重新加载（实际重新加载由前端执行），返回：</p>
+            <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": null
+}</code></pre>
+
+            <p><strong>失败响应:</strong></p>
+            <ul>
+                <li>如果认证失败 (未提供有效 API Token、非管理员、或处于只读模式)，将返回相应的 HTTP 错误状态码 (如 401, 403) 或标准错误 JSON 结构。</li>
+            </ul>
+        </section>
+
+        <section id="authentication">
+            <h2>认证与授权</h2>
+            <p>调用此 API 端点需要有效的用户认证 (通过 <code>Authorization</code> HTTP头部传递 API Token)。</p>
+            <p>此外，执行此操作需要：</p>
+            <ul>
+                <li><strong>管理员角色 (<code>model.CheckAdminRole</code>):</strong> 只有管理员用户才能调用此接口。</li>
+                <li><strong>非只读模式 (<code>model.CheckReadonly</code>):</strong> 不能在只读模式下执行此操作。</li>
+            </ul>
+        </section>
+
+        <section id="notes">
+            <h2>备注</h2>
+            <ul>
+                <li>这是一个具有显著影响的操作，会导致整个前端界面刷新，可能会中断用户当前的操作。</li>
+                <li>通常用于应用某些需要完全刷新才能生效的配置更改，或在开发调试时使用。</li>
+            </ul>
+        </section>
+
+        <div class="test-area">
+            <h2>在线测试</h2>
+            <p>您可以使用下面的按钮来测试此 API。请注意，这将导致当前思源笔记的UI完全重新加载。</p>
+            <form id="reloadUIForm">
+                <button type="button" onclick="sendReloadUIRequest()">重新加载 UI</button>
+            </form>
+            <h3>响应:</h3>
+            <pre><code id="reloadUIResponse" class="language-json">点击按钮查看响应</code></pre>
+        </div>
+    </main>
+    <blockquote>
+        <p>感谢您对思源笔记的关注与支持！</p>
+        <p><a href="https://afdian.com/a/leolee9086?tab=feed" target="_blank">在爱发电上赞助我们</a></p>
+    </blockquote>
+    <footer>
+        <p>&copy; 2024-2025 <a href="https://b3log.org/siyuan">思源笔记 B3log.org</a>. All rights reserved.</p>
+    </footer>
+    <script>
+        async function sendReloadUIRequest() {
+            const responseCode = document.getElementById('reloadUIResponse');
+            responseCode.textContent = '正在请求重新加载UI...';
+            const apiToken = prompt("请输入您的 API Token (需要管理员权限):", "");
+            if (!apiToken) {
+                responseCode.textContent = '操作取消：未提供 API Token。';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/system/reloadUI', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Token ' + apiToken
+                    },
+                    body: JSON.stringify({})
+                });
+                const result = await response.json();
+                responseCode.textContent = JSON.stringify(result, null, 2);
+                
+                if (result.code === 0) {
+                    alert('重新加载UI请求已发送！前端将在片刻后刷新。');
+                } else {
+                    alert('请求失败: ' + result.msg);
+                }
+            } catch (error) {
+                console.error('Error during reloadUI request:', error);
+                responseCode.textContent = JSON.stringify({ code: -1, msg: '请求失败: ' + error.message, data: null }, null, 2);
+                alert('请求失败: ' + error.message);
+            }
+        }
+    </script>
+    <script src="../common/js/theme-toggle.js"></script>
+</body>
+</html> 

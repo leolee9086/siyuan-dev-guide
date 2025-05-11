@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/system/logoutAuth">
+    <title>访问授权码登出 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../common/css/styles.css">
+</head>
+<body>
+    <header class="api-header">
+        <h1>访问授权码登出 (LogoutAuth)</h1>
+        <nav>
+            <a href="../index.html">首页</a> |
+            <a href="index.html">System API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/model/session.go#L34" target="_blank">GitHub Source (model/session.go L34)</a>
+        </nav>
+        <div class="endpoint-container">
+            <span class="endpoint">POST /api/system/logoutAuth</span>
+        </div>
+    </header>
+    <main>
+        <section id="description">
+            <h2>接口描述</h2>
+            <p>此 API 端点 <code>POST /api/system/logoutAuth</code> 用于登出通过"访问授权码"认证的用户会话。</p>
+            <p>如果当前思源笔记设置了"访问授权码" (<code>conf.System.AccessAuthCode</code>)，调用此接口会清除当前用户的会话信息，使其需要重新通过 <code>/api/system/loginAuth</code> 进行认证。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>此 API 不需要任何请求参数。发送一个空的 JSON 对象 <code>{}</code> 或不包含请求体即可。</p>
+            <p><strong>请求示例 (空JSON对象):</strong></p>
+            <pre><code class="language-json">{}</code></pre>
+        </section>
+
+        <section id="response-body">
+            <h2>响应体</h2>
+            <p><strong>成功响应 (HTTP 200 OK):</strong></p>
+            <p>成功清除会话后，API 返回：</p>
+            <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": null
+}</code></pre>
+
+            <p><strong>失败响应 (HTTP 200 OK, 但 code 非 0):</strong></p>
+            <ul>
+                <li><strong>访问授权码未设置:</strong>
+                    <p>如果系统当前并未配置"访问授权码"，则登出操作被视为无效。</p>
+                    <pre><code class="language-json">{
+    "code": -1,
+    "msg": "请先设置访问授权码", // Conf.Language(86)
+    "data": { "closeTimeout": 5000 }
+}</code></pre>
+                </li>
+                <li><strong>会话保存失败 (内部错误):</strong>
+                    <pre><code class="language-json">{
+    "code": -1,
+    "msg": "save session failed",
+    "data": null
+}</code></pre>
+                </li>
+            </ul>
+            <p><em>注意: 一般情况下，即使用户并未通过 <code>LoginAuth</code> 登录（例如，通过 API Token 访问），只要设置了访问授权码，调用此接口也会尝试清除会话并返回成功，具体行为是移除 `workspaceSession`。</em></p>
+        </section>
+
+        <section id="authentication">
+            <h2>认证与授权</h2>
+            <p>此 API 本身不执行新的认证检查。它作用于当前已建立的会话。</p>
+            <p>其目的是终止一个基于"访问授权码"的已认证会话。如果用户是通过其他方式（如 API Token）认证的，此接口主要影响通过访问授权码建立的会话状态，对 API Token 的有效性无直接影响。</p>
+        </section>
+
+        <section id="notes">
+            <h2>备注</h2>
+            <ul>
+                <li>此接口用于配合"访问授权码"功能，提供登出机制。</li>
+                <li>如果系统中没有设置"访问授权码"，调用此接口会返回错误，提示用户先设置授权码。</li>
+                <li>成功调用后，用户需要重新通过 <code>/api/system/loginAuth</code>（如果配置了授权码）才能再次访问受保护的资源。</li>
+            </ul>
+        </section>
+
+        <div class="test-area">
+            <h2>在线测试</h2>
+            <p>您可以使用下面的按钮来测试此 API。如果您的思源笔记已设置访问授权码并已通过其登录，调用此接口将登出当前会话。</p>
+            <form id="logoutAuthForm">
+                <button type="button" onclick="sendLogoutAuthRequest()">登出</button>
+            </form>
+            <h3>响应:</h3>
+            <pre><code id="logoutAuthResponse" class="language-json">点击"登出"按钮查看响应</code></pre>
+        </div>
+    </main>
+    <blockquote>
+        <p>感谢您对思源笔记的关注与支持！</p>
+        <p><a href="https://afdian.com/a/leolee9086?tab=feed" target="_blank">在爱发电上赞助我们</a></p>
+    </blockquote>
+    <footer>
+        <p>&copy; 2024-2025 <a href="https://b3log.org/siyuan">思源笔记 B3log.org</a>. All rights reserved.</p>
+    </footer>
+    <script>
+        async function sendLogoutAuthRequest() {
+            const responseCode = document.getElementById('logoutAuthResponse');
+            responseCode.textContent = '正在登出...';
+
+            try {
+                const response = await fetch('/api/system/logoutAuth', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // 通常登出操作依赖于当前会话cookie，不需要显式Authorization头
+                        // 如果是纯API测试且无浏览器会话，可能需要根据实际认证情况调整
+                    },
+                    body: JSON.stringify({})
+                });
+                const result = await response.json();
+                responseCode.textContent = JSON.stringify(result, null, 2);
+                
+                if (result.code === 0) {
+                    alert('登出成功！');
+                    // 登出成功后，通常会重定向到登录页或刷新使登录状态失效
+                    // window.location.href = '/login.html'; // 假设的登录页
+                } else {
+                    alert('登出操作可能未完全生效或遇到问题: ' + result.msg);
+                }
+            } catch (error) {
+                console.error('Error during logoutAuth:', error);
+                responseCode.textContent = JSON.stringify({ code: -1, msg: '登出请求失败: ' + error.message }, null, 2);
+                alert('登出请求失败: ' + error.message);
+            }
+        }
+    </script>
+    <script src="../common/js/theme-toggle.js"></script>
+</body>
+</html> 

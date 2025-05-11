@@ -1,0 +1,87 @@
+<!DOCTYPE html><html><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export Markdown - SiYuan API Documentation</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../index.html">返回首页</a>
+    <h1>Export Markdown</h1>
+    <p><strong>POST</strong> <code>/api/export/exportMd</code></p>
+    <p>导出 Markdown。</p>
+
+    <h2>请求参数</h2>
+    <pre><code class="language-json">
+{
+  "id": "string", // 必填，文档/笔记本 id
+  "pdf": false, // 可选，是否导出为 PDF
+  "paragraphBeginningSpace": false, // 可选，段首是否空两格
+  "keepFold": false, // 可选，保持块折叠
+  "removeAssets": false // 可选，是否移除资源文件
+}
+    </code></pre>
+
+    <h2>返回数据</h2>
+    <p>如果导出成功，返回导出的路径。</p>
+    <pre><code class="language-json">
+{
+    "code": 0,
+    "msg": "",
+    "data": {
+        "path": "string" // 导出路径
+    }
+}
+    </code></pre>
+
+    <h2>请求示例</h2>
+    <pre><code class="language-bash">
+curl -X POST \
+  http://127.0.0.1:6806/api/export/exportMd \
+  -H 'Authorization: Token YOUR_API_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "id": "20200812220555-z0k8qkk",
+    "pdf": false,
+    "paragraphBeginningSpace": true,
+    "keepFold": false,
+    "removeAssets": false
+  }'
+    </code></pre>
+
+    <h2>响应示例</h2>
+    <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "path": "/path/to/exported/markdown/file.md"
+  }
+}
+    </code></pre>
+
+    <h2>在线测试</h2>
+    <div class="api-tester">
+        <input type="text" id="apiToken" placeholder="API Token"><br>
+        <input type="text" id="endpoint" value="/api/export/exportMd" disabled=""><br>
+        <input type="text" id="method" value="POST" disabled=""><br>
+        <textarea id="params" placeholder="JSON 请求体">{"id": "", "pdf": false, "paragraphBeginningSpace": false, "keepFold": false, "removeAssets": false}</textarea><br>
+        <button onclick="sendRequest()">发送请求</button>
+        <pre id="response"></pre>
+    </div>
+
+    <h2>导航</h2>
+    <ul>
+        <li><a href="../index.html">返回首页</a></li>
+        <li><a href="getExportProgress.html">上一个接口：/api/export/getExportProgress</a></li>
+        <li><a href="exportMdContent.html">下一个接口：/api/export/exportMdContent</a></li>
+        <li><a href="../pages/export.html">返回 Export API</a></li>
+    </ul>
+
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+
+ </body></html>

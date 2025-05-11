@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>/api/sync/removeCloudSyncDir - 删除云端同步目录</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>/api/sync/removeCloudSyncDir</h1>
+        <p>删除指定云存储提供商上的一个同步目录。</p>
+    </header>
+    <main>
+        <section class="endpoint-details">
+            <h2>API 端点详情</h2>
+            <ul>
+                <li><strong>路径:</strong> <code>/api/sync/removeCloudSyncDir</code></li>
+                <li><strong>HTTP 方法:</strong> <code>POST</code></li>
+                <li><strong>认证:</strong> 需要 (<code>model.CheckAuth</code>, <code>model.CheckAdminRole</code>, <code>model.CheckReadonly</code>)</li>
+            </ul>
+        </section>
+
+        <section class="request-parameters">
+            <h2>请求参数 (JSON Body)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>参数名</th>
+                        <th>类型</th>
+                        <th>是否必需</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>provider</code></td>
+                        <td>string</td>
+                        <td>是</td>
+                        <td>云服务提供商的名称。例如：<code>"S3"</code>, <code>"WebDAV"</code>, <code>"LocalFolder"</code>。不能为空。</td>
+                    </tr>
+                    <tr>
+                        <td><code>path</code></td>
+                        <td>string</td>
+                        <td>是</td>
+                        <td>要在云端删除的目录的路径或名称。不能为空。这个通常是之前通过 <code>/api/sync/listCloudSyncDir</code> 获取到的目录名。</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h3>请求示例:</h3>
+            <pre><code class="language-json">{
+    "provider": "S3",
+    "path": "my-siyuan-sync-repo-to-delete"
+}</code></pre>
+        </section>
+
+        <section class="response-details">
+            <h2>响应详情</h2>
+            <p>成功时，API 返回一个标准的成功响应，其中 <code>data</code> 字段为 <code>null</code>。</p>
+            <h3>成功响应示例 (<code>code: 0</code>):</h3>
+            <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": null
+}</code></pre>
+            <h3>失败响应示例:</h3>
+            <p>如果提供商名称或路径为空，或者删除操作失败，API会返回错误信息。</p>
+            <pre><code class="language-json">{
+    "code": -1,
+    "msg": "provider can not be empty", // 或 "path can not be empty", 或其他底层错误信息
+    "data": null
+}</code></pre>
+        </section>
+
+        <section class="important-notes">
+            <h2>重要提示</h2>
+            <ul>
+                <li>请谨慎操作此 API，删除的云端目录可能无法恢复。</li>
+                <li>在调用此 API 前，建议使用 <code>/api/sync/listCloudSyncDir</code> 确认要删除的目录名和提供商是否正确。</li>
+                <li>如果删除的是当前正在使用的同步目录 (<code>conf.Sync.CloudName</code>)，删除后可能需要重新配置同步设置。</li>
+            </ul>
+        </section>
+
+        <section class="online-test">
+            <h2>在线测试</h2>
+            <label for="providerName">提供商 (provider):</label>
+            <input type="text" id="providerName" value="S3"><br><br>
+
+            <label for="dirPath">目录路径 (path):</label>
+            <input type="text" id="dirPath" placeholder="要删除的云端目录名"><br><br>
+
+            <button onclick="removeDirTest()">删除云端目录</button>
+            <h3>响应:</h3>
+            <pre><code id="responseArea">点击按钮测试...</code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 SiYuan API Documentation</p>
+    </footer>
+
+    <script src="../assets/js/scripts.js"></script>
+    <script>
+        async function removeDirTest() {
+            const provider = document.getElementById('providerName').value;
+            const path = document.getElementById('dirPath').value;
+            const responseArea = document.getElementById('responseArea');
+
+            if (!provider) {
+                responseArea.textContent = '错误：提供商 (provider) 不能为空。';
+                return;
+            }
+            if (!path) {
+                responseArea.textContent = '错误：目录路径 (path) 不能为空。';
+                return;
+            }
+
+            if (!confirm(`确定要删除云端提供商 "${provider}" 下的目录 "${path}" 吗？此操作不可恢复！`)) {
+                responseArea.textContent = '操作已取消。';
+                return;
+            }
+
+            const requestBody = {
+                provider: provider,
+                path: path
+            };
+
+            try {
+                responseArea.textContent = '请求中...';
+                const response = await fetch('/api/sync/removeCloudSyncDir', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Token ' + getToken()
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                const result = await response.json();
+                responseArea.textContent = JSON.stringify(result, null, 2);
+            } catch (error) {
+                responseArea.textContent = '请求失败: ' + error.message;
+                console.error('Error removing cloud sync dir:', error);
+            }
+        }
+    </script>
+</body>
+</html> 

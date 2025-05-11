@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>API: /api/sync/setSyncProviderS3</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../script.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>思源笔记 API 文档</h1>
+    </header>
+    <nav>
+        <a href="../index.html">返回首页</a>
+        <a href="index.html">返回 sync 分类</a>
+    </nav>
+    <main>
+        <h2>/api/sync/setSyncProviderS3</h2>
+        <p><strong>方法:</strong> POST</p>
+        <p><strong>认证:</strong> `model.CheckAuth`, `model.CheckAdminRole`, `model.CheckReadonly` (需要登录，管理员权限，非只读模式)</p>
+        <p><strong>功能:</strong> 设置使用 S3 (Amazon Simple Storage Service) 或兼容 S3 协议的对象存储作为同步服务提供商时的具体配置。</p>
+        <p>在调用此 API 前，应先通过 <code>/api/sync/setSyncProvider</code> 将 <code>provider</code> 设置为 <code>2</code> (S3)。</p>
+
+        <h3>请求参数 (JSON Body)</h3>
+        <p>请求体包含一个名为 <code>s3</code> 的对象，其结构如下 (<code>conf.S3</code>)：</p>
+        <table>
+            <thead>
+                <tr>
+                    <th><code>s3</code> 对象字段</th>
+                    <th>类型</th>
+                    <th>是否必需</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>endpoint</code></td>
+                    <td>string</td>
+                    <td>是</td>
+                    <td>S3 服务的端点 URL。例如：<code>s3.amazonaws.com</code> 或 <code>minio.example.com:9000</code>。</td>
+                </tr>
+                <tr>
+                    <td><code>accessKey</code></td>
+                    <td>string</td>
+                    <td>是</td>
+                    <td>S3 Access Key ID。</td>
+                </tr>
+                <tr>
+                    <td><code>secretKey</code></td>
+                    <td>string</td>
+                    <td>是</td>
+                    <td>S3 Secret Access Key。</td>
+                </tr>
+                <tr>
+                    <td><code>bucket</code></td>
+                    <td>string</td>
+                    <td>是</td>
+                    <td>S3 存储桶 (Bucket) 名称。</td>
+                </tr>
+                <tr>
+                    <td><code>region</code></td>
+                    <td>string</td>
+                    <td>否</td>
+                    <td>S3 存储区域 (Region)。例如：<code>us-east-1</code>。如果 S3 服务不需要或未使用区域概念，可留空。</td>
+                </tr>
+                <tr>
+                    <td><code>pathStyle</code></td>
+                    <td>boolean</td>
+                    <td>否</td>
+                    <td>是否使用路径风格的 URL (例如 <code>endpoint/bucket/key</code>)。默认为 <code>false</code> (即虚拟主机风格 <code>bucket.endpoint/key</code>)。某些 S3 兼容服务（如 MinIO）可能需要设置为 <code>true</code>。</td>
+                </tr>
+                <tr>
+                    <td><code>skipTlsVerify</code></td>
+                    <td>boolean</td>
+                    <td>否</td>
+                    <td>是否跳过 TLS (HTTPS) 证书验证。如果 S3 服务使用自签名证书或内网部署且无法验证证书时，可设为 <code>true</code>。默认为 <code>false</code>。<strong>警告：设置为 <code>true</code> 会降低安全性。</strong></td>
+                </tr>
+                <tr>
+                    <td><code>timeout</code></td>
+                    <td>number</td>
+                    <td>否</td>
+                    <td>操作超时时间，单位为秒。如果未提供或为0，则可能使用默认值。</td>
+                </tr>
+                <tr>
+                    <td><code>concurrentReqs</code></td>
+                    <td>number</td>
+                    <td>否</td>
+                    <td>并发请求数。如果未提供或为0，则可能使用默认值。</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>请求示例</h3>
+        <pre><code class="language-json">
+{
+    "s3": {
+        "endpoint": "s3.us-west-2.amazonaws.com",
+        "accessKey": "YOUR_ACCESS_KEY_ID",
+        "secretKey": "YOUR_SECRET_ACCESS_KEY",
+        "bucket": "my-siyuan-notebooks",
+        "region": "us-west-2",
+        "pathStyle": false,
+        "skipTlsVerify": false,
+        "timeout": 60,
+        "concurrentReqs": 10
+    }
+}
+        </code></pre>
+
+        <h3>响应结果</h3>
+        <p>成功时，返回的 JSON 对象中 <code>code</code> 为 0，<code>msg</code> 为空字符串，<code>data</code> 为 <code>null</code>。</p>
+        <pre><code class="language-json">
+{
+    "code": 0,
+    "msg": "",
+    "data": null
+}
+        </code></pre>
+        <p>失败时 (例如，参数缺失、认证失败、存储桶不存在或网络问题等)，<code>code</code> 非 0，<code>msg</code> 包含错误信息，<code>data</code> 可能包含 <code>{"closeTimeout": 5000}</code>。</p>
+        <pre><code class="language-json">
+{
+    "code": -1,
+    "msg": "Failed to connect to S3: ...error details...",
+    "data": {
+        "closeTimeout": 5000
+    }
+}
+        </code></pre>
+
+        <h3>在线测试</h3>
+        <div class="test-area">
+            <label for="param-s3-endpoint">s3.endpoint (string, 必需):</label>
+            <input type="text" id="param-s3-endpoint" value="s3.example.com" style="width: 300px;"><br>
+            <label for="param-s3-accessKey">s3.accessKey (string, 必需):</label>
+            <input type="text" id="param-s3-accessKey" value="ACCESS_KEY" style="width: 300px;"><br>
+            <label for="param-s3-secretKey">s3.secretKey (string, 必需):</label>
+            <input type="password" id="param-s3-secretKey" value="SECRET_KEY" style="width: 300px;"><br>
+            <label for="param-s3-bucket">s3.bucket (string, 必需):</label>
+            <input type="text" id="param-s3-bucket" value="siyuan-data" style="width: 300px;"><br>
+            <label for="param-s3-region">s3.region (string, 可选):</label>
+            <input type="text" id="param-s3-region" value="us-east-1" style="width: 300px;"><br>
+            <label for="param-s3-pathStyle">s3.pathStyle (boolean, 可选):</label>
+            <select id="param-s3-pathStyle">
+                <option value="false" selected>false (虚拟主机风格)</option>
+                <option value="true">true (路径风格)</option>
+            </select><br>
+            <label for="param-s3-skipTlsVerify">s3.skipTlsVerify (boolean, 可选):</label>
+            <select id="param-s3-skipTlsVerify">
+                <option value="false" selected>false (不跳过TLS验证)</option>
+                <option value="true">true (跳过TLS验证 - 危险)</option>
+            </select><br>
+            <label for="param-s3-timeout">s3.timeout (number, 可选):</label>
+            <input type="number" id="param-s3-timeout" value="60"><br>
+            <label for="param-s3-concurrentReqs">s3.concurrentReqs (number, 可选):</label>
+            <input type="number" id="param-s3-concurrentReqs" value="10"><br><br>
+            <button onclick="testAPI()">发送请求</button>
+            <h4>请求体:</h4>
+            <pre id="request-body-display"></pre>
+            <h4>响应:</h4>
+            <pre id="response-output"></pre>
+        </div>
+
+        <script>
+            function buildRequestBody() {
+                const s3Config = {};
+                const fields = ['endpoint', 'accessKey', 'secretKey', 'bucket', 'region'];
+                fields.forEach(field => {
+                    const value = document.getElementById(`param-s3-${field}`).value;
+                    if (value) s3Config[field] = value;
+                });
+                s3Config.pathStyle = document.getElementById('param-s3-pathStyle').value === 'true';
+                s3Config.skipTlsVerify = document.getElementById('param-s3-skipTlsVerify').value === 'true';
+                
+                const timeout = parseInt(document.getElementById('param-s3-timeout').value, 10);
+                if (!isNaN(timeout) && timeout > 0) s3Config.timeout = timeout;
+                
+                const concurrentReqs = parseInt(document.getElementById('param-s3-concurrentReqs').value, 10);
+                if (!isNaN(concurrentReqs) && concurrentReqs > 0) s3Config.concurrentReqs = concurrentReqs;
+
+                const body = { s3: s3Config };
+                document.getElementById('request-body-display').textContent = JSON.stringify(body, null, 2);
+                return body;
+            }
+
+            async function testAPI() {
+                const requestBody = buildRequestBody();
+                const responseOutput = document.getElementById('response-output');
+                responseOutput.textContent = '正在请求...';
+
+                if (!requestBody.s3 || !requestBody.s3.endpoint || !requestBody.s3.accessKey || !requestBody.s3.secretKey || !requestBody.s3.bucket) {
+                    responseOutput.textContent = '错误: s3对象的 endpoint, accessKey, secretKey, 和 bucket 字段是必需的。';
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/sync/setSyncProviderS3', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // 'Authorization': 'Token YOUR_API_TOKEN_HERE' // 如果需要认证
+                        },
+                        body: JSON.stringify(requestBody)
+                    });
+                    const result = await response.json();
+                    responseOutput.textContent = JSON.stringify(result, null, 2);
+                } catch (error) {
+                    console.error('API 测试失败:', error);
+                    responseOutput.textContent = '发生错误，请查看控制台。\n' + error.message;
+                }
+            }
+
+            // 初始化请求体显示
+            buildRequestBody();
+            // 监听输入变化实时更新请求体
+            ['endpoint', 'accessKey', 'secretKey', 'bucket', 'region', 'pathStyle', 'skipTlsVerify', 'timeout', 'concurrentReqs'].forEach(field => {
+                 document.getElementById(`param-s3-${field}`).addEventListener('input', buildRequestBody);
+                 if (document.getElementById(`param-s3-${field}`).tagName === 'SELECT') {
+                    document.getElementById(`param-s3-${field}`).addEventListener('change', buildRequestBody);
+                 }
+            });
+        </script>
+    </main>
+    <footer>
+        <p>本文档由 AI 自动生成，可能存在不准确之处，请以实际 API 行为为准。</p>
+    </footer>
+</body>
+</html> 

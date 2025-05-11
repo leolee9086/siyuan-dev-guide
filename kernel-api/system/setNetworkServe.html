@@ -1,0 +1,110 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/system/setNetworkServe"> <!-- API Endpoint Meta Tag -->
+    <title>设置网络伺服 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <h1>设置网络伺服 (setNetworkServe)</h1>
+        <nav>
+            <a href="../index.html">首页</a> | 
+            <a href="index.html">System API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/system.go#L355" target="_blank">GitHub Source</a>
+        </nav>
+    </header>
+    <main>
+        <section id="description">
+            <h2>功能描述</h2>
+            <p>此 API 端点 <code>POST /api/system/setNetworkServe</code> 用于设置思源笔记是否在局域网中提供服务（是否可以通过局域网访问）。</p>
+            <p>它修改配置文件中的 <code>conf.System.NetworkServe</code> 项。设置成功后会向用户发送通知，并延迟3秒返回结果。</p>
+            <p><strong>注意</strong>：更改此设置后可能需要重启应用才能完全生效。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体必须是 JSON 格式，包含以下参数：</p>
+            <ul>
+                <li><code>networkServe</code> (boolean): <strong>必填</strong>。是否允许通过局域网访问思源笔记。
+                    <ul>
+                        <li><code>true</code>: 启用网络伺服，允许局域网访问。</li>
+                        <li><code>false</code>: 禁用网络伺服，仅允许本机访问。</li>
+                    </ul>
+                </li>
+            </ul>
+            <p><strong>请求示例 (启用网络伺服):</strong></p>
+            <pre><code class="language-json">
+{
+  "networkServe": true
+}
+            </code></pre>
+            <p><strong>请求示例 (禁用网络伺服):</strong></p>
+            <pre><code class="language-json">
+{
+  "networkServe": false
+}
+            </code></pre>
+        </section>
+
+        <section id="response-format">
+            <h2>响应结果</h2>
+            <p>成功的请求将返回一个 JSON 对象，<code>code</code> 为 0，<code>data</code> 为 <code>null</code>。同时会在界面上显示一条提示消息。</p>
+            <p><strong>注意</strong>：此 API 会延迟 3 秒钟才返回响应，以便用户看到提示消息。</p>
+            <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": null
+}
+            </code></pre>
+            <p>如果操作失败（例如参数无效），将返回非 0 的 <code>code</code> 和具体的错误信息 <code>msg</code>。</p>
+            <pre><code class="language-json">
+{
+  "code": -1, // 示例错误码
+  "msg": "Invalid parameter", // 示例错误信息
+  "data": null
+}
+            </code></pre>
+        </section>
+
+        <section id="online-testing">
+            <h2>在线测试</h2>
+            <p>您可以在下方选择是否启用网络伺服进行在线测试。</p>
+            <div class="api-tester">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="请输入您的 API Token (可选)" value=""><br>
+
+                <label for="endpoint">Endpoint:</label>
+                <input type="text" id="endpoint" value="/api/system/setNetworkServe" readonly=""><br>
+
+                <label for="method">Method:</label>
+                <input type="text" id="method" value="POST" readonly=""><br>
+
+                <label for="params">Parameters (JSON):</label><br>
+                <textarea id="params" rows="4" placeholder="{
+  &quot;networkServe&quot;: true // true: 启用, false: 禁用
+}"></textarea><br>
+
+                <button onclick="sendRequest()">发送请求</button>
+
+                <h3>响应结果:</h3>
+                <pre id="response-output"></pre>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>思源笔记 API 文档 | 最后更新时间：<span id="last-updated"></span></p>
+    </footer>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        // 更新最后更新时间
+        document.getElementById('last-updated').textContent = new Date().toLocaleString();
+    </script>
+
+ </body></html>

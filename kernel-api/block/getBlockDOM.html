@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>获取块 DOM - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>获取块 DOM (`/api/block/getBlockDOM`)</h1>
+            <nav>
+                <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/block.go#L638" target="_blank">在 GitHub 上查看源码</a>
+                <a href="../pages/block.html">返回块 API 列表</a>
+                <a href="../index.html">返回 API 主页</a>
+            </nav>
+        </header>
+        <main>
+            <div class="api-header" style="display:none;">
+                <span class="method">POST</span>
+                <span class="endpoint">/api/block/getBlockDOM</span>
+            </div>
+
+            <h2>接口描述</h2>
+            <p>获取指定块 ID 对应的渲染后的 HTML DOM 字符串。</p>
+
+            <h2>请求参数</h2>
+            <table class="param-table">
+                <thead>
+                    <tr>
+                        <th>参数名</th>
+                        <th>类型</th>
+                        <th>必选</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>id</td>
+                        <td>string</td>
+                        <td><span class="required">是</span></td>
+                        <td>需要获取 DOM 的块 ID。</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>返回值</h2>
+            <p>返回一个标准的 API 响应 JSON 对象。</p>
+             <table class="response-table">
+                <thead>
+                    <tr>
+                        <th>字段名</th>
+                        <th>类型</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>code</td>
+                        <td>number</td>
+                        <td><code>0</code> 表示成功，非 <code>0</code> 表示失败。</td>
+                    </tr>
+                    <tr>
+                        <td>msg</td>
+                        <td>string</td>
+                        <td>如果失败，则包含错误信息。</td>
+                    </tr>
+                    <tr>
+                        <td>data</td>
+                        <td>object | null</td>
+                        <td>包含块信息和 DOM 的对象。如果块不存在或发生错误，可能为 <code>null</code>。
+                         <br>对象结构如下:
+                            <table class="nested-table">
+                                <thead><tr><th>字段名</th><th>类型</th><th>描述</th></tr></thead>
+                                <tbody>
+                                    <tr><td>id</td><td>string</td><td>请求的块 ID。</td></tr>
+                                    <tr><td>dom</td><td>string</td><td>渲染后的 HTML DOM 字符串。如果块不存在或无法渲染，可能为空字符串 <code>""</code>。</td></tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="tab-container">
+                <div class="tabs">
+                    <div class="tab active" data-target="example-tab">请求示例</div>
+                    <div class="tab" data-target="response-tab-success">成功响应</div>
+                    <div class="tab" data-target="response-tab-fail">失败响应</div>
+                </div>
+
+                <div id="example-tab" class="tab-content active">
+                    <h3>请求示例</h3>
+                    <pre><code class="language-json">POST /api/block/getBlockDOM HTTP/1.1
+Host: 127.0.0.1:6806
+Content-Type: application/json
+Authorization: Token your-api-token
+
+{
+  "id": "20231018102400-abcde1f"
+}</code></pre>
+                </div>
+
+                <div id="response-tab-success" class="tab-content">
+                     <h3>成功响应示例</h3>
+                     <pre><code class="language-json">{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "id": "20231018102400-abcde1f",
+    "dom": "<div data-node-id=\"20231018102400-abcde1f\" data-type=\"NodeParagraph\" class=\"p\" updated=\"20231018102400\"><div contenteditable=\"true\" spellcheck=\"false\">这是一个段落</div><div class=\"protyle-attr\" contenteditable=\"false\"></div></div>"
+  }
+}</code></pre>
+                </div>
+
+                 <div id="response-tab-fail" class="tab-content">
+                    <h3>失败响应示例 (参数错误)</h3>
+                     <pre><code class="language-json">{
+  "code": -1,
+  "msg": "json: cannot unmarshal string into Go struct field .id of type string",
+  "data": null
+}</code></pre>
+                 </div>
+            </div>
+
+            <h2>备注</h2>
+            <ul>
+                <li>返回的 <code>dom</code> 字符串是块在思源笔记编辑器中渲染后的 HTML 表示，包含了块的属性、内容和结构。</li>
+                <li>可以用于获取块的最新渲染结果，例如在外部应用中展示块内容。</li>
+            </ul>
+
+            <blockquote class="important-note">
+                <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+                <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+            </blockquote>
+
+            <div class="test-area">
+                <h3>在线测试</h3>
+                <form id="api-test-form">
+                     <div class="form-group">
+                        <label for="api-token">API Token:</label>
+                        <input type="text" id="api-token" placeholder="在思源笔记的 设置->关于 中查看 API Token">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="api-endpoint">接口地址:</label>
+                        <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/block/getBlockDOM" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="api-method">请求方法:</label>
+                        <input type="text" id="api-method" value="POST" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="api-params">请求参数 (JSON):</label>
+                        <textarea id="api-params">{
+  "id": ""
+}</textarea>
+                        <small>请填入必需的 <code>id</code>。</small>
+                    </div>
+
+                    <button type="submit" class="btn">发送请求</button>
+                </form>
+
+                <div id="api-result" class="result"></div>
+            </div>
+
+            <div class="nav-links">
+                <a href="getBlockBreadcrumb.html">上一个接口: 获取块面包屑</a>
+                <a href="getRefIDs.html">下一个接口: 获取引用块的定义块 ID</a> <!-- 假设下一个是 getRefIDs -->
+            </div>
+        </main>
+        <footer>
+            <p>© 2024 思源笔记 API 文档 (社区维护)</p>
+        </footer>
+    </div>
+    <script src="../api-tester.js"></script>
+</body>
+</html> 

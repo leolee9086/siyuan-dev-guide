@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/account/checkActivationcode">
+    <title>检查激活码状态 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../common/css/styles.css">
+</head>
+<body>
+    <header class="api-header">
+        <h1>检查激活码状态 (checkActivationcode)</h1>
+        <nav>
+            <a href="../index.html">首页</a> |
+            <a href="index.html">Account API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/account.go#L57" target="_blank">GitHub Source (api/account.go L57)</a>
+        </nav>
+        <div class="endpoint-container">
+            <span class="endpoint">POST /api/account/checkActivationcode</span>
+        </div>
+    </header>
+    <main>
+        <section id="description">
+            <h2>接口描述</h2>
+            <p>此 API 端点 <code>POST /api/account/checkActivationcode</code> 用于检查提供的激活码的状态。</p>
+            <p>它会调用后端的 <code>model.CheckActivationcode</code> 函数来验证激活码的有效性，并返回相应的状态码和消息。</p>
+        </section>
+
+        <section id="authentication">
+            <h2>认证与授权</h2>
+            <p>调用此 API 端点需要有效的用户认证，并通过 <code>Authorization</code> HTTP 头部传递 API Token。</p>
+            <p>此外，执行此操作需要：</p>
+            <ul>
+                <li><strong>管理员角色 (<code>model.CheckAdminRole</code>)</strong></li>
+            </ul>
+            <p><em>注意：此接口受 <code>model.CheckReadonly</code> 中间件的限制，可能无法在只读模式下成功调用，即使其本身可能不直接修改数据。</em></p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体应为 JSON 格式，包含以下字段：</p>
+            <ul>
+                <li><code>data</code> (string, 必需): 需要检查状态的激活码字符串。</li>
+            </ul>
+            <p>示例请求体：</p>
+            <pre><code class="language-json">{
+    "data": "YOUR_ACTIVATION_CODE_HERE"
+}</code></pre>
+        </section>
+
+        <section id="response-body">
+            <h2>响应体</h2>
+            <table class="response-table">
+                <thead>
+                    <tr>
+                        <th>参数名</th>
+                        <th>类型</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                     <tr><td>code</td><td>number</td><td>返回码，0表示成功</td></tr>
+                     <tr><td>msg</td><td>string</td><td>返回信息</td></tr>
+                     <tr><td>data</td><td>object</td><td>返回的具体数据 (通常为空对象 <code>{}</code>，具体信息通过 <code>code</code> 和 <code>msg</code> 反映)</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <div class="tab-container">
+            <div class="tabs">
+                <div class="tab active" data-target="example-tab">请求示例</div>
+                <div class="tab" data-target="response-tab">返回示例</div>
+            </div>
+
+            <div id="example-tab" class="tab-content active">
+                <h3>请求示例</h3>
+                <pre><code>POST /api/account/checkActivationcode
+Content-Type: application/json
+Authorization: Token your-token
+
+{
+  "data": "YOUR_ACTIVATION_CODE_HERE"
+}</code></pre>
+            </div>
+
+            <div id="response-tab" class="tab-content">
+                <h3>返回示例 (成功检查，激活码有效或无效，具体看msg)</h3>
+                <pre><code>{
+  "code": 0,
+  "msg": "具体的激活码状态信息，例如 '激活码有效' 或 '激活码不存在'",
+  "data": {}
+}</code></pre>
+            </div>
+        </div>
+
+        <section id="notes">
+            <h2>备注</h2>
+            <ul>
+                <li>此接口用于验证激活码本身的状态，例如是否存在、是否已被使用等，具体结果通过响应的 <code>code</code> 和 <code>msg</code> 字段来判断。</li>
+                <li>即使激活码无效或已过期，只要请求格式正确且通过认证授权，接口通常也会返回 HTTP 200 OK，并通过 <code>msg</code> 字段告知具体状态。</li>
+            </ul>
+        </section>
+        
+    <blockquote class="important-note">
+        <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+        <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+    </blockquote>
+    <div class="test-area">
+            <h3>在线测试</h3>
+            <form id="api-test-form">
+                <div class="form-group">
+                    <label for="api-token">API Token:</label>
+                    <input type="text" id="api-token" placeholder="在思源笔记中的" 设置-关于"中查看api="" token"="">
+                </div>
+
+                <div class="form-group">
+                    <label for="api-endpoint">接口地址:</label>
+                    <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/account/checkActivationcode">
+                </div>
+
+                <div class="form-group">
+                    <label for="api-method">请求方法:</label>
+                    <input type="text" id="api-method" value="POST" readonly="">
+                </div>
+
+                <div class="form-group">
+                    <label for="api-params">请求参数 (JSON):</label>
+                    <textarea id="api-params">{\n  "data\": \"YOUR_ACTIVATION_CODE_HERE\"\n}</textarea>
+                </div>
+
+                <button type="submit" class="btn">发送请求</button>
+            </form>
+
+            <div id="api-result" class="result"></div>
+        </div>
+
+        <div class="nav-links">
+            <a href="../index.html">返回首页</a>
+             <a href="index.html">返回Account API</a>
+            
+            
+        </div>
+
+        <script src="../common/js/api-tester.js"></script>
+        <script src="../common/js/theme-toggle.js"></script>
+
+ </body></html>

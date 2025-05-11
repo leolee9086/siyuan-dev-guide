@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>获取动态图标 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+    
+    <div class="api-header">
+        <span class="method">GET</span>
+        <span class="endpoint">/api/icon/getDynamicIcon</span>
+    </div>
+    
+    <h1>获取动态图标</h1>
+    
+    <div class="auth-tags">
+        <span class="chip">无需认证</span>
+    </div>
+    
+    <h2>接口描述</h2>
+    <p>根据传入的参数动态生成一个 SVG 图标，并以 <code>image/svg+xml</code> 的形式返回。常用于文档标题、书签等处的个性化图标展示。该接口不进行缓存。</p>
+    
+    <h2>请求参数 (Query Parameters)</h2>
+    <p>所有参数均通过 URL query string 传递，并且都是可选的。</p>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+                <th>默认值</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>type</td>
+                <td>string</td>
+                <td>动态图标的类型。可选值：<br>
+                    - <code>"1"</code>: 显示年月日星期 (默认)<br>
+                    - <code>"2"</code>: 显示年月日<br>
+                    - <code>"3"</code>: 显示年月<br>
+                    - <code>"4"</code>: 仅显示年<br>
+                    - <code>"5"</code>: 显示周数 (e.g., "23W" 或 "23周")<br>
+                    - <code>"6"</code>: 仅显示星期 (周末颜色会自动调整)<br>
+                    - <code>"7"</code>: 倒数日 (基于 <code>date</code> 参数)<br>
+                    - <code>"8"</code>: 文字图标 (使用 <code>content</code> 参数)
+                </td>
+                <td>"1"</td>
+            </tr>
+            <tr>
+                <td>color</td>
+                <td>string</td>
+                <td>图标的主要颜色。可以是预定义颜色名 (e.g., "red", "blue") 或十六进制颜色码 (e.g., "#d23f31", "d23f31")。对于特定类型 (如 <code>type="6"</code> 的星期显示)，颜色可能会根据内容 (如是否周末) 自动调整。如果未提供，多数类型会使用内部预设颜色方案。</td>
+                <td>依赖于 <code>type</code> 和内部逻辑</td>
+            </tr>
+            <tr>
+                <td>date</td>
+                <td>string</td>
+                <td>日期字符串，格式为 <code>YYYY-MM-DD</code> (e.g., "2023-10-26")。用于生成与日期相关的图标内容。</td>
+                <td>当前日期</td>
+            </tr>
+            <tr>
+                <td>lang</td>
+                <td>string</td>
+                <td>语言代码，影响日期和星期等的显示格式。支持 <code>zh_CN</code> (简体中文), <code>zh_CHT</code> (繁体中文) 等。</td>
+                <td>系统当前语言 (e.g., <code>util.Lang</code>)</td>
+            </tr>
+            <tr>
+                <td>weekdayType</td>
+                <td>string</td>
+                <td>
+                    星期几的显示格式，依赖于 <code>lang</code> 参数。<br>
+                    <strong>当 <code>lang="zh_CN"</code>:</strong><br>
+                    - <code>"1"</code>: "周日", "周一", ... (默认)<br>
+                    - <code>"2"</code>: "周天", "周一", ...<br>
+                    - <code>"3"</code>: "星期日", "星期一", ...<br>
+                    - <code>"4"</code>: "星期天", "星期一", ...<br>
+                    <strong>当 <code>lang="zh_CHT"</code>:</strong><br>
+                    - <code>"1"</code>: "週日", "週一", ... (默认)<br>
+                    - <code>"2"</code>: "週天", "週一", ...<br>
+                    - <code>"3"</code>: "星期日", "星期一", ...<br>
+                    - <code>"4"</code>: "星期天", "星期一", ...<br>
+                    <strong>其他语言 (e.g., <code>en_US</code>):</strong><br>
+                    - <code>"1"</code>: "Mon", "Tue", ... (默认)<br>
+                    - <code>"2"</code>: "MON", "TUE", ...<br>
+                    - <code>"3"</code>: "Monday", "Tuesday", ...<br>
+                    - <code>"4"</code>: "MONDAY", "TUESDAY", ...
+                </td>
+                <td>"1"</td>
+            </tr>
+            <tr>
+                <td>content</td>
+                <td>string</td>
+                <td>当 <code>type="8"</code> (文字图标) 时，此参数用于指定要在图标中显示的文本内容。</td>
+                <td>空 (在 <code>type="8"</code> 时不显示文字)</td>
+            </tr>
+            <tr>
+                <td>id</td>
+                <td>string</td>
+                <td>当 <code>type="8"</code> (文字图标) 时，此参数可能用于SVG内部元素的ID或其他特殊处理。</td>
+                <td>无</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <h2>返回值</h2>
+    <p>成功时，此接口直接返回一个 <code>image/svg+xml</code> 类型的图片资源。可以直接在 <code>&lt;img&gt;</code> 标签的 <code>src</code> 属性中使用此 API 地址。</p>
+    <p>接口倾向于通过使用默认值来容错处理无效或缺失的参数，并总是尝试返回一个有效的 SVG 图像 (<code>HTTP 200 OK</code>)。</p>
+    
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="example-tab">请求示例</div>
+        </div>
+        
+        <div id="example-tab" class="tab-content active">
+            <h3>请求示例</h3>
+            <p>获取一个红色的，内容为 "Test"，类型为文字图标的动态图标：</p>
+            <pre><code>GET /api/icon/getDynamicIcon?type=8&amp;color=red&amp;content=Test HTTP/1.1
+Host: 127.0.0.1:6806
+</code></pre>
+            <p>获取一个显示当前日期的默认类型图标：</p>
+            <pre><code>GET /api/icon/getDynamicIcon HTTP/1.1
+Host: 127.0.0.1:6806
+</code></pre>
+            <p>在 HTML 中的使用方式：</p>
+            <pre><code>&lt;img src="/api/icon/getDynamicIcon?type=8&amp;color=%23337ab7&amp;content=S&amp;id=myIcon" alt="Dynamic Text Icon"&gt;</code></pre>
+        </div>
+    </div>
+    
+    <blockquote class="important-note">
+        <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+        <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+    </blockquote>
+
+ </body>
+</html> 

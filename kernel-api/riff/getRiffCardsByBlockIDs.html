@@ -1,0 +1,130 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/riff/getRiffCardsByBlockIDs"> <!-- API Endpoint Meta Tag -->
+    <title>根据块ID获取闪卡信息 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <h1>根据块ID获取闪卡信息 (getRiffCardsByBlockIDs)</h1>
+        <nav>
+            <a href="../index.html">首页</a> | 
+            <a href="index.html">Riff API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/riff.go#L30" target="_blank">GitHub Source</a>
+        </nav>
+    </header>
+    <main>
+        <section id="description">
+            <h2>功能描述</h2>
+            <p>此 API 端点 <code>POST /api/riff/getRiffCardsByBlockIDs</code> 用于根据提供的块 ID 列表，批量获取这些块对应的闪卡详细信息。</p>
+            <p>如果一个块不是闪卡，则不会包含在返回结果中。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体必须是 JSON 格式，包含以下参数：</p>
+            <ul>
+                <li><code>blockIDs</code> (array of strings): <strong>必填</strong>。要查询其闪卡信息的块 ID 列表。</li>
+            </ul>
+            <p><strong>请求示例:</strong></p>
+            <pre><code class="language-json">
+{
+  "blockIDs": [
+    "20240101100000-hijklmn",
+    "20240102110000-opqrstu", 
+    "20240815100000-notacard" // 假设这个 ID 不是闪卡
+  ]
+}
+            </code></pre>
+        </section>
+
+        <section id="response-format">
+            <h2>响应结果</h2>
+            <p>成功的请求将返回一个 JSON 对象，<code>code</code> 为 0，<code>data</code> 字段包含一个名为 <code>blocks</code> 的数组，其中包含查询到的闪卡信息对象。</p>
+            <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "blocks": [
+      {
+        "ID": "20240101100000-hijklmn", // 卡片 ID (等于 BlockID)
+        "BlockID": "20240101100000-hijklmn", // 块 ID
+        "DeckID": "20231027111111-abcdefg", // 卡包 ID
+        "Created": "2024-01-01 10:00:00", // 创建时间
+        "Updated": "2024-08-12 14:00:00", // 最后更新时间
+        "Due": "2024-08-18 09:00:00", // 到期时间
+        "State": 2, // 卡片状态
+        "Reviews": 8, // 复习次数
+        "Lapses": 1, // 遗忘次数
+        "Interval": 6.2 // 当前间隔天数
+        // ... 其他卡片属性 ...
+      },
+      {
+        "ID": "20240102110000-opqrstu",
+        "BlockID": "20240102110000-opqrstu",
+        "DeckID": "20231027111111-abcdefg",
+        "Created": "2024-01-02 11:00:00",
+        "Updated": "2024-08-14 11:00:00",
+        "Due": "2024-08-16 12:30:00",
+        "State": 1,
+        "Reviews": 2,
+        "Lapses": 0,
+        "Interval": 2.0
+        // ... 其他卡片属性 ...
+      }
+      // 注意："20240815100000-notacard" 不会出现在结果中
+    ]
+  }
+}
+            </code></pre>
+            <ul>
+                <li><code>code</code>: 0 表示成功，非 0 表示失败。</li>
+                <li><code>msg</code>: 错误信息（如果 code 非 0）。</li>
+                <li><code>data.blocks</code>: 一个数组，包含查询到的闪卡信息对象。如果请求的某个 `blockID` 不是闪卡，则对应的条目不会出现在此数组中。</li>
+            </ul>
+        </section>
+
+        <section id="online-testing">
+            <h2>在线测试</h2>
+            <p>您可以在下方输入要查询闪卡信息的块 ID 列表进行在线测试。</p>
+            <div class="api-tester">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="请输入您的 API Token (可选)" value=""><br>
+
+                <label for="endpoint">Endpoint:</label>
+                <input type="text" id="endpoint" value="/api/riff/getRiffCardsByBlockIDs" readonly=""><br>
+
+                <label for="method">Method:</label>
+                <input type="text" id="method" value="POST" readonly=""><br>
+
+                <label for="params">Parameters (JSON):</label><br>
+                <textarea id="params" rows="6" placeholder="{
+  &quot;blockIDs&quot;: [
+    &quot;&quot;
+  ]
+}"></textarea><br>
+
+                <button onclick="sendRequest()">发送请求</button>
+
+                <h3>响应结果:</h3>
+                <pre id="response-output"></pre>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>思源笔记 API 文档 | 最后更新时间：<span id="last-updated"></span></p>
+    </footer>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        // 更新最后更新时间
+        document.getElementById('last-updated').textContent = new Date().toLocaleString();
+    </script>
+
+ </body></html>

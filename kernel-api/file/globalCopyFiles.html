@@ -1,0 +1,161 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>globalCopyFiles API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>全局复制文件 API (`/api/file/globalCopyFiles`)</h1>
+            <nav>
+                <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/file.go#L53" target="_blank">在 GitHub 上查看源码</a>
+                <a href="../pages/file.html">返回文件 API 列表</a>
+                <a href="../index.html">返回 API 主页</a>
+            </nav>
+        </header>
+        <main>
+            <section id="description">
+                <h2>接口描述</h2>
+                <p>将本地文件系统中的多个文件拷贝到工作空间的指定目录。</p>
+                <p>通常用于从外部导入资源文件。</p>
+                <p class="important-note"><strong>注意:</strong> 目标目录路径 (`destDir`) 相对于工作空间根目录。要拷贝到 <code>data</code> 目录，路径必须以 <code>data/</code> 开头。要拷贝到临时目录 <code>temp</code>，路径必须以 <code>temp/</code> 开头。</p>
+                <p>源文件路径 (`srcs`) 是本地文件系统的绝对路径。</p>
+            </section>
+
+            <section id="request">
+                <h2>请求</h2>
+                <p><strong>方法:</strong> POST</p>
+                <p><strong>路径:</strong> `/api/file/globalCopyFiles`</p>
+                <p><strong>认证:</strong> 需要 Token</p>
+                <h3>请求体 (JSON)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>参数</th>
+                            <th>类型</th>
+                            <th>必需</th>
+                            <th>描述</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>`srcs`</td>
+                            <td>array[string]</td>
+                            <td>是</td>
+                            <td>源文件路径数组 (本地文件系统的绝对路径)。例如 <code>["/Users/user/Downloads/image1.png", "/Users/user/Downloads/image2.jpg"]</code>。</td>
+                        </tr>
+                        <tr>
+                            <td>`destDir`</td>
+                            <td>string</td>
+                            <td>是</td>
+                            <td>目标目录路径，相对于工作空间根目录。例如 <code>data/assets</code> 或 <code>temp/uploads</code>。<strong>必须包含正确的路径前缀。</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h3>请求示例</h3>
+                 <p>将本地下载的文件拷贝到数据目录下的 assets:</p>
+                <pre><code class="language-json">{
+    "srcs": [
+        "C:/Users/MyUser/Downloads/report.pdf",
+        "/home/user/Pictures/logo.svg"
+    ],
+    "destDir": "data/assets"
+}</code></pre>
+                 <p>将本地临时文件拷贝到工作空间的 temp 目录:</p>
+                 <pre><code class="language-json">{
+    "srcs": ["/tmp/temp_export.zip"],
+    "destDir": "temp"
+}</code></pre>
+            </section>
+
+            <section id="response">
+                <h2>响应</h2>
+                <h3>成功响应 (200 OK)</h3>
+                <p>成功复制后，返回一个对象，其中 `files` 字段包含一个映射，键是原始临时文件路径，值是在 `data/assets/` 下生成的新文件名。</p>
+                <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": {
+        "files": {
+            "C:/Users/用户名/AppData/Local/Temp/copied-image.png": "assets/20230518120000-abcdefgh.png",
+            "/tmp/another-file.pdf": "assets/20230518120001-ijklmnop.pdf"
+        }
+    }
+}</code></pre>
+                <h3>失败响应</h3>
+                <p>如果请求失败（例如，路径无效、文件不存在、复制失败等），将返回错误信息。</p>
+                <pre><code class="language-json">{
+    "code": -1,
+    "msg": "Copy file failed: ...", // 或其他错误信息
+    "data": null
+}</code></pre>
+            </section>
+
+            <section id="online-test">
+                <h2>在线测试</h2>
+                 <p><strong>注意:</strong> 此接口操作的是操作系统级的临时文件路径，在线测试器无法直接模拟。你需要确保提供的 `paths` 是当前操作系统中实际存在的临时文件路径。</p>
+                <form id="test-form">
+                     <div class="form-group">
+                        <label for="param-paths">paths (必填, JSON 数组):</label>
+                        <textarea id="param-paths" name="paths" rows="4" required="">[
+    "你的操作系统临时文件路径1",
+    "你的操作系统临时文件路径2"
+]</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="param-assetPath">assetPath (必填):</label>
+                        <input type="text" id="param-assetPath" name="assetPath" required="" value="assets">
+                    </div>
+                    <button type="submit">发送请求 (需提供有效临时路径)</button>
+                </form>
+                <h3>测试结果:</h3>
+                <pre><code id="test-result"></code></pre>
+            </section>
+        </main>
+        <footer>
+            <p>© 2023 Siyuan Note API 文档</p>
+        </footer>
+    </div>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        document.getElementById('test-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const pathsText = document.getElementById('param-paths').value;
+            const assetPath = document.getElementById('param-assetPath').value;
+            const resultContainer = document.getElementById('test-result');
+            resultContainer.textContent = '请求中...';
+            let paths;
+            try {
+                paths = JSON.parse(pathsText);
+                if (!Array.isArray(paths) || !paths.every(p => typeof p === 'string')) {
+                    throw new Error('paths 必须是一个 JSON 字符串数组');
+                }
+            } catch (e) {
+                resultContainer.textContent = `请求体格式错误: ${e.message}`;
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/file/globalCopyFiles', { // Updated API path
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Token ${getAuthToken()}` // 从 localStorage 或其他地方获取 Token
+                    },
+                    body: JSON.stringify({ paths, assetPath })
+                });
+                const result = await response.json();
+                resultContainer.textContent = JSON.stringify(result, null, 2);
+            } catch (error) {
+                resultContainer.textContent = `请求失败: ${error}`;
+            }
+        });
+    </script>
+
+ </body></html>

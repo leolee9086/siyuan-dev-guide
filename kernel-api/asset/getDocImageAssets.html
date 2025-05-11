@@ -1,0 +1,154 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>getDocImageAssets - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/asset/getDocImageAssets</span>
+    </div>
+
+    <h1>getDocImageAssets</h1>
+    <nav class="source-code-nav">
+        <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/asset.go#L185" target="_blank">在 GitHub 上查看源码</a>
+    </nav>
+
+    <div class="auth-tags">
+        <span class="tag auth-tag">需要鉴权</span>
+        <!-- 根据 router.go，此接口没有 admin 角色或 readonly 限制 -->
+    </div>
+
+    <h2>接口描述</h2>
+    <p>获取指定文档块直接引用的所有<strong>图片类型</strong>的资源文件路径列表。</p>
+    <p><strong>注意:</strong> 只返回该文档块直接引用的图片资源，不包含子块或非图片类型的资源。</p>
+
+    <h2>请求参数</h2>
+    
+    <table class="request-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>是否必须</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>id</td>
+                <td>string</td>
+                <td>是</td>
+                <td>要查询的文档块 ID。</td>
+            </tr>
+        </tbody>
+    </table>
+    
+
+    <h2>返回值</h2>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+             <tr><td>code</td><td>number</td><td>返回码，0表示成功，非0表示失败</td></tr>
+             <tr><td>msg</td><td>string</td><td>返回信息</td></tr>
+             <tr><td>data</td><td>array (string)</td><td>该文档块引用的图片资源相对路径列表（例如 `["assets/xxx.png", "assets/yyy.jpg"]`）。如果出错或没有引用图片，可能返回 `null` 或空数组 `[]`。</td></tr>
+        </tbody>
+    </table>
+
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="example-tab">请求示例</div>
+            <div class="tab" data-target="response-tab">返回示例</div>
+        </div>
+
+        <div id="example-tab" class="tab-content active">
+            <h3>请求示例</h3>
+            <pre><code>POST /api/asset/getDocImageAssets
+Content-Type: application/json
+Authorization: Token your-token
+
+{
+  "id": "20230101000000-abcdefgh"
+}</code></pre>
+        </div>
+
+        <div id="response-tab" class="tab-content">
+            <h3>返回示例 (成功)</h3>
+            <pre><code>{
+  "code": 0,
+  "msg": "",
+  "data": [
+    "assets/image-20240315103000-randomid.png",
+    "assets/photo-20240315110000-anotherid.jpg"
+  ]
+}</code></pre>
+             <h3>返回示例 (无图片或失败)</h3>
+            <pre><code>{
+  "code": 0, 
+  "msg": "",
+  "data": [] 
+}</code></pre>
+            <pre><code>{
+  "code": -1,
+  "msg": "具体的错误信息",
+  "data": null
+}</code></pre>
+        </div>
+    </div>
+
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<div class="test-area">
+        <h3>在线测试</h3>
+        <form id="api-test-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记中的" 设置-关于"中查看api="" token"="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/asset/getDocImageAssets" readonly="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-params">请求参数 (JSON):</label>
+                <textarea id="api-params">{
+  "id": "输入文档块的 ID"
+}</textarea>
+            </div>
+
+            <button type="submit" class="btn">发送请求</button>
+        </form>
+
+        <div id="api-result" class="result"></div>
+    </div>
+
+    <div class="nav-links">
+        <a href="../index.html">返回首页</a>
+        <a href="../pages/asset.html">返回 Asset API</a>
+        <a href="fullReindexAssetContent.html">上一个接口: 全量重建资源内容索引</a>
+        <a href="getFileAnnotation.html">下一个接口: 获取文件标注</a>
+    </div>
+
+    <script src="../api-tester.js"></script>
+
+ </body></html>

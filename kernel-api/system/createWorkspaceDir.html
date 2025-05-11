@@ -1,0 +1,105 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/system/createWorkspaceDir"> <!-- API Endpoint Meta Tag -->
+    <title>创建工作空间目录 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <h1>创建工作空间目录 (createWorkspaceDir)</h1>
+        <nav>
+            <a href="../index.html">首页</a> | 
+            <a href="index.html">System API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/workspace.go#L80" target="_blank">GitHub Source (workspace.go)</a>
+        </nav>
+    </header>
+    <main>
+        <section id="description">
+            <h2>功能描述</h2>
+            <p>此 API 端点 <code>POST /api/system/createWorkspaceDir</code> 用于创建一个新的目录作为思源笔记的工作空间，并将其路径添加到已知的工作空间列表中。</p>
+            <p>如果指定的目录已存在，则不会重新创建，但仍会将其路径添加到工作空间列表中（如果尚未存在于列表末尾）。</p>
+            <p><strong>重要提示：</strong>此 API 仅负责创建指定的目录本身并更新工作空间列表文件 (<code>workspace.json</code>)。它 <strong>不会</strong> 自动创建工作空间内部所需的 <code>conf</code>、<code>data</code> 等子目录和配置文件。如果需要一个功能完整的新工作空间，可能需要结合其他操作或 API。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体必须是 JSON 格式，包含以下参数：</p>
+            <ul>
+                <li><code>path</code> (string): <strong>必填</strong>。要创建或添加为工作空间的目录的绝对路径。路径名称需要符合思源笔记对工作空间名称的规范（例如，不能包含 "conf", "data" 等，长度不能过长）。</li>
+            </ul>
+            <p><strong>请求示例:</strong></p>
+            <pre><code class="language-json">
+{
+  "path": "/path/to/create/new_siyuan_workspace"
+}
+            </code></pre>
+        </section>
+
+        <section id="response-format">
+            <h2>响应结果</h2>
+            <p>成功的请求将返回一个 JSON 对象，<code>code</code> 为 0，<code>data</code> 为 <code>null</code>。</p>
+            <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": null
+}
+            </code></pre>
+            <p>如果操作失败（例如路径名称非法、无法创建目录、无法读写工作空间列表文件等），将返回非 0 的 <code>code</code> 和具体的错误信息 <code>msg</code>。</p>
+            <pre><code class="language-json">
+{
+  "code": -1,
+  "msg": "This workspace name is not allowed, please use another name", // 示例错误信息
+  "data": null
+}
+            </code></pre>
+             <pre><code class="language-json">
+{
+  "code": -1,
+  "msg": "create workspace dir [/path/to/create/...] failed: permission denied", // 示例错误信息
+  "data": null
+}
+            </code></pre>
+        </section>
+
+        <section id="online-testing">
+            <h2>在线测试</h2>
+            <p>您可以在下方输入要创建或添加的工作空间目录的绝对路径进行在线测试。</p>
+            <div class="api-tester">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="请输入您的 API Token (可选)" value=""><br>
+
+                <label for="endpoint">Endpoint:</label>
+                <input type="text" id="endpoint" value="/api/system/createWorkspaceDir" readonly=""><br>
+
+                <label for="method">Method:</label>
+                <input type="text" id="method" value="POST" readonly=""><br>
+
+                <label for="params">Parameters (JSON):</label><br>
+                <textarea id="params" rows="4" placeholder="{
+  &quot;path&quot;: &quot;&quot;
+}"></textarea><br>
+
+                <button onclick="sendRequest()">发送请求</button>
+
+                <h3>响应结果:</h3>
+                <pre id="response-output"></pre>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>思源笔记 API 文档 | 最后更新时间：<span id="last-updated"></span></p>
+    </footer>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        // 更新最后更新时间
+        document.getElementById('last-updated').textContent = new Date().toLocaleString();
+    </script>
+
+ </body></html>

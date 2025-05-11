@@ -1,0 +1,1667 @@
+[
+  {
+    "category": "account",
+    "file": "account/checkActivationcode.html",
+    "path": "/api/account/checkActivationcode",
+    "name": "checkActivationcode",
+    "description": "/api/account/checkActivationcode 的接口描述待补充。",
+    "pinyin_full": "/api/account/checkactivationcode /api/account/checkactivationcode  de jie kou miao shu dai bu chong 。",
+    "pinyin_first": "/api/account/checkactivationcode /api/account/checkactivationcode  d j k m s d b c 。"
+  },
+  {
+    "category": "account",
+    "file": "account/deactivate.html",
+    "path": "/api/account/deactivate",
+    "name": "deactivate",
+    "description": "/api/account/deactivate 的接口描述待补充。",
+    "pinyin_full": "/api/account/deactivate /api/account/deactivate  de jie kou miao shu dai bu chong 。",
+    "pinyin_first": "/api/account/deactivate /api/account/deactivate  d j k m s d b c 。"
+  },
+  {
+    "category": "account",
+    "file": "account/login.html",
+    "path": "/api/account/login",
+    "name": "login",
+    "description": "/api/account/login 的接口描述待补充。",
+    "pinyin_full": "/api/account/login /api/account/login  de jie kou miao shu dai bu chong 。",
+    "pinyin_first": "/api/account/login /api/account/login  d j k m s d b c 。"
+  },
+  {
+    "category": "account",
+    "file": "account/startFreeTrial.html",
+    "path": "/api/account/startFreeTrial",
+    "name": "startFreeTrial",
+    "description": "/api/account/startFreeTrial 的接口描述待补充。",
+    "pinyin_full": "/api/account/startfreetrial /api/account/startfreetrial  de jie kou miao shu dai bu chong 。",
+    "pinyin_first": "/api/account/startfreetrial /api/account/startfreetrial  d j k m s d b c 。"
+  },
+  {
+    "category": "account",
+    "file": "account/useActivationcode.html",
+    "path": "/api/account/useActivationcode",
+    "name": "useActivationcode",
+    "description": "/api/account/useActivationcode 的接口描述待补充。",
+    "pinyin_full": "/api/account/useactivationcode /api/account/useactivationcode  de jie kou miao shu dai bu chong 。",
+    "pinyin_first": "/api/account/useactivationcode /api/account/useactivationcode  d j k m s d b c 。"
+  },
+  {
+    "category": "ai",
+    "file": "ai/chatGPT.html",
+    "path": "/api/ai/chatGPT",
+    "name": "基础 AI 对话",
+    "description": "向配置好的 AI 服务（目前主要指 OpenAI ChatGPT 或兼容接口）发送文本消息，并获取 AI 的回复。需要先在设置中配置好 AI 服务。",
+    "pinyin_full": "/api/ai/chatgpt  xiang pei zhi hao de  ai  fu wu （ mu qian zhu yao zhi  openai chatgpt  huo jian rong jie kou ） fa song wen ben xiao xi ， bing huo qu  ai  de hui fu 。 xu yao xian zai she zhi zhong pei zhi hao  ai  fu wu 。",
+    "pinyin_first": "/api/ai/chatgpt  x p z h d  ai  f w （ m q z y z  openai chatgpt  h j r j k ） f s w b x x ， b h q  ai  d h f 。 x y x z s z z p z h  ai  f w 。"
+  },
+  {
+    "category": "ai",
+    "file": "ai/chatGPTWithAction.html",
+    "path": "/api/ai/chatGPTWithAction",
+    "name": "带动作的 AI 对话",
+    "description": "向配置好的 AI 服务发送消息，并可以指定对一组块（通过 ID）执行特定的动作（如总结、润色、翻译等）。",
+    "pinyin_full": "/api/ai/chatgptwithaction  xiang pei zhi hao de  ai  fu wu fa song xiao xi ， bing ke yi zhi ding dui yi zu kuai （ tong guo  id） zhi xing te ding de dong zuo （ ru zong jie 、 run se 、 fan yi deng ）。",
+    "pinyin_first": "/api/ai/chatgptwithaction  x p z h d  ai  f w f s x x ， b k y z d d y z k （ t g  id） z x t d d d z （ r z j 、 r s 、 f y d ）。"
+  },
+  {
+    "category": "archive",
+    "file": "archive/unzip.html",
+    "path": "/api/archive/unzip",
+    "name": "解压文件",
+    "description": "解压一个指定的压缩文件到指定目录。",
+    "pinyin_full": "/api/archive/unzip  jie ya yi ge zhi ding de ya suo wen jian dao zhi ding mu lu 。",
+    "pinyin_first": "/api/archive/unzip  j y y g z d d y s w j d z d m l 。"
+  },
+  {
+    "category": "archive",
+    "file": "archive/zip.html",
+    "path": "/api/archive/zip",
+    "name": "压缩文件",
+    "description": "将指定的文件或目录压缩成一个 zip 文件。",
+    "pinyin_full": "/api/archive/zip  jiang zhi ding de wen jian huo mu lu ya suo cheng yi ge  zip  wen jian 。",
+    "pinyin_first": "/api/archive/zip  j z d d w j h m l y s c y g  zip  w j 。"
+  },
+  {
+    "category": "asset",
+    "file": "asset/fullReindexAssetContent.html",
+    "path": "/api/asset/fullReindexAssetContent",
+    "name": "全量重建资源内容索引",
+    "description": "对工作空间内的所有资源文件（assets 目录）执行全量的内容索引重建。这是一个耗时操作，通常在索引出现问题或需要强制更新时使用。",
+    "pinyin_full": "/api/asset/fullreindexassetcontent  dui gong zuo kong jian nei de suo you zi yuan wen jian （assets  mu lu ） zhi xing quan liang de nei rong suo yin chong jian 。 zhe shi yi ge hao shi cao zuo ， tong chang zai suo yin chu xian wen ti huo xu yao qiang zhi geng xin shi shi yong 。",
+    "pinyin_first": "/api/asset/fullreindexassetcontent  d g z k j n d s y z y w j （assets  m l ） z x q l d n r s y c j 。 z s y g h s c z ， t c z s y c x w t h x y q z g x s s y 。"
+  },
+  {
+    "category": "asset",
+    "file": "asset/getDocImageAssets.html",
+    "path": "/api/asset/getDocImageAssets",
+    "name": "getDocImageAssets",
+    "description": "获取指定文档块直接引用的所有图片类型的资源文件路径列表。",
+    "pinyin_full": "/api/asset/getdocimageassets  huo qu zhi ding wen dang kuai zhi jie yin yong de suo you tu pian lei xing de zi yuan wen jian lu jing lie biao 。",
+    "pinyin_first": "/api/asset/getdocimageassets  h q z d w d k z j y y d s y t p l x d z y w j l j l b 。"
+  },
+  {
+    "category": "asset",
+    "file": "asset/getFileAnnotation.html",
+    "path": "/api/asset/getFileAnnotation",
+    "name": "getFileAnnotation",
+    "description": "获取指定资源文件的标注信息 (PDF 文件等)。",
+    "pinyin_full": "/api/asset/getfileannotation  huo qu zhi ding zi yuan wen jian de biao zhu xin xi  (pdf  wen jian deng )。",
+    "pinyin_first": "/api/asset/getfileannotation  h q z d z y w j d b z x x  (pdf  w j d )。"
+  },
+  {
+    "category": "asset",
+    "file": "asset/getImageOCRText.html",
+    "path": "/api/asset/getImageOCRText",
+    "name": "获取图片 OCR 文本",
+    "description": "获取指定图片资源文件中包含的 OCR 文本（如果存在）。",
+    "pinyin_full": "/api/asset/getimageocrtext  huo qu zhi ding tu pian zi yuan wen jian zhong bao han de  ocr  wen ben （ ru guo cun zai ）。",
+    "pinyin_first": "/api/asset/getimageocrtext  h q z d t p z y w j z b h d  ocr  w b （ r g c z ）。"
+  },
+  {
+    "category": "asset",
+    "file": "asset/getMissingAssets.html",
+    "path": "/api/asset/getMissingAssets",
+    "name": "获取丢失资源",
+    "description": "获取工作空间中被引用但实际文件已丢失的资源列表。",
+    "pinyin_full": "/api/asset/getmissingassets  huo qu gong zuo kong jian zhong bei yin yong dan shi ji wen jian yi diu shi de zi yuan lie biao 。",
+    "pinyin_first": "/api/asset/getmissingassets  h q g z k j z b y y d s j w j y d s d z y l b 。"
+  },
+  {
+    "category": "asset",
+    "file": "asset/getUnusedAssets.html",
+    "path": "/api/asset/getUnusedAssets",
+    "name": "getUnusedAssets",
+    "description": "/api/asset/getUnusedAssets 的接口描述待补充。",
+    "pinyin_full": "/api/asset/getunusedassets /api/asset/getunusedassets  de jie kou miao shu dai bu chong 。",
+    "pinyin_first": "/api/asset/getunusedassets /api/asset/getunusedassets  d j k m s d b c 。"
+  },
+  {
+    "category": "asset",
+    "file": "asset/insertLocalAssets.html",
+    "path": "/api/asset/insertLocalAssets",
+    "name": "插入本地资源",
+    "description": "将本地文件系统中的一个或多个文件复制到思源笔记的 assets 目录，并返回它们在笔记中可用的资源链接。",
+    "pinyin_full": "/api/asset/insertlocalassets  jiang ben di wen jian xi tong zhong de yi ge huo duo ge wen jian fu zhi dao si yuan bi ji de  assets  mu lu ， bing fan hui ta men zai bi ji zhong ke yong de zi yuan lian jie 。",
+    "pinyin_first": "/api/asset/insertlocalassets  j b d w j x t z d y g h d g w j f z d s y b j d  assets  m l ， b f h t m z b j z k y d z y l j 。"
+  },
+  {
+    "category": "asset",
+    "file": "asset/ocr.html",
+    "path": "/api/asset/ocr",
+    "name": "OCR 识别",
+    "description": "对指定的图片资源文件执行 OCR（光学字符识别），并将识别出的文本保存起来，以便后续搜索和获取。",
+    "pinyin_full": "/api/asset/ocr  dui zhi ding de tu pian zi yuan wen jian zhi xing  ocr（ guang xue zi fu shi bie ）， bing jiang shi bie chu de wen ben bao cun qi lai ， yi bian hou xu sou suo he huo qu 。",
+    "pinyin_first": "/api/asset/ocr  d z d d t p z y w j z x  ocr（ g x z f s b ）， b j s b c d w b b c q l ， y b h x s s h h q 。"
+  },
+  {
+    "category": "asset",
+    "file": "asset/removeUnusedAsset.html",
+    "path": "/api/asset/removeUnusedAsset",
+    "name": "删除单个未使用资源",
+    "description": "删除一个指定的、未被任何文档引用的资源文件。",
+    "pinyin_full": "/api/asset/removeunusedasset  shan chu yi ge zhi ding de 、 wei bei ren he wen dang yin yong de zi yuan wen jian 。",
+    "pinyin_first": "/api/asset/removeunusedasset  s c y g z d d 、 w b r h w d y y d z y w j 。"
+  },
+  {
+    "category": "asset",
+    "file": "asset/removeUnusedAssets.html",
+    "path": "/api/asset/removeUnusedAssets",
+    "name": "删除所有未使用资源",
+    "description": "删除工作空间中所有未被任何文档引用的资源文件。这是一个危险操作，请谨慎使用。",
+    "pinyin_full": "/api/asset/removeunusedassets  shan chu gong zuo kong jian zhong suo you wei bei ren he wen dang yin yong de zi yuan wen jian 。 zhe shi yi ge wei xian cao zuo ， qing jin shen shi yong 。",
+    "pinyin_first": "/api/asset/removeunusedassets  s c g z k j z s y w b r h w d y y d z y w j 。 z s y g w x c z ， q j s s y 。"
+  },
+  {
+    "category": "asset",
+    "file": "asset/renameAsset.html",
+    "path": "/api/asset/renameAsset",
+    "name": "重命名资源",
+    "description": "重命名一个指定的资源文件。同时会自动更新所有引用该资源的地方。",
+    "pinyin_full": "/api/asset/renameasset  zhong ming ming yi ge zhi ding de zi yuan wen jian 。 tong shi hui zi dong geng xin suo you yin yong gai zi yuan de di fang 。",
+    "pinyin_first": "/api/asset/renameasset  z m m y g z d d z y w j 。 t s h z d g x s y y y g z y d d f 。"
+  },
+  {
+    "category": "asset",
+    "file": "asset/resolveAssetPath.html",
+    "path": "/api/asset/resolveAssetPath",
+    "name": "解析资源路径",
+    "description": "将相对于 assets 目录的资源路径解析为其在当前操作系统上的绝对路径。",
+    "pinyin_full": "/api/asset/resolveassetpath  jiang xiang dui yu  assets  mu lu de zi yuan lu jing jie xi wei qi zai dang qian cao zuo xi tong shang de jue dui lu jing 。",
+    "pinyin_first": "/api/asset/resolveassetpath  j x d y  assets  m l d z y l j j x w q z d q c z x t s d j d l j 。"
+  },
+  {
+    "category": "asset",
+    "file": "asset/setFileAnnotation.html",
+    "path": "/api/asset/setFileAnnotation",
+    "name": "设置文件标注",
+    "description": "设置指定资源文件的标注信息 (通常用于 PDF 文件)。",
+    "pinyin_full": "/api/asset/setfileannotation  she zhi zhi ding zi yuan wen jian de biao zhu xin xi  ( tong chang yong yu  pdf  wen jian )。",
+    "pinyin_first": "/api/asset/setfileannotation  s z z d z y w j d b z x x  ( t c y y  pdf  w j )。"
+  },
+  {
+    "category": "asset",
+    "file": "asset/setImageOCRText.html",
+    "path": "/api/asset/setImageOCRText",
+    "name": "设置图片 OCR 文本",
+    "description": "设置指定图片资源文件的 OCR 文本内容。这通常用于手动修正或添加 OCR 结果。",
+    "pinyin_full": "/api/asset/setimageocrtext  she zhi zhi ding tu pian zi yuan wen jian de  ocr  wen ben nei rong 。 zhe tong chang yong yu shou dong xiu zheng huo tian jia  ocr  jie guo 。",
+    "pinyin_first": "/api/asset/setimageocrtext  s z z d t p z y w j d  ocr  w b n r 。 z t c y y s d x z h t j  ocr  j g 。"
+  },
+  {
+    "category": "asset",
+    "file": "asset/statAsset.html",
+    "path": "/api/asset/statAsset",
+    "name": "获取资源统计信息",
+    "description": "获取指定资源文件的统计信息，如大小、修改时间等。",
+    "pinyin_full": "/api/asset/statasset  huo qu zhi ding zi yuan wen jian de tong ji xin xi ， ru da xiao 、 xiu gai shi jian deng 。",
+    "pinyin_first": "/api/asset/statasset  h q z d z y w j d t j x x ， r d x 、 x g s j d 。"
+  },
+  {
+    "category": "asset",
+    "file": "asset/upload.html",
+    "path": "/api/asset/upload",
+    "name": "上传资源",
+    "description": "上传一个或多个文件到指定的文档块关联的 assets 目录。通常用于通过 HTTP 表单上传文件。",
+    "pinyin_full": "/api/asset/upload  shang chuan yi ge huo duo ge wen jian dao zhi ding de wen dang kuai guan lian de  assets  mu lu 。 tong chang yong yu tong guo  http  biao dan shang chuan wen jian 。",
+    "pinyin_first": "/api/asset/upload  s c y g h d g w j d z d d w d k g l d  assets  m l 。 t c y y t g  http  b d s c w j 。"
+  },
+  {
+    "category": "asset",
+    "file": "asset/uploadCloud.html",
+    "path": "/api/asset/uploadCloud",
+    "name": "上传到云端",
+    "description": "将本地资源文件上传到配置的云存储（如 S3）。通常用于云端同步相关的操作。",
+    "pinyin_full": "/api/asset/uploadcloud  jiang ben di zi yuan wen jian shang chuan dao pei zhi de yun cun chu （ ru  s3）。 tong chang yong yu yun duan tong bu xiang guan de cao zuo 。",
+    "pinyin_first": "/api/asset/uploadcloud  j b d z y w j s c d p z d y c c （ r  s3）。 t c y y y d t b x g d c z 。"
+  },
+  {
+    "category": "attr",
+    "file": "attr/batchGetBlockAttrs.html",
+    "path": "/api/attr/batchGetBlockAttrs",
+    "name": "批量获取块属性",
+    "description": "一次性获取多个指定块的所有命名属性。",
+    "pinyin_full": "/api/attr/batchgetblockattrs  yi ci xing huo qu duo ge zhi ding kuai de suo you ming ming shu xing 。",
+    "pinyin_first": "/api/attr/batchgetblockattrs  y c x h q d g z d k d s y m m s x 。"
+  },
+  {
+    "category": "attr",
+    "file": "attr/getBlockAttrs.html",
+    "path": "/api/attr/getBlockAttrs",
+    "name": "getBlockAttrs",
+    "description": "/api/attr/getBlockAttrs 的接口描述待补充。",
+    "pinyin_full": "/api/attr/getblockattrs /api/attr/getblockattrs  de jie kou miao shu dai bu chong 。",
+    "pinyin_first": "/api/attr/getblockattrs /api/attr/getblockattrs  d j k m s d b c 。"
+  },
+  {
+    "category": "attr",
+    "file": "attr/getBookmarkLabels.html",
+    "path": "/api/attr/getBookmarkLabels",
+    "name": "获取书签标签",
+    "description": "获取当前工作空间中所有用作书签的标签（即 `bookmark` 属性非空的块的 `tag` 属性值）。",
+    "pinyin_full": "/api/attr/getbookmarklabels  huo qu dang qian gong zuo kong jian zhong suo you yong zuo shu qian de biao qian （ ji  `bookmark`  shu xing fei kong de kuai de  `tag`  shu xing zhi ）。",
+    "pinyin_first": "/api/attr/getbookmarklabels  h q d q g z k j z s y y z s q d b q （ j  `bookmark`  s x f k d k d  `tag`  s x z ）。"
+  },
+  {
+    "category": "attr",
+    "file": "attr/setBlockAttrs.html",
+    "path": "/api/attr/setBlockAttrs",
+    "name": "setBlockAttrs",
+    "description": "设置指定块的自定义属性。可以添加新属性、更新现有属性值，或者通过设置空值来删除属性。",
+    "pinyin_full": "/api/attr/setblockattrs  she zhi zhi ding kuai de zi ding yi shu xing 。 ke yi tian jia xin shu xing 、 geng xin xian you shu xing zhi ， huo zhe tong guo she zhi kong zhi lai shan chu shu xing 。",
+    "pinyin_first": "/api/attr/setblockattrs  s z z d k d z d y s x 。 k y t j x s x 、 g x x y s x z ， h z t g s z k z l s c s x 。"
+  },
+  {
+    "category": "av",
+    "file": "av/addAttributeViewBlocks.html",
+    "path": "/api/av/addAttributeViewBlocks",
+    "name": "添加属性视图块",
+    "description": "向指定的属性视图（数据库）中添加块。这些块将成为数据库的行。",
+    "pinyin_full": "/api/av/addattributeviewblocks  xiang zhi ding de shu xing shi tu （ shu ju ku ） zhong tian jia kuai 。 zhe xie kuai jiang cheng wei shu ju ku de xing 。",
+    "pinyin_first": "/api/av/addattributeviewblocks  x z d d s x s t （ s j k ） z t j k 。 z x k j c w s j k d x 。"
+  },
+  {
+    "category": "av",
+    "file": "av/addAttributeViewKey.html",
+    "path": "/api/av/addAttributeViewKey",
+    "name": "添加属性视图列 (Key)",
+    "description": "向指定的属性视图（数据库）中添加一个新的列（Key）。",
+    "pinyin_full": "/api/av/addattributeviewkey  xiang zhi ding de shu xing shi tu （ shu ju ku ） zhong tian jia yi ge xin de lie （key）。",
+    "pinyin_first": "/api/av/addattributeviewkey  x z d d s x s t （ s j k ） z t j y g x d l （key）。"
+  },
+  {
+    "category": "av",
+    "file": "av/appendAttributeViewDetachedBlocksWithValues.html",
+    "path": "/api/av/appendAttributeViewDetachedBlocksWithValues",
+    "name": "添加游离块并带值到属性视图",
+    "description": "创建新的游离块（独立块），并将其添加到指定的属性视图中，同时为这些新块设置属性值。",
+    "pinyin_full": "/api/av/appendattributeviewdetachedblockswithvalues  chuang jian xin de you li kuai （ du li kuai ）， bing jiang qi tian jia dao zhi ding de shu xing shi tu zhong ， tong shi wei zhe xie xin kuai she zhi shu xing zhi 。",
+    "pinyin_first": "/api/av/appendattributeviewdetachedblockswithvalues  c j x d y l k （ d l k ）， b j q t j d z d d s x s t z ， t s w z x x k s z s x z 。"
+  },
+  {
+    "category": "av",
+    "file": "av/duplicateAttributeViewBlock.html",
+    "path": "/api/av/duplicateAttributeViewBlock",
+    "name": "复制属性视图块",
+    "description": "复制指定的属性视图块（行）。",
+    "pinyin_full": "/api/av/duplicateattributeviewblock  fu zhi zhi ding de shu xing shi tu kuai （ xing ）。",
+    "pinyin_first": "/api/av/duplicateattributeviewblock  f z z d d s x s t k （ x ）。"
+  },
+  {
+    "category": "av",
+    "file": "av/getAttributeView.html",
+    "path": "/api/av/getAttributeView",
+    "name": "获取属性视图",
+    "description": "获取指定 ID 的属性视图（数据库）的结构和配置信息，但不包含其数据行。",
+    "pinyin_full": "/api/av/getattributeview  huo qu zhi ding  id  de shu xing shi tu （ shu ju ku ） de jie gou he pei zhi xin xi ， dan bu bao han qi shu ju xing 。",
+    "pinyin_first": "/api/av/getattributeview  h q z d  id  d s x s t （ s j k ） d j g h p z x x ， d b b h q s j x 。"
+  },
+  {
+    "category": "av",
+    "file": "av/getAttributeViewFilterSort.html",
+    "path": "/api/av/getAttributeViewFilterSort",
+    "name": "获取属性视图的过滤和排序",
+    "description": "获取指定属性视图（数据库）特定视图（View）的过滤（Filter）和排序（Sort）规则。",
+    "pinyin_full": "/api/av/getattributeviewfiltersort  huo qu zhi ding shu xing shi tu （ shu ju ku ） te ding shi tu （view） de guo lü （filter） he pai xu （sort） gui ze 。",
+    "pinyin_first": "/api/av/getattributeviewfiltersort  h q z d s x s t （ s j k ） t d s t （view） d g l （filter） h p x （sort） g z 。"
+  },
+  {
+    "category": "av",
+    "file": "av/getAttributeViewKeys.html",
+    "path": "/api/av/getAttributeViewKeys",
+    "name": "获取属性视图所有列 (Keys)",
+    "description": "获取指定属性视图（数据库）的所有列 (Key) 的信息。",
+    "pinyin_full": "/api/av/getattributeviewkeys  huo qu zhi ding shu xing shi tu （ shu ju ku ） de suo you lie  (key)  de xin xi 。",
+    "pinyin_first": "/api/av/getattributeviewkeys  h q z d s x s t （ s j k ） d s y l  (key)  d x x 。"
+  },
+  {
+    "category": "av",
+    "file": "av/getAttributeViewKeysByAvID.html",
+    "path": "/api/av/getAttributeViewKeysByAvID",
+    "name": "通过 avID 获取属性视图列 (Keys)",
+    "description": "获取指定属性视图（数据库）的所有列 (Key) 的信息。根据 Go 源码，此接口与 `/api/av/getAttributeViewKeys` 功能高度相似，可能存在冗余，主要区别在于请求参数字段名不同 (`avID` vs `id`)。",
+    "pinyin_full": "/api/av/getattributeviewkeysbyavid  huo qu zhi ding shu xing shi tu （ shu ju ku ） de suo you lie  (key)  de xin xi 。 gen ju  go  yuan ma ， ci jie kou yu  `/api/av/getattributeviewkeys`  gong neng gao du xiang si ， ke neng cun zai rong yu ， zhu yao qu bie zai yu qing qiu can shu zi duan ming bu tong  (`avid` vs `id`)。",
+    "pinyin_first": "/api/av/getattributeviewkeysbyavid  h q z d s x s t （ s j k ） d s y l  (key)  d x x 。 g j  go  y m ， c j k y  `/api/av/getattributeviewkeys`  g n g d x s ， k n c z r y ， z y q b z y q q c s z d m b t  (`avid` vs `id`)。"
+  },
+  {
+    "category": "av",
+    "file": "av/getAttributeViewPrimaryKeyValues.html",
+    "path": "/api/av/getAttributeViewPrimaryKeyValues",
+    "name": "获取属性视图主键列值",
+    "description": "获取指定属性视图（数据库）的主键列（通常是文本列）的值，支持分页和关键词搜索。常用于关系列选择关联块。",
+    "pinyin_full": "/api/av/getattributeviewprimarykeyvalues  huo qu zhi ding shu xing shi tu （ shu ju ku ） de zhu jian lie （ tong chang shi wen ben lie ） de zhi ， zhi chi fen ye he guan jian ci sou suo 。 chang yong yu guan xi lie xuan ze guan lian kuai 。",
+    "pinyin_first": "/api/av/getattributeviewprimarykeyvalues  h q z d s x s t （ s j k ） d z j l （ t c s w b l ） d z ， z c f y h g j c s s 。 c y y g x l x z g l k 。"
+  },
+  {
+    "category": "av",
+    "file": "av/getMirrorDatabaseBlocks.html",
+    "path": "/api/av/getMirrorDatabaseBlocks",
+    "name": "获取镜像数据库块",
+    "description": "获取指定属性视图（数据库）的所有镜像块（Mirror Blocks）的 ID 列表。",
+    "pinyin_full": "/api/av/getmirrordatabaseblocks  huo qu zhi ding shu xing shi tu （ shu ju ku ） de suo you jing xiang kuai （mirror blocks） de  id  lie biao 。",
+    "pinyin_first": "/api/av/getmirrordatabaseblocks  h q z d s x s t （ s j k ） d s y j x k （mirror blocks） d  id  l b 。"
+  },
+  {
+    "category": "av",
+    "file": "av/removeAttributeViewBlocks.html",
+    "path": "/api/av/removeAttributeViewBlocks",
+    "name": "移除属性视图块",
+    "description": "从指定的属性视图（数据库）中移除块（行）。",
+    "pinyin_full": "/api/av/removeattributeviewblocks  cong zhi ding de shu xing shi tu （ shu ju ku ） zhong yi chu kuai （ xing ）。",
+    "pinyin_first": "/api/av/removeattributeviewblocks  c z d d s x s t （ s j k ） z y c k （ x ）。"
+  },
+  {
+    "category": "av",
+    "file": "av/removeAttributeViewKey.html",
+    "path": "/api/av/removeAttributeViewKey",
+    "name": "移除属性视图列 (Key)",
+    "description": "从指定的属性视图（数据库）中移除列 (Key)。",
+    "pinyin_full": "/api/av/removeattributeviewkey  cong zhi ding de shu xing shi tu （ shu ju ku ） zhong yi chu lie  (key)。",
+    "pinyin_first": "/api/av/removeattributeviewkey  c z d d s x s t （ s j k ） z y c l  (key)。"
+  },
+  {
+    "category": "av",
+    "file": "av/renderAttributeView.html",
+    "path": "/api/av/renderAttributeView",
+    "name": "renderAttributeView",
+    "description": "渲染指定的属性视图，返回其结构和数据。支持分页和过滤。",
+    "pinyin_full": "/api/av/renderattributeview  xuan ran zhi ding de shu xing shi tu ， fan hui qi jie gou he shu ju 。 zhi chi fen ye he guo lü 。",
+    "pinyin_first": "/api/av/renderattributeview  x r z d d s x s t ， f h q j g h s j 。 z c f y h g l 。"
+  },
+  {
+    "category": "av",
+    "file": "av/renderHistoryAttributeView.html",
+    "path": "/api/av/renderHistoryAttributeView",
+    "name": "renderHistoryAttributeView",
+    "description": "根据指定的属性视图 ID 和历史记录时间戳，渲染该属性视图在特定历史时刻的状态和数据。",
+    "pinyin_full": "/api/av/renderhistoryattributeview  gen ju zhi ding de shu xing shi tu  id  he li shi ji lu shi jian chuo ， xuan ran gai shu xing shi tu zai te ding li shi shi ke de zhuang tai he shu ju 。",
+    "pinyin_first": "/api/av/renderhistoryattributeview  g j z d d s x s t  id  h l s j l s j c ， x r g s x s t z t d l s s k d z t h s j 。"
+  },
+  {
+    "category": "av",
+    "file": "av/renderSnapshotAttributeView.html",
+    "path": "/api/av/renderSnapshotAttributeView",
+    "name": "renderSnapshotAttributeView",
+    "description": "根据指定的属性视图 ID 和仓库快照 (Snapshot) 索引，渲染该属性视图在特定快照中的状态和数据。",
+    "pinyin_full": "/api/av/rendersnapshotattributeview  gen ju zhi ding de shu xing shi tu  id  he cang ku kuai zhao  (snapshot)  suo yin ， xuan ran gai shu xing shi tu zai te ding kuai zhao zhong de zhuang tai he shu ju 。",
+    "pinyin_first": "/api/av/rendersnapshotattributeview  g j z d d s x s t  id  h c k k z  (snapshot)  s y ， x r g s x s t z t d k z z d z t h s j 。"
+  },
+  {
+    "category": "av",
+    "file": "av/searchAttributeView.html",
+    "path": "/api/av/searchAttributeView",
+    "name": "searchAttributeView",
+    "description": "根据关键词搜索属性视图 (Attribute Views)。可以指定需要排除的属性视图。",
+    "pinyin_full": "/api/av/searchattributeview  gen ju guan jian ci sou suo shu xing shi tu  (attribute views)。 ke yi zhi ding xu yao pai chu de shu xing shi tu 。",
+    "pinyin_first": "/api/av/searchattributeview  g j g j c s s s x s t  (attribute views)。 k y z d x y p c d s x s t 。"
+  },
+  {
+    "category": "av",
+    "file": "av/searchAttributeViewNonRelationKey.html",
+    "path": "/api/av/searchAttributeViewNonRelationKey",
+    "name": "searchAttributeViewNonRelationKey",
+    "description": "在指定的属性视图 (Attribute View) 中，根据关键词搜索非关系类型的列 (Key)。",
+    "pinyin_full": "/api/av/searchattributeviewnonrelationkey  zai zhi ding de shu xing shi tu  (attribute view)  zhong ， gen ju guan jian ci sou suo fei guan xi lei xing de lie  (key)。",
+    "pinyin_first": "/api/av/searchattributeviewnonrelationkey  z z d d s x s t  (attribute view)  z ， g j g j c s s f g x l x d l  (key)。"
+  },
+  {
+    "category": "av",
+    "file": "av/searchAttributeViewRelationKey.html",
+    "path": "/api/av/searchAttributeViewRelationKey",
+    "name": "searchAttributeViewRelationKey",
+    "description": "在指定的属性视图 (Attribute View) 中，根据关键词搜索关系类型的列 (Key)。关系列用于链接其他属性视图。",
+    "pinyin_full": "/api/av/searchattributeviewrelationkey  zai zhi ding de shu xing shi tu  (attribute view)  zhong ， gen ju guan jian ci sou suo guan xi lei xing de lie  (key)。 guan xi lie yong yu lian jie qi ta shu xing shi tu 。",
+    "pinyin_first": "/api/av/searchattributeviewrelationkey  z z d d s x s t  (attribute view)  z ， g j g j c s s g x l x d l  (key)。 g x l y y l j q t s x s t 。"
+  },
+  {
+    "category": "av",
+    "file": "av/setAttributeViewBlockAttr.html",
+    "path": "/api/av/setAttributeViewBlockAttr",
+    "name": "setAttributeViewBlockAttr",
+    "description": "更新属性视图 (Attribute View) 中指定块（行）的某个属性（单元格）的值。",
+    "pinyin_full": "/api/av/setattributeviewblockattr  geng xin shu xing shi tu  (attribute view)  zhong zhi ding kuai （ xing ） de mou ge shu xing （ dan yuan ge ） de zhi 。",
+    "pinyin_first": "/api/av/setattributeviewblockattr  g x s x s t  (attribute view)  z z d k （ x ） d m g s x （ d y g ） d z 。"
+  },
+  {
+    "category": "av",
+    "file": "av/setDatabaseBlockView.html",
+    "path": "/api/av/setDatabaseBlockView",
+    "name": "setDatabaseBlockView",
+    "description": "设置数据库块（属性视图块）的默认显示视图 (View)。当用户打开该属性视图时，将默认展示这里设置的视图。",
+    "pinyin_full": "/api/av/setdatabaseblockview  she zhi shu ju ku kuai （ shu xing shi tu kuai ） de mo ren xian shi shi tu  (view)。 dang yong hu da kai gai shu xing shi tu shi ， jiang mo ren zhan shi zhe li she zhi de shi tu 。",
+    "pinyin_first": "/api/av/setdatabaseblockview  s z s j k k （ s x s t k ） d m r x s s t  (view)。 d y h d k g s x s t s ， j m r z s z l s z d s t 。"
+  },
+  {
+    "category": "av",
+    "file": "av/sortAttributeViewKey.html",
+    "path": "/api/av/sortAttributeViewKey",
+    "name": "sortAttributeViewKey",
+    "description": "对指定属性视图 (Attribute View) 中的列 (Key) 进行排序，改变它们在界面上的显示顺序。",
+    "pinyin_full": "/api/av/sortattributeviewkey  dui zhi ding shu xing shi tu  (attribute view)  zhong de lie  (key)  jin xing pai xu ， gai bian ta men zai jie mian shang de xian shi shun xu 。",
+    "pinyin_first": "/api/av/sortattributeviewkey  d z d s x s t  (attribute view)  z d l  (key)  j x p x ， g b t m z j m s d x s s x 。"
+  },
+  {
+    "category": "av",
+    "file": "av/sortAttributeViewViewKey.html",
+    "path": "/api/av/sortAttributeViewViewKey",
+    "name": "sortAttributeViewViewKey",
+    "description": "对指定属性视图 (Attribute View) 的特定视图 (View) 中的列 (Key) 进行排序，改变它们在该特定视图下的显示顺序。这允许不同的视图（如表格、列表）拥有独立的列排序。",
+    "pinyin_full": "/api/av/sortattributeviewviewkey  dui zhi ding shu xing shi tu  (attribute view)  de te ding shi tu  (view)  zhong de lie  (key)  jin xing pai xu ， gai bian ta men zai gai te ding shi tu xia de xian shi shun xu 。 zhe yun xu bu tong de shi tu （ ru biao ge 、 lie biao ） yong you du li de lie pai xu 。",
+    "pinyin_first": "/api/av/sortattributeviewviewkey  d z d s x s t  (attribute view)  d t d s t  (view)  z d l  (key)  j x p x ， g b t m z g t d s t x d x s s x 。 z y x b t d s t （ r b g 、 l b ） y y d l d l p x 。"
+  },
+  {
+    "category": "bazaar",
+    "file": "bazaar/getBazaarPlugin.html",
+    "path": "/api/bazaar/getBazaarPlugin",
+    "name": "获取集市插件列表",
+    "description": "从官方集市获取可用的插件列表。可以通过关键词进行筛选。",
+    "pinyin_full": "/api/bazaar/getbazaarplugin  cong guan fang ji shi huo qu ke yong de cha jian lie biao 。 ke yi tong guo guan jian ci jin xing shai xuan 。",
+    "pinyin_first": "/api/bazaar/getbazaarplugin  c g f j s h q k y d c j l b 。 k y t g g j c j x s x 。"
+  },
+  {
+    "category": "bazaar",
+    "file": "bazaar/getInstalledPlugin.html",
+    "path": "/api/bazaar/getInstalledPlugin",
+    "name": "获取已安装插件列表",
+    "description": "获取当前工作空间中已安装的插件列表。可以通过关键词进行筛选。",
+    "pinyin_full": "/api/bazaar/getinstalledplugin  huo qu dang qian gong zuo kong jian zhong yi an zhuang de cha jian lie biao 。 ke yi tong guo guan jian ci jin xing shai xuan 。",
+    "pinyin_first": "/api/bazaar/getinstalledplugin  h q d q g z k j z y a z d c j l b 。 k y t g g j c j x s x 。"
+  },
+  {
+    "category": "bazaar",
+    "file": "bazaar/uninstallBazaarTemplate.html",
+    "path": "/api/bazaar/uninstallBazaarTemplate",
+    "name": "卸载集市模板",
+    "description": "卸载指定的集市模板。",
+    "pinyin_full": "/api/bazaar/uninstallbazaartemplate  xie zai zhi ding de ji shi mu ban 。",
+    "pinyin_first": "/api/bazaar/uninstallbazaartemplate  x z z d d j s m b 。"
+  },
+  {
+    "category": "bazaar",
+    "file": "bazaar/uninstallBazaarTheme.html",
+    "path": "/api/bazaar/uninstallBazaarTheme",
+    "name": "卸载集市主题",
+    "description": "卸载指定的集市主题。",
+    "pinyin_full": "/api/bazaar/uninstallbazaartheme  xie zai zhi ding de ji shi zhu ti 。",
+    "pinyin_first": "/api/bazaar/uninstallbazaartheme  x z z d d j s z t 。"
+  },
+  {
+    "category": "bazaar",
+    "file": "bazaar/uninstallBazaarWidget.html",
+    "path": "/api/bazaar/uninstallBazaarWidget",
+    "name": "卸载集市挂件",
+    "description": "卸载指定的集市挂件。",
+    "pinyin_full": "/api/bazaar/uninstallbazaarwidget  xie zai zhi ding de ji shi gua jian 。",
+    "pinyin_first": "/api/bazaar/uninstallbazaarwidget  x z z d d j s g j 。"
+  },
+  {
+    "category": "block",
+    "file": "block/appendBlock.html",
+    "path": "/api/block/appendBlock",
+    "name": "追加块",
+    "description": "该接口用于在一个指定的父块内容的末尾追加一个新的块。",
+    "pinyin_full": "/api/block/appendblock  gai jie kou yong yu zai yi ge zhi ding de fu kuai nei rong de mo wei zhui jia yi ge xin de kuai 。",
+    "pinyin_first": "/api/block/appendblock  g j k y y z y g z d d f k n r d m w z j y g x d k 。"
+  },
+  {
+    "category": "block",
+    "file": "block/appendDailyNoteBlock.html",
+    "path": "/api/block/appendDailyNoteBlock",
+    "name": "appendDailyNoteBlock",
+    "description": "将指定的内容块（可以是 Markdown 或 DOM 字符串）追加到指定笔记本的当日日记文档的末尾。如果当日日记文档不存在，将自动创建。",
+    "pinyin_full": "/api/block/appenddailynoteblock  jiang zhi ding de nei rong kuai （ ke yi shi  markdown  huo  dom  zi fu chuan ） zhui jia dao zhi ding bi ji ben de dang ri ri ji wen dang de mo wei 。 ru guo dang ri ri ji wen dang bu cun zai ， jiang zi dong chuang jian 。",
+    "pinyin_first": "/api/block/appenddailynoteblock  j z d d n r k （ k y s  markdown  h  dom  z f c ） z j d z d b j b d d r r j w d d m w 。 r g d r r j w d b c z ， j z d c j 。"
+  },
+  {
+    "category": "block",
+    "file": "block/batchUpdateBlock.html",
+    "path": "/api/block/batchUpdateBlock",
+    "name": "批量更新块",
+    "description": "此接口用于在一个原子事务中批量更新多个块的内容。",
+    "pinyin_full": "/api/block/batchupdateblock  ci jie kou yong yu zai yi ge yuan zi shi wu zhong pi liang geng xin duo ge kuai de nei rong 。",
+    "pinyin_first": "/api/block/batchupdateblock  c j k y y z y g y z s w z p l g x d g k d n r 。"
+  },
+  {
+    "category": "block",
+    "file": "block/checkBlockRef.html",
+    "path": "/api/block/checkBlockRef",
+    "name": "检查块是否为引用 (`/api/block/checkBlockRef`)",
+    "description": "检查所提供的一组块 ID 是否均为引用块。",
+    "pinyin_full": "/api/block/checkblockref  jian cha suo ti gong de yi zu kuai  id  shi fou jun wei yin yong kuai 。",
+    "pinyin_first": "/api/block/checkblockref  j c s t g d y z k  id  s f j w y y k 。"
+  },
+  {
+    "category": "block",
+    "file": "block/foldBlock.html",
+    "path": "/api/block/foldBlock",
+    "name": "折叠块",
+    "description": "折叠指定的块，隐藏其子块内容。",
+    "pinyin_full": "/api/block/foldblock  zhe die zhi ding de kuai ， yin cang qi zi kuai nei rong 。",
+    "pinyin_first": "/api/block/foldblock  z d z d d k ， y c q z k n r 。"
+  },
+  {
+    "category": "block",
+    "file": "block/getBlockBreadcrumb.html",
+    "path": "/api/block/getBlockBreadcrumb",
+    "name": "获取块面包屑 (`/api/block/getBlockBreadcrumb`)",
+    "description": "获取指定块 ID 的面包屑路径信息，即从其根节点（通常是文档）到该块自身的路径节点列表。",
+    "pinyin_full": "/api/block/getblockbreadcrumb  huo qu zhi ding kuai  id  de mian bao xie lu jing xin xi ， ji cong qi gen jie dian （ tong chang shi wen dang ） dao gai kuai zi shen de lu jing jie dian lie biao 。",
+    "pinyin_first": "/api/block/getblockbreadcrumb  h q z d k  id  d m b x l j x x ， j c q g j d （ t c s w d ） d g k z s d l j j d l b 。"
+  },
+  {
+    "category": "block",
+    "file": "block/getBlockDOM.html",
+    "path": "/api/block/getBlockDOM",
+    "name": "获取块 DOM (`/api/block/getBlockDOM`)",
+    "description": "获取指定块 ID 对应的渲染后的 HTML DOM 字符串。",
+    "pinyin_full": "/api/block/getblockdom  huo qu zhi ding kuai  id  dui ying de xuan ran hou de  html dom  zi fu chuan 。",
+    "pinyin_first": "/api/block/getblockdom  h q z d k  id  d y d x r h d  html dom  z f c 。"
+  },
+  {
+    "category": "block",
+    "file": "block/getBlockInfo.html",
+    "path": "/api/block/getBlockInfo",
+    "name": "获取块信息",
+    "description": "获取指定块的基本信息，包括所属笔记本、文档路径、根文档 ID 及标题等。",
+    "pinyin_full": "/api/block/getblockinfo  huo qu zhi ding kuai de ji ben xin xi ， bao kuo suo shu bi ji ben 、 wen dang lu jing 、 gen wen dang  id  ji biao ti deng 。",
+    "pinyin_first": "/api/block/getblockinfo  h q z d k d j b x x ， b k s s b j b 、 w d l j 、 g w d  id  j b t d 。"
+  },
+  {
+    "category": "block",
+    "file": "block/getBlockKramdown.html",
+    "path": "/api/block/getBlockKramdown",
+    "name": "获取块Markdown",
+    "description": "获取指定块的Markdown格式内容（Kramdown格式）。",
+    "pinyin_full": "/api/block/getblockkramdown  huo qu zhi ding kuai de markdown ge shi nei rong （kramdown ge shi ）。",
+    "pinyin_first": "/api/block/getblockkramdown  h q z d k d markdown g s n r （kramdown g s ）。"
+  },
+  {
+    "category": "block",
+    "file": "block/getChildBlocks.html",
+    "path": "/api/block/getChildBlocks",
+    "name": "获取子块",
+    "description": "获取指定块的所有直接子块，不包括孙子块。",
+    "pinyin_full": "/api/block/getchildblocks  huo qu zhi ding kuai de suo you zhi jie zi kuai ， bu bao kuo sun zi kuai 。",
+    "pinyin_first": "/api/block/getchildblocks  h q z d k d s y z j z k ， b b k s z k 。"
+  },
+  {
+    "category": "block",
+    "file": "block/getRefIDs.html",
+    "path": "/api/block/getRefIDs",
+    "name": "获取引用块信息 (`/api/block/getRefIDs`)",
+    "description": "获取指定定义块 (defID) 的所有反向链接（引用块 refID）的信息。",
+    "pinyin_full": "/api/block/getrefids  huo qu zhi ding ding yi kuai  (defid)  de suo you fan xiang lian jie （ yin yong kuai  refid） de xin xi 。",
+    "pinyin_first": "/api/block/getrefids  h q z d d y k  (defid)  d s y f x l j （ y y k  refid） d x x 。"
+  },
+  {
+    "category": "block",
+    "file": "block/getUnfoldedParentID.html",
+    "path": "/api/block/getUnfoldedParentID",
+    "name": "获取未折叠父块 ID (`/api/block/getUnfoldedParentID`)",
+    "description": "获取指定块 ID 的第一个未折叠的父块 ID。",
+    "pinyin_full": "/api/block/getunfoldedparentid  huo qu zhi ding kuai  id  de di yi ge wei zhe die de fu kuai  id。",
+    "pinyin_first": "/api/block/getunfoldedparentid  h q z d k  id  d d y g w z d d f k  id。"
+  },
+  {
+    "category": "bookmark",
+    "file": "bookmark/getBookmark.html",
+    "path": "/api/bookmark/getBookmark",
+    "name": "获取书签",
+    "description": "获取思源笔记中的所有书签列表。书签是快速导航到特定内容的便捷方式，可以为任何块添加书签。",
+    "pinyin_full": "/api/bookmark/getbookmark  huo qu si yuan bi ji zhong de suo you shu qian lie biao 。 shu qian shi kuai su dao hang dao te ding nei rong de bian jie fang shi ， ke yi wei ren he kuai tian jia shu qian 。",
+    "pinyin_first": "/api/bookmark/getbookmark  h q s y b j z d s y s q l b 。 s q s k s d h d t d n r d b j f s ， k y w r h k t j s q 。"
+  },
+  {
+    "category": "bookmark",
+    "file": "bookmark/removeBookmark.html",
+    "path": "/api/bookmark/removeBookmark",
+    "name": "移除书签",
+    "description": "从思源笔记中移除指定ID的书签。移除书签后，该块仍然存在，只是不再出现在书签列表中。",
+    "pinyin_full": "/api/bookmark/removebookmark  cong si yuan bi ji zhong yi chu zhi ding id de shu qian 。 yi chu shu qian hou ， gai kuai reng ran cun zai ， zhi shi bu zai chu xian zai shu qian lie biao zhong 。",
+    "pinyin_first": "/api/bookmark/removebookmark  c s y b j z y c z d id d s q 。 y c s q h ， g k r r c z ， z s b z c x z s q l b z 。"
+  },
+  {
+    "category": "bookmark",
+    "file": "bookmark/renameBookmark.html",
+    "path": "/api/bookmark/renameBookmark",
+    "name": "重命名书签",
+    "description": "修改指定ID的书签名称。使用此接口可以更新书签的显示名称，方便组织和管理书签。",
+    "pinyin_full": "/api/bookmark/renamebookmark  xiu gai zhi ding id de shu qian ming cheng 。 shi yong ci jie kou ke yi geng xin shu qian de xian shi ming cheng ， fang bian zu zhi he guan li shu qian 。",
+    "pinyin_first": "/api/bookmark/renamebookmark  x g z d id d s q m c 。 s y c j k k y g x s q d x s m c ， f b z z h g l s q 。"
+  },
+  {
+    "category": "broadcast",
+    "file": "broadcast/publish.html",
+    "path": "/api/broadcast/publish",
+    "name": "发布广播消息",
+    "description": "此 API 用于向一个或多个指定的广播频道推送（发布）多条消息。消息可以是字符串类型，也可以是二进制文件类型。",
+    "pinyin_full": "/api/broadcast/publish  ci  api  yong yu xiang yi ge huo duo ge zhi ding de guang bo pin dao tui song （ fa bu ） duo tiao xiao xi 。 xiao xi ke yi shi zi fu chuan lei xing ， ye ke yi shi er jin zhi wen jian lei xing 。",
+    "pinyin_first": "/api/broadcast/publish  c  api  y y x y g h d g z d d g b p d t s （ f b ） d t x x 。 x x k y s z f c l x ， y k y s e j z w j l x 。"
+  },
+  {
+    "category": "cloud",
+    "file": "cloud/getCloudSpace.html",
+    "path": "/api/cloud/space",
+    "name": "获取云端存储空间",
+    "description": "获取当前登录的思源笔记云端账户的存储空间使用情况，包括总空间、已用空间、剩余空间等信息。",
+    "pinyin_full": "/api/cloud/space  huo qu dang qian deng lu de si yuan bi ji yun duan zhang hu de cun chu kong jian shi yong qing kuang ， bao kuo zong kong jian 、 yi yong kong jian 、 sheng yu kong jian deng xin xi 。",
+    "pinyin_first": "/api/cloud/space  h q d q d l d s y b j y d z h d c c k j s y q k ， b k z k j 、 y y k j 、 s y k j d x x 。"
+  },
+  {
+    "category": "export",
+    "file": "export/exportDocx.html",
+    "path": "/api/export/exportDocx",
+    "name": "导出文档为Word",
+    "description": "将指定的文档（包含其所有块）导出为 Microsoft Word (.docx) 文件。",
+    "pinyin_full": "/api/export/exportdocx  jiang zhi ding de wen dang （ bao han qi suo you kuai ） dao chu wei  microsoft word (.docx)  wen jian 。",
+    "pinyin_first": "/api/export/exportdocx  j z d d w d （ b h q s y k ） d c w  microsoft word (.docx)  w j 。"
+  },
+  {
+    "category": "export",
+    "file": "export/exportHTML.html",
+    "path": "/api/export/exportHTML",
+    "name": "导出 HTML",
+    "description": "将指定文档导出为 HTML 格式，支持导出为 PDF 预览，可以设置是否保持折叠状态以及是否合并导出。",
+    "pinyin_full": "/api/export/exporthtml  jiang zhi ding wen dang dao chu wei  html  ge shi ， zhi chi dao chu wei  pdf  yu lan ， ke yi she zhi shi fou bao chi zhe die zhuang tai yi ji shi fou he bing dao chu 。",
+    "pinyin_first": "/api/export/exporthtml  j z d w d d c w  html  g s ， z c d c w  pdf  y l ， k y s z s f b c z d z t y j s f h b d c 。"
+  },
+  {
+    "category": "export",
+    "file": "export/exportMdContent.html",
+    "path": "/api/export/exportMdContent",
+    "name": "导出 Markdown 内容",
+    "description": "获取指定文档的原始 Markdown 内容，包括文档的层级路径。这个接口不会生成文件，仅返回文档内容。",
+    "pinyin_full": "/api/export/exportmdcontent  huo qu zhi ding wen dang de yuan shi  markdown  nei rong ， bao kuo wen dang de ceng ji lu jing 。 zhe ge jie kou bu hui sheng cheng wen jian ， jin fan hui wen dang nei rong 。",
+    "pinyin_first": "/api/export/exportmdcontent  h q z d w d d y s  markdown  n r ， b k w d d c j l j 。 z g j k b h s c w j ， j f h w d n r 。"
+  },
+  {
+    "category": "export",
+    "file": "export/exportMds.html",
+    "path": "/api/export/exportMds",
+    "name": "导出多个 Markdown 文档 (exportMds)",
+    "description": "本接口用于将指定的多个文档导出为独立的 Markdown 文件，并将这些文件打包成一个 ZIP 压缩包供下载。",
+    "pinyin_full": "/api/export/exportmds  ben jie kou yong yu jiang zhi ding de duo ge wen dang dao chu wei du li de  markdown  wen jian ， bing jiang zhe xie wen jian da bao cheng yi ge  zip  ya suo bao gong xia zai 。",
+    "pinyin_first": "/api/export/exportmds  b j k y y j z d d d g w d d c w d l d  markdown  w j ， b j z x w j d b c y g  zip  y s b g x z 。"
+  },
+  {
+    "category": "export",
+    "file": "export/exportNotebookMd.html",
+    "path": "/api/export/exportNotebookMd",
+    "name": "导出笔记本为 Markdown (exportNotebookMd)",
+    "description": "本接口用于将指定 ID 的整个笔记本导出为一系列 Markdown 文件，并将这些文件及其相关资源（如图片）打包成一个 ZIP 压缩文件。",
+    "pinyin_full": "/api/export/exportnotebookmd  ben jie kou yong yu jiang zhi ding  id  de zheng ge bi ji ben dao chu wei yi xi lie  markdown  wen jian ， bing jiang zhe xie wen jian ji qi xiang guan zi yuan （ ru tu pian ） da bao cheng yi ge  zip  ya suo wen jian 。",
+    "pinyin_first": "/api/export/exportnotebookmd  b j k y y j z d  id  d z g b j b d c w y x l  markdown  w j ， b j z x w j j q x g z y （ r t p ） d b c y g  zip  y s w j 。"
+  },
+  {
+    "category": "file",
+    "file": "file/getFile.html",
+    "path": "/api/file/getFile",
+    "name": "获取文件",
+    "description": "获取工作空间中指定文件的内容。",
+    "pinyin_full": "/api/file/getfile  huo qu gong zuo kong jian zhong zhi ding wen jian de nei rong 。",
+    "pinyin_first": "/api/file/getfile  h q g z k j z z d w j d n r 。"
+  },
+  {
+    "category": "file",
+    "file": "file/getUniqueFilename.html",
+    "path": "/api/file/getUniqueFilename",
+    "name": "获取唯一文件名",
+    "description": "在指定目录下生成一个唯一的文件名（避免覆盖现有文件）。",
+    "pinyin_full": "/api/file/getuniquefilename  zai zhi ding mu lu xia sheng cheng yi ge wei yi de wen jian ming （ bi mian fu gai xian you wen jian ）。",
+    "pinyin_first": "/api/file/getuniquefilename  z z d m l x s c y g w y d w j m （ b m f g x y w j ）。"
+  },
+  {
+    "category": "filetree",
+    "file": "filetree/createDailyNote.html",
+    "path": "/api/filetree/createDailyNote",
+    "name": "创建每日笔记 (createDailyNote)",
+    "description": "本接口用于创建或打开今天的每日笔记文档。如果文档已存在，将返回现有文档的 ID；如果不存在，则会根据笔记本的每日笔记设置创建新文档，然后返回新创建文档的 ID。",
+    "pinyin_full": "/api/filetree/createdailynote  ben jie kou yong yu chuang jian huo da kai jin tian de mei ri bi ji wen dang 。 ru guo wen dang yi cun zai ， jiang fan hui xian you wen dang de  id； ru guo bu cun zai ， ze hui gen ju bi ji ben de mei ri bi ji she zhi chuang jian xin wen dang ， ran hou fan hui xin chuang jian wen dang de  id。",
+    "pinyin_first": "/api/filetree/createdailynote  b j k y y c j h d k j t d m r b j w d 。 r g w d y c z ， j f h x y w d d  id； r g b c z ， z h g j b j b d m r b j s z c j x w d ， r h f h x c j w d d  id。"
+  },
+  {
+    "category": "filetree",
+    "file": "filetree/createDoc.html",
+    "path": "/api/filetree/createDoc",
+    "name": "创建文档 (createDoc)",
+    "description": "本接口用于在指定的笔记本中创建新文档。可以同时指定文档的路径、标题和初始 Markdown 内容。创建后会返回新文档的 ID。",
+    "pinyin_full": "/api/filetree/createdoc  ben jie kou yong yu zai zhi ding de bi ji ben zhong chuang jian xin wen dang 。 ke yi tong shi zhi ding wen dang de lu jing 、 biao ti he chu shi  markdown  nei rong 。 chuang jian hou hui fan hui xin wen dang de  id。",
+    "pinyin_first": "/api/filetree/createdoc  b j k y y z z d d b j b z c j x w d 。 k y t s z d w d d l j 、 b t h c s  markdown  n r 。 c j h h f h x w d d  id。"
+  },
+  {
+    "category": "filetree",
+    "file": "filetree/createDocWithMd.html",
+    "path": "/api/filetree/createDocWithMd",
+    "name": "通过Markdown创建文档",
+    "description": "使用Markdown内容创建一个新的文档。此接口会将Markdown文本解析为思源笔记的块结构并创建文档。",
+    "pinyin_full": "/api/filetree/createdocwithmd  shi yong markdown nei rong chuang jian yi ge xin de wen dang 。 ci jie kou hui jiang markdown wen ben jie xi wei si yuan bi ji de kuai jie gou bing chuang jian wen dang 。",
+    "pinyin_first": "/api/filetree/createdocwithmd  s y markdown n r c j y g x d w d 。 c j k h j markdown w b j x w s y b j d k j g b c j w d 。"
+  },
+  {
+    "category": "filetree",
+    "file": "filetree/duplicateDoc.html",
+    "path": "/api/filetree/duplicateDoc",
+    "name": "复制文档",
+    "description": "复制指定的文档。此操作将在当前目录下创建一个新的文档，包含原文档的所有内容和子文档结构。",
+    "pinyin_full": "/api/filetree/duplicatedoc  fu zhi zhi ding de wen dang 。 ci cao zuo jiang zai dang qian mu lu xia chuang jian yi ge xin de wen dang ， bao han yuan wen dang de suo you nei rong he zi wen dang jie gou 。",
+    "pinyin_first": "/api/filetree/duplicatedoc  f z z d d w d 。 c c z j z d q m l x c j y g x d w d ， b h y w d d s y n r h z w d j g 。"
+  },
+  {
+    "category": "filetree",
+    "file": "filetree/getDoc.html",
+    "path": "/api/filetree/getDoc",
+    "name": "获取文档内容",
+    "description": "获取指定文档的详细内容，包括文档元数据和所有的块。可以选择是否包含子文档内容。",
+    "pinyin_full": "/api/filetree/getdoc  huo qu zhi ding wen dang de xiang xi nei rong ， bao kuo wen dang yuan shu ju he suo you de kuai 。 ke yi xuan ze shi fou bao han zi wen dang nei rong 。",
+    "pinyin_first": "/api/filetree/getdoc  h q z d w d d x x n r ， b k w d y s j h s y d k 。 k y x z s f b h z w d n r 。"
+  },
+  {
+    "category": "filetree",
+    "file": "filetree/getDocCreateSavePath.html",
+    "path": "/api/filetree/getDocCreateSavePath",
+    "name": "获取文档创建保存路径",
+    "description": "获取在指定笔记本和路径下创建新文档时，系统建议的默认保存路径。这对于需要确定新文档确切存储位置的场景很有用。",
+    "pinyin_full": "/api/filetree/getdoccreatesavepath  huo qu zai zhi ding bi ji ben he lu jing xia chuang jian xin wen dang shi ， xi tong jian yi de mo ren bao cun lu jing 。 zhe dui yu xu yao que ding xin wen dang que qie cun chu wei zhi de chang jing hen you yong 。",
+    "pinyin_first": "/api/filetree/getdoccreatesavepath  h q z z d b j b h l j x c j x w d s ， x t j y d m r b c l j 。 z d y x y q d x w d q q c c w z d c j h y y 。"
+  },
+  {
+    "category": "filetree",
+    "file": "filetree/getHPathByID.html",
+    "path": "/api/filetree/getHPathByID",
+    "name": "获取文档人类可读路径 (getHPathByID)",
+    "description": "本接口用于根据文档 ID 获取其人类可读路径（HPath）。HPath 是文档在笔记本中的层级结构路径，以文档标题组成，例如 /笔记/子文件夹/文档标题。",
+    "pinyin_full": "/api/filetree/gethpathbyid  ben jie kou yong yu gen ju wen dang  id  huo qu qi ren lei ke du lu jing （hpath）。hpath  shi wen dang zai bi ji ben zhong de ceng ji jie gou lu jing ， yi wen dang biao ti zu cheng ， li ru  / bi ji / zi wen jian jia / wen dang biao ti 。",
+    "pinyin_first": "/api/filetree/gethpathbyid  b j k y y g j w d  id  h q q r l k d l j （hpath）。hpath  s w d z b j b z d c j j g l j ， y w d b t z c ， l r  / b j / z w j j / w d b t 。"
+  },
+  {
+    "category": "filetree",
+    "file": "filetree/getHPathByPath.html",
+    "path": "/api/filetree/getHPathByPath",
+    "name": "根据路径获取人类可读路径 (getHPathByPath)",
+    "description": "本接口用于根据文档的物理路径（path）获取其人类可读路径（HPath）。HPath 是文档在笔记本中的层级结构路径，以文档标题组成，例如 /笔记/子文件夹/文档标题。",
+    "pinyin_full": "/api/filetree/gethpathbypath  ben jie kou yong yu gen ju wen dang de wu li lu jing （path） huo qu qi ren lei ke du lu jing （hpath）。hpath  shi wen dang zai bi ji ben zhong de ceng ji jie gou lu jing ， yi wen dang biao ti zu cheng ， li ru  / bi ji / zi wen jian jia / wen dang biao ti 。",
+    "pinyin_first": "/api/filetree/gethpathbypath  b j k y y g j w d d w l l j （path） h q q r l k d l j （hpath）。hpath  s w d z b j b z d c j j g l j ， y w d b t z c ， l r  / b j / z w j j / w d b t 。"
+  },
+  {
+    "category": "filetree",
+    "file": "filetree/getIDsByHPath.html",
+    "path": "/api/filetree/getIDsByHPath",
+    "name": "根据人类可读路径获取文档ID (getIDsByHPath)",
+    "description": "本接口用于根据人类可读路径（HPath）获取对应的文档ID列表。HPath 是文档在笔记本中的层级结构路径，以文档标题组成，例如 /笔记/子文件夹/文档标题。",
+    "pinyin_full": "/api/filetree/getidsbyhpath  ben jie kou yong yu gen ju ren lei ke du lu jing （hpath） huo qu dui ying de wen dang id lie biao 。hpath  shi wen dang zai bi ji ben zhong de ceng ji jie gou lu jing ， yi wen dang biao ti zu cheng ， li ru  / bi ji / zi wen jian jia / wen dang biao ti 。",
+    "pinyin_first": "/api/filetree/getidsbyhpath  b j k y y g j r l k d l j （hpath） h q d y d w d id l b 。hpath  s w d z b j b z d c j j g l j ， y w d b t z c ， l r  / b j / z w j j / w d b t 。"
+  },
+  {
+    "category": "filetree",
+    "file": "filetree/getPathByID.html",
+    "path": "/api/filetree/getPathByID",
+    "name": "根据 ID 获取文档路径 (getPathByID)",
+    "description": "本接口用于根据文档 ID 获取其物理存储路径和所属笔记本。物理路径是指文档在文件系统中的实际存储位置，由 ID 组成，例如 /20210808180117-czj9bvb/20200813125239-hbwpz87.sy。",
+    "pinyin_full": "/api/filetree/getpathbyid  ben jie kou yong yu gen ju wen dang  id  huo qu qi wu li cun chu lu jing he suo shu bi ji ben 。 wu li lu jing shi zhi wen dang zai wen jian xi tong zhong de shi ji cun chu wei zhi ， you  id  zu cheng ， li ru  /20210808180117-czj9bvb/20200813125239-hbwpz87.sy。",
+    "pinyin_first": "/api/filetree/getpathbyid  b j k y y g j w d  id  h q q w l c c l j h s s b j b 。 w l l j s z w d z w j x t z d s j c c w z ， y  id  z c ， l r  /20210808180117-czj9bvb/20200813125239-hbwpz87.sy。"
+  },
+  {
+    "category": "filetree",
+    "file": "filetree/listDocsByPath.html",
+    "path": "/api/filetree/listDocsByPath",
+    "name": "列出指定路径下的文档 (listDocsByPath)",
+    "description": "本接口用于列出指定笔记本和路径下的所有文档。它返回路径下的文档和子文档的详细信息，包括文档ID、名称、图标、创建时间等。",
+    "pinyin_full": "/api/filetree/listdocsbypath  ben jie kou yong yu lie chu zhi ding bi ji ben he lu jing xia de suo you wen dang 。 ta fan hui lu jing xia de wen dang he zi wen dang de xiang xi xin xi ， bao kuo wen dang id、 ming cheng 、 tu biao 、 chuang jian shi jian deng 。",
+    "pinyin_first": "/api/filetree/listdocsbypath  b j k y y l c z d b j b h l j x d s y w d 。 t f h l j x d w d h z w d d x x x x ， b k w d id、 m c 、 t b 、 c j s j d 。"
+  },
+  {
+    "category": "filetree",
+    "file": "filetree/moveDocs.html",
+    "path": "/api/filetree/moveDocs",
+    "name": "移动多个文档 (moveDocs)",
+    "description": "本接口用于将指定路径的多个文档移动到目标位置。可以批量移动多个文档，支持跨笔记本移动。",
+    "pinyin_full": "/api/filetree/movedocs  ben jie kou yong yu jiang zhi ding lu jing de duo ge wen dang yi dong dao mu biao wei zhi 。 ke yi pi liang yi dong duo ge wen dang ， zhi chi kua bi ji ben yi dong 。",
+    "pinyin_first": "/api/filetree/movedocs  b j k y y j z d l j d d g w d y d d m b w z 。 k y p l y d d g w d ， z c k b j b y d 。"
+  },
+  {
+    "category": "filetree",
+    "file": "filetree/moveDocsByID.html",
+    "path": "/api/filetree/moveDocsByID",
+    "name": "根据ID移动多个文档 (moveDocsByID)",
+    "description": "本接口用于根据文档ID将多个文档移动到目标位置。与moveDocs接口不同，该接口使用文档ID来指定来源和目标，而不是路径。",
+    "pinyin_full": "/api/filetree/movedocsbyid  ben jie kou yong yu gen ju wen dang id jiang duo ge wen dang yi dong dao mu biao wei zhi 。 yu movedocs jie kou bu tong ， gai jie kou shi yong wen dang id lai zhi ding lai yuan he mu biao ， er bu shi lu jing 。",
+    "pinyin_first": "/api/filetree/movedocsbyid  b j k y y g j w d id j d g w d y d d m b w z 。 y movedocs j k b t ， g j k s y w d id l z d l y h m b ， e b s l j 。"
+  },
+  {
+    "category": "filetree",
+    "file": "filetree/moveLocalShorthands.html",
+    "path": "/api/filetree/moveLocalShorthands",
+    "name": "移动本地闪记 (moveLocalShorthands)",
+    "description": "本接口用于将本地闪记（速记）移动到指定笔记本的文档中。闪记是思源笔记中用于快速记录临时想法的功能，存储在特定目录下的Markdown文件。",
+    "pinyin_full": "/api/filetree/movelocalshorthands  ben jie kou yong yu jiang ben di shan ji （ su ji ） yi dong dao zhi ding bi ji ben de wen dang zhong 。 shan ji shi si yuan bi ji zhong yong yu kuai su ji lu lin shi xiang fa de gong neng ， cun chu zai te ding mu lu xia de markdown wen jian 。",
+    "pinyin_first": "/api/filetree/movelocalshorthands  b j k y y j b d s j （ s j ） y d d z d b j b d w d z 。 s j s s y b j z y y k s j l l s x f d g n ， c c z t d m l x d markdown w j 。"
+  },
+  {
+    "category": "filetree",
+    "file": "filetree/removeDoc.html",
+    "path": "/api/filetree/removeDoc",
+    "name": "删除文档",
+    "description": "删除指定的文档及其所有子文档。此操作会将文档移至回收站，可以通过回收站恢复。",
+    "pinyin_full": "/api/filetree/removedoc  shan chu zhi ding de wen dang ji qi suo you zi wen dang 。 ci cao zuo hui jiang wen dang yi zhi hui shou zhan ， ke yi tong guo hui shou zhan hui fu 。",
+    "pinyin_first": "/api/filetree/removedoc  s c z d d w d j q s y z w d 。 c c z h j w d y z h s z ， k y t g h s z h f 。"
+  },
+  {
+    "category": "filetree",
+    "file": "filetree/removeDocByID.html",
+    "path": "/api/filetree/removeDocByID",
+    "name": "根据ID删除文档 (removeDocByID)",
+    "description": "本接口用于根据文档ID删除一个文档。删除操作会将文档移动到系统回收站，不是永久性删除。",
+    "pinyin_full": "/api/filetree/removedocbyid  ben jie kou yong yu gen ju wen dang id shan chu yi ge wen dang 。 shan chu cao zuo hui jiang wen dang yi dong dao xi tong hui shou zhan ， bu shi yong jiu xing shan chu 。",
+    "pinyin_first": "/api/filetree/removedocbyid  b j k y y g j w d id s c y g w d 。 s c c z h j w d y d d x t h s z ， b s y j x s c 。"
+  },
+  {
+    "category": "filetree",
+    "file": "filetree/renameDoc.html",
+    "path": "/api/filetree/renameDoc",
+    "name": "重命名文档",
+    "description": "重命名指定的文档。此接口会更新文档的名称和路径。",
+    "pinyin_full": "/api/filetree/renamedoc  zhong ming ming zhi ding de wen dang 。 ci jie kou hui geng xin wen dang de ming cheng he lu jing 。",
+    "pinyin_first": "/api/filetree/renamedoc  z m m z d d w d 。 c j k h g x w d d m c h l j 。"
+  },
+  {
+    "category": "filetree",
+    "file": "filetree/renameDocByID.html",
+    "path": "/api/filetree/renameDocByID",
+    "name": "根据ID重命名文档 (renameDocByID)",
+    "description": "本接口用于根据文档ID重命名文档。与renameDoc接口不同，该接口使用文档ID来指定要重命名的文档，而不是文档路径。",
+    "pinyin_full": "/api/filetree/renamedocbyid  ben jie kou yong yu gen ju wen dang id zhong ming ming wen dang 。 yu renamedoc jie kou bu tong ， gai jie kou shi yong wen dang id lai zhi ding yao zhong ming ming de wen dang ， er bu shi wen dang lu jing 。",
+    "pinyin_first": "/api/filetree/renamedocbyid  b j k y y g j w d id z m m w d 。 y renamedoc j k b t ， g j k s y w d id l z d y z m m d w d ， e b s w d l j 。"
+  },
+  {
+    "category": "filetree",
+    "file": "filetree/searchDocs.html",
+    "path": "/api/filetree/searchDocs",
+    "name": "搜索文档 (searchDocs)",
+    "description": "本接口用于通过关键词搜索文档。可以快速查找包含特定关键词的文档，返回文档的基本信息列表。",
+    "pinyin_full": "/api/filetree/searchdocs  ben jie kou yong yu tong guo guan jian ci sou suo wen dang 。 ke yi kuai su cha zhao bao han te ding guan jian ci de wen dang ， fan hui wen dang de ji ben xin xi lie biao 。",
+    "pinyin_first": "/api/filetree/searchdocs  b j k y y t g g j c s s w d 。 k y k s c z b h t d g j c d w d ， f h w d d j b x x l b 。"
+  },
+  {
+    "category": "format",
+    "file": "format/autoSpace.html",
+    "path": "/api/format/autoSpace",
+    "name": "自动添加空格",
+    "description": "对指定文档的所有块内容进行处理，自动在中文与英文、数字、符号之间添加空格，以符合 Pangu.js 规范，优化排版。",
+    "pinyin_full": "/api/format/autospace  dui zhi ding wen dang de suo you kuai nei rong jin xing chu li ， zi dong zai zhong wen yu ying wen 、 shu zi 、 fu hao zhi jian tian jia kong ge ， yi fu he  pangu.js  gui fan ， you hua pai ban 。",
+    "pinyin_first": "/api/format/autospace  d z d w d d s y k n r j x c l ， z d z z w y y w 、 s z 、 f h z j t j k g ， y f h  pangu.js  g f ， y h p b 。"
+  },
+  {
+    "category": "format",
+    "file": "format/netAssets2LocalAssets.html",
+    "path": "/api/format/netAssets2LocalAssets",
+    "name": "网络资源转本地资源",
+    "description": "扫描指定文档中的所有块，查找所有外部网络资源链接（包括图片、音视频、iframe等），将这些资源下载到本地 `assets` 目录，并更新块内容中的链接指向本地资源。",
+    "pinyin_full": "/api/format/netassets2localassets  sao miao zhi ding wen dang zhong de suo you kuai ， cha zhao suo you wai bu wang luo zi yuan lian jie （ bao kuo tu pian 、 yin shi pin 、iframe deng ）， jiang zhe xie zi yuan xia zai dao ben di  `assets`  mu lu ， bing geng xin kuai nei rong zhong de lian jie zhi xiang ben di zi yuan 。",
+    "pinyin_first": "/api/format/netassets2localassets  s m z d w d z d s y k ， c z s y w b w l z y l j （ b k t p 、 y s p 、iframe d ）， j z x z y x z d b d  `assets`  m l ， b g x k n r z d l j z x b d z y 。"
+  },
+  {
+    "category": "format",
+    "file": "format/netImg2LocalAssets.html",
+    "path": "/api/format/netImg2LocalAssets",
+    "name": "网络图片转本地资源",
+    "description": "扫描指定文档中的所有块，查找外部网络图片链接（例如 `` 标签或Markdown图片语法），将这些图片下载到本地 `assets` 目录，并更新块内容中的链接指向本地资源。",
+    "pinyin_full": "/api/format/netimg2localassets  sao miao zhi ding wen dang zhong de suo you kuai ， cha zhao wai bu wang luo tu pian lian jie （ li ru  ``  biao qian huo markdown tu pian yu fa ）， jiang zhe xie tu pian xia zai dao ben di  `assets`  mu lu ， bing geng xin kuai nei rong zhong de lian jie zhi xiang ben di zi yuan 。",
+    "pinyin_first": "/api/format/netimg2localassets  s m z d w d z d s y k ， c z w b w l t p l j （ l r  ``  b q h markdown t p y f ）， j z x t p x z d b d  `assets`  m l ， b g x k n r z d l j z x b d z y 。"
+  },
+  {
+    "category": "history",
+    "file": "history/clearWorkspaceHistory.html",
+    "path": "/api/history/clearWorkspaceHistory",
+    "name": "清理工作空间历史",
+    "description": "清理当前工作空间的所有历史记录数据，包括笔记本历史和文档历史。这是一个全局性的清理操作。",
+    "pinyin_full": "/api/history/clearworkspacehistory  qing li dang qian gong zuo kong jian de suo you li shi ji lu shu ju ， bao kuo bi ji ben li shi he wen dang li shi 。 zhe shi yi ge quan ju xing de qing li cao zuo 。",
+    "pinyin_first": "/api/history/clearworkspacehistory  q l d q g z k j d s y l s j l s j ， b k b j b l s h w d l s 。 z s y g q j x d q l c z 。"
+  },
+  {
+    "category": "history",
+    "file": "history/getDocHistoryContent.html",
+    "path": "/api/history/getDocHistoryContent",
+    "name": "获取文档历史内容",
+    "description": "获取指定历史快照中某个特定文档的内容。这允许用户查看或预览文档在过去某个时间点的具体状态。",
+    "pinyin_full": "/api/history/getdochistorycontent  huo qu zhi ding li shi kuai zhao zhong mou ge te ding wen dang de nei rong 。 zhe yun xu yong hu cha kan huo yu lan wen dang zai guo qu mou ge shi jian dian de ju ti zhuang tai 。",
+    "pinyin_first": "/api/history/getdochistorycontent  h q z d l s k z z m g t d w d d n r 。 z y x y h c k h y l w d z g q m g s j d d j t z t 。"
+  },
+  {
+    "category": "history",
+    "file": "history/getHistoryItems.html",
+    "path": "/api/history/getHistoryItems",
+    "name": "获取历史条目",
+    "description": "根据创建时间和查询条件获取历史记录中的具体条目。",
+    "pinyin_full": "/api/history/gethistoryitems  gen ju chuang jian shi jian he cha xun tiao jian huo qu li shi ji lu zhong de ju ti tiao mu 。",
+    "pinyin_first": "/api/history/gethistoryitems  g j c j s j h c x t j h q l s j l z d j t t m 。"
+  },
+  {
+    "category": "history",
+    "file": "history/getNotebookHistory.html",
+    "path": "/api/history/getNotebookHistory",
+    "name": "获取工作空间历史记录",
+    "description": "获取整个工作空间的历史快照列表。这些快照由思源自动（根据设置）或手动创建，记录了特定时间点附近的文件变更（创建、更新、删除、移动）。",
+    "pinyin_full": "/api/history/getnotebookhistory  huo qu zheng ge gong zuo kong jian de li shi kuai zhao lie biao 。 zhe xie kuai zhao you si yuan zi dong （ gen ju she zhi ） huo shou dong chuang jian ， ji lu le te ding shi jian dian fu jin de wen jian bian geng （ chuang jian 、 geng xin 、 shan chu 、 yi dong ）。",
+    "pinyin_first": "/api/history/getnotebookhistory  h q z g g z k j d l s k z l b 。 z x k z y s y z d （ g j s z ） h s d c j ， j l l t d s j d f j d w j b g （ c j 、 g x 、 s c 、 y d ）。"
+  },
+  {
+    "category": "history",
+    "file": "history/reindexHistory.html",
+    "path": "/api/history/reindexHistory",
+    "name": "重建历史索引",
+    "description": "重建历史记录索引。",
+    "pinyin_full": "/api/history/reindexhistory  chong jian li shi ji lu suo yin 。",
+    "pinyin_first": "/api/history/reindexhistory  c j l s j l s y 。"
+  },
+  {
+    "category": "history",
+    "file": "history/rollbackAssetsHistory.html",
+    "path": "/api/history/rollbackAssetsHistory",
+    "name": "回滚资源历史",
+    "description": "回滚资源文件（assets）的历史版本。",
+    "pinyin_full": "/api/history/rollbackassetshistory  hui gun zi yuan wen jian （assets） de li shi ban ben 。",
+    "pinyin_first": "/api/history/rollbackassetshistory  h g z y w j （assets） d l s b b 。"
+  },
+  {
+    "category": "history",
+    "file": "history/rollbackDocHistory.html",
+    "path": "/api/history/rollbackDocHistory",
+    "name": "回滚单个文档历史",
+    "description": "将单个文档恢复到其在指定历史快照中的状态。此操作会将指定的历史 .sy 文件复制到当前工作空间，覆盖具有相同文档 ID 的现有文件（如果存在）。",
+    "pinyin_full": "/api/history/rollbackdochistory  jiang dan ge wen dang hui fu dao qi zai zhi ding li shi kuai zhao zhong de zhuang tai 。 ci cao zuo hui jiang zhi ding de li shi  .sy  wen jian fu zhi dao dang qian gong zuo kong jian ， fu gai ju you xiang tong wen dang  id  de xian you wen jian （ ru guo cun zai ）。",
+    "pinyin_first": "/api/history/rollbackdochistory  j d g w d h f d q z z d l s k z z d z t 。 c c z h j z d d l s  .sy  w j f z d d q g z k j ， f g j y x t w d  id  d x y w j （ r g c z ）。"
+  },
+  {
+    "category": "history",
+    "file": "history/rollbackNotebookHistory.html",
+    "path": "/api/history/rollbackNotebookHistory",
+    "name": "回滚笔记本历史",
+    "description": "将指定的笔记本恢复到其历史记录中的某个版本。需要提供从 `getNotebookHistory` 接口获取的历史版本文件路径。",
+    "pinyin_full": "/api/history/rollbacknotebookhistory  jiang zhi ding de bi ji ben hui fu dao qi li shi ji lu zhong de mou ge ban ben 。 xu yao ti gong cong  `getnotebookhistory`  jie kou huo qu de li shi ban ben wen jian lu jing 。",
+    "pinyin_first": "/api/history/rollbacknotebookhistory  j z d d b j b h f d q l s j l z d m g b b 。 x y t g c  `getnotebookhistory`  j k h q d l s b b w j l j 。"
+  },
+  {
+    "category": "history",
+    "file": "history/searchHistory.html",
+    "path": "/api/history/searchHistory",
+    "name": "搜索历史记录",
+    "description": "根据条件搜索历史记录，返回按时间分组的快照列表。",
+    "pinyin_full": "/api/history/searchhistory  gen ju tiao jian sou suo li shi ji lu ， fan hui an shi jian fen zu de kuai zhao lie biao 。",
+    "pinyin_first": "/api/history/searchhistory  g j t j s s l s j l ， f h a s j f z d k z l b 。"
+  },
+  {
+    "category": "icon",
+    "file": "icon/getDynamicIcon.html",
+    "path": "/api/icon/getDynamicIcon",
+    "name": "获取动态图标",
+    "description": "根据传入的参数动态生成一个 SVG 图标，并以 image/svg+xml 的形式返回。常用于文档标题、书签等处的个性化图标展示。该接口不进行缓存。",
+    "pinyin_full": "/api/icon/getdynamicicon  gen ju chuan ru de can shu dong tai sheng cheng yi ge  svg  tu biao ， bing yi  image/svg+xml  de xing shi fan hui 。 chang yong yu wen dang biao ti 、 shu qian deng chu de ge xing hua tu biao zhan shi 。 gai jie kou bu jin xing huan cun 。",
+    "pinyin_first": "/api/icon/getdynamicicon  g j c r d c s d t s c y g  svg  t b ， b y  image/svg+xml  d x s f h 。 c y y w d b t 、 s q d c d g x h t b z s 。 g j k b j x h c 。"
+  },
+  {
+    "category": "inbox",
+    "file": "inbox/getShorthand.html",
+    "path": "/api/inbox/getShorthand",
+    "name": "获取速记",
+    "description": "根据指定的 ID 获取单个云端速记 (Cloud Shorthand) 的详细信息。",
+    "pinyin_full": "/api/inbox/getshorthand  gen ju zhi ding de  id  huo qu dan ge yun duan su ji  (cloud shorthand)  de xiang xi xin xi 。",
+    "pinyin_first": "/api/inbox/getshorthand  g j z d d  id  h q d g y d s j  (cloud shorthand)  d x x x x 。"
+  },
+  {
+    "category": "inbox",
+    "file": "inbox/getShorthands.html",
+    "path": "/api/inbox/getShorthands",
+    "name": "获取速记列表",
+    "description": "分页获取云端速记 (Cloud Shorthand) 的列表。",
+    "pinyin_full": "/api/inbox/getshorthands  fen ye huo qu yun duan su ji  (cloud shorthand)  de lie biao 。",
+    "pinyin_first": "/api/inbox/getshorthands  f y h q y d s j  (cloud shorthand)  d l b 。"
+  },
+  {
+    "category": "inbox",
+    "file": "inbox/removeShorthands.html",
+    "path": "/api/inbox/removeShorthands",
+    "name": "删除速记",
+    "description": "根据提供的 ID 列表，批量删除速记。",
+    "pinyin_full": "/api/inbox/removeshorthands  gen ju ti gong de  id  lie biao ， pi liang shan chu su ji 。",
+    "pinyin_first": "/api/inbox/removeshorthands  g j t g d  id  l b ， p l s c s j 。"
+  },
+  {
+    "category": "lute",
+    "file": "lute/html2BlockDOM.html",
+    "path": "/api/lute/html2BlockDOM",
+    "name": "HTML转块DOM",
+    "description": "将输入的HTML文本转换为思源笔记内部使用的块DOM（Document Object Model）结构。这对于需要将外部HTML内容导入并解析为思源块结构的场景非常有用。",
+    "pinyin_full": "/api/lute/html2blockdom  jiang shu ru de html wen ben zhuan huan wei si yuan bi ji nei bu shi yong de kuai dom（document object model） jie gou 。 zhe dui yu xu yao jiang wai bu html nei rong dao ru bing jie xi wei si yuan kuai jie gou de chang jing fei chang you yong 。",
+    "pinyin_first": "/api/lute/html2blockdom  j s r d html w b z h w s y b j n b s y d k dom（document object model） j g 。 z d y x y j w b html n r d r b j x w s y k j g d c j f c y y 。"
+  },
+  {
+    "category": "lute",
+    "file": "lute/spinBlockDOM.html",
+    "path": "/api/lute/spinBlockDOM",
+    "name": "处理块级 DOM (spinBlockDOM)",
+    "description": "接收一个块级 DOM 字符串，使用 Lute 引擎的 SpinBlockDOM 方法对其进行处理，并返回处理后的 DOM 字符串。",
+    "pinyin_full": "/api/lute/spinblockdom  jie shou yi ge kuai ji  dom  zi fu chuan ， shi yong  lute  yin qing de  spinblockdom  fang fa dui qi jin xing chu li ， bing fan hui chu li hou de  dom  zi fu chuan 。",
+    "pinyin_first": "/api/lute/spinblockdom  j s y g k j  dom  z f c ， s y  lute  y q d  spinblockdom  f f d q j x c l ， b f h c l h d  dom  z f c 。"
+  },
+  {
+    "category": "notebook",
+    "file": "notebook/changeSortNotebook.html",
+    "path": "/api/notebook/changeSortNotebook",
+    "name": "更改笔记本排序",
+    "description": "根据提供的笔记本 ID 列表的顺序，更改工作空间中笔记本的排序。",
+    "pinyin_full": "/api/notebook/changesortnotebook  gen ju ti gong de bi ji ben  id  lie biao de shun xu ， geng gai gong zuo kong jian zhong bi ji ben de pai xu 。",
+    "pinyin_first": "/api/notebook/changesortnotebook  g j t g d b j b  id  l b d s x ， g g g z k j z b j b d p x 。"
+  },
+  {
+    "category": "notebook",
+    "file": "notebook/closeNotebook.html",
+    "path": "/api/notebook/closeNotebook",
+    "name": "关闭笔记本",
+    "description": "关闭指定的笔记本。此操作会从当前工作空间卸载该笔记本，但不会删除笔记本的物理文件。",
+    "pinyin_full": "/api/notebook/closenotebook  guan bi zhi ding de bi ji ben 。 ci cao zuo hui cong dang qian gong zuo kong jian xie zai gai bi ji ben ， dan bu hui shan chu bi ji ben de wu li wen jian 。",
+    "pinyin_first": "/api/notebook/closenotebook  g b z d d b j b 。 c c z h c d q g z k j x z g b j b ， d b h s c b j b d w l w j 。"
+  },
+  {
+    "category": "notebook",
+    "file": "notebook/createNotebook.html",
+    "path": "/api/notebook/createNotebook",
+    "name": "创建笔记本 (createNotebook)",
+    "description": "本接口用于创建一个新的笔记本。",
+    "pinyin_full": "/api/notebook/createnotebook  ben jie kou yong yu chuang jian yi ge xin de bi ji ben 。",
+    "pinyin_first": "/api/notebook/createnotebook  b j k y y c j y g x d b j b 。"
+  },
+  {
+    "category": "notebook",
+    "file": "notebook/getNotebookConf.html",
+    "path": "/api/notebook/getNotebookConf",
+    "name": "获取笔记本配置",
+    "description": "获取指定笔记本的配置信息，包括笔记本的 ID、名称以及详细的配置对象 (BoxConf)。",
+    "pinyin_full": "/api/notebook/getnotebookconf  huo qu zhi ding bi ji ben de pei zhi xin xi ， bao kuo bi ji ben de  id、 ming cheng yi ji xiang xi de pei zhi dui xiang  (boxconf)。",
+    "pinyin_first": "/api/notebook/getnotebookconf  h q z d b j b d p z x x ， b k b j b d  id、 m c y j x x d p z d x  (boxconf)。"
+  },
+  {
+    "category": "notebook",
+    "file": "notebook/getNotebookInfo.html",
+    "path": "/api/notebook/getNotebookInfo",
+    "name": "获取笔记本信息",
+    "description": "获取指定笔记本的基本信息，例如 ID、名称、文档数量、大小以及创建和修改时间等。",
+    "pinyin_full": "/api/notebook/getnotebookinfo  huo qu zhi ding bi ji ben de ji ben xin xi ， li ru  id、 ming cheng 、 wen dang shu liang 、 da xiao yi ji chuang jian he xiu gai shi jian deng 。",
+    "pinyin_first": "/api/notebook/getnotebookinfo  h q z d b j b d j b x x ， l r  id、 m c 、 w d s l 、 d x y j c j h x g s j d 。"
+  },
+  {
+    "category": "notebook",
+    "file": "notebook/lsNotebooks.html",
+    "path": "/api/notebook/lsNotebooks",
+    "name": "列出笔记本",
+    "description": "列出当前工作空间中的所有笔记本。可以通过参数指定是否只列出包含闪卡功能的笔记本。",
+    "pinyin_full": "/api/notebook/lsnotebooks  lie chu dang qian gong zuo kong jian zhong de suo you bi ji ben 。 ke yi tong guo can shu zhi ding shi fou zhi lie chu bao han shan ka gong neng de bi ji ben 。",
+    "pinyin_first": "/api/notebook/lsnotebooks  l c d q g z k j z d s y b j b 。 k y t g c s z d s f z l c b h s k g n d b j b 。"
+  },
+  {
+    "category": "notebook",
+    "file": "notebook/openNotebook.html",
+    "path": "/api/notebook/openNotebook",
+    "name": "打开笔记本",
+    "description": "根据提供的笔记本 ID 打开（挂载）一个笔记本。如果笔记本已经是打开状态，此接口依然会尝试执行挂载操作并返回笔记本信息。",
+    "pinyin_full": "/api/notebook/opennotebook  gen ju ti gong de bi ji ben  id  da kai （ gua zai ） yi ge bi ji ben 。 ru guo bi ji ben yi jing shi da kai zhuang tai ， ci jie kou yi ran hui chang shi zhi xing gua zai cao zuo bing fan hui bi ji ben xin xi 。",
+    "pinyin_first": "/api/notebook/opennotebook  g j t g d b j b  id  d k （ g z ） y g b j b 。 r g b j b y j s d k z t ， c j k y r h c s z x g z c z b f h b j b x x 。"
+  },
+  {
+    "category": "notebook",
+    "file": "notebook/removeNotebook.html",
+    "path": "/api/notebook/removeNotebook",
+    "name": "移除笔记本",
+    "description": "根据提供的笔记本 ID 移除（删除）一个笔记本。请注意：此操作通常是不可逆的，会导致笔记本及其包含的所有数据被删除。",
+    "pinyin_full": "/api/notebook/removenotebook  gen ju ti gong de bi ji ben  id  yi chu （ shan chu ） yi ge bi ji ben 。 qing zhu yi ： ci cao zuo tong chang shi bu ke ni de ， hui dao zhi bi ji ben ji qi bao han de suo you shu ju bei shan chu 。",
+    "pinyin_first": "/api/notebook/removenotebook  g j t g d b j b  id  y c （ s c ） y g b j b 。 q z y ： c c z t c s b k n d ， h d z b j b j q b h d s y s j b s c 。"
+  },
+  {
+    "category": "notebook",
+    "file": "notebook/renameNotebook.html",
+    "path": "/api/notebook/renameNotebook",
+    "name": "重命名笔记本",
+    "description": "根据提供的笔记本 ID 和新名称，重命名一个已存在的笔记本。",
+    "pinyin_full": "/api/notebook/renamenotebook  gen ju ti gong de bi ji ben  id  he xin ming cheng ， zhong ming ming yi ge yi cun zai de bi ji ben 。",
+    "pinyin_first": "/api/notebook/renamenotebook  g j t g d b j b  id  h x m c ， z m m y g y c z d b j b 。"
+  },
+  {
+    "category": "notebook",
+    "file": "notebook/setNotebookConf.html",
+    "path": "/api/notebook/setNotebookConf",
+    "name": "设置笔记本配置",
+    "description": "修改指定笔记本的配置信息。可以更新笔记本的名称、图标、排序值、关闭状态等。",
+    "pinyin_full": "/api/notebook/setnotebookconf  xiu gai zhi ding bi ji ben de pei zhi xin xi 。 ke yi geng xin bi ji ben de ming cheng 、 tu biao 、 pai xu zhi 、 guan bi zhuang tai deng 。",
+    "pinyin_first": "/api/notebook/setnotebookconf  x g z d b j b d p z x x 。 k y g x b j b d m c 、 t b 、 p x z 、 g b z t d 。"
+  },
+  {
+    "category": "notebook",
+    "file": "notebook/setNotebookIcon.html",
+    "path": "/api/notebook/setNotebookIcon",
+    "name": "设置笔记本图标",
+    "description": "为指定的笔记本设置一个新的图标。图标通常是一个 Emoji 字符。",
+    "pinyin_full": "/api/notebook/setnotebookicon  wei zhi ding de bi ji ben she zhi yi ge xin de tu biao 。 tu biao tong chang shi yi ge  emoji  zi fu 。",
+    "pinyin_first": "/api/notebook/setnotebookicon  w z d d b j b s z y g x d t b 。 t b t c s y g  emoji  z f 。"
+  },
+  {
+    "category": "outline",
+    "file": "outline/getDocOutline.html",
+    "path": "/api/outline/getDocOutline",
+    "name": "获取文档大纲",
+    "description": "获取指定文档的大纲结构，大纲由文档中的标题块（h1-h6）组成。大纲结构对于导航和理解文档结构非常有帮助。",
+    "pinyin_full": "/api/outline/getdocoutline  huo qu zhi ding wen dang de da gang jie gou ， da gang you wen dang zhong de biao ti kuai （h1-h6） zu cheng 。 da gang jie gou dui yu dao hang he li jie wen dang jie gou fei chang you bang zhu 。",
+    "pinyin_first": "/api/outline/getdocoutline  h q z d w d d d g j g ， d g y w d z d b t k （h1-h6） z c 。 d g j g d y d h h l j w d j g f c y b z 。"
+  },
+  {
+    "category": "query",
+    "file": "query/sql.html",
+    "path": "/api/query/sql",
+    "name": "执行 SQL 查询",
+    "description": "执行 SQL 查询语句，返回查询结果。思源笔记使用 SQLite 作为底层数据库，支持标准的 SQL 查询语法。",
+    "pinyin_full": "/api/query/sql  zhi xing  sql  cha xun yu ju ， fan hui cha xun jie guo 。 si yuan bi ji shi yong  sqlite  zuo wei di ceng shu ju ku ， zhi chi biao zhun de  sql  cha xun yu fa 。",
+    "pinyin_first": "/api/query/sql  z x  sql  c x y j ， f h c x j g 。 s y b j s y  sqlite  z w d c s j k ， z c b z d  sql  c x y f 。"
+  },
+  {
+    "category": "ref",
+    "file": "ref/getBacklink.html",
+    "path": "/api/ref/getBacklink",
+    "name": "获取块的反向链接",
+    "description": "获取指定块的反向链接（Backlinks）和提及（Mentions）。反向链接是指其他块中明确引用了该块的内容，提及是指其他块中提到了该块的名称或别名但未创建链接。",
+    "pinyin_full": "/api/ref/getbacklink  huo qu zhi ding kuai de fan xiang lian jie （backlinks） he ti ji （mentions）。 fan xiang lian jie shi zhi qi ta kuai zhong ming que yin yong le gai kuai de nei rong ， ti ji shi zhi qi ta kuai zhong ti dao le gai kuai de ming cheng huo bie ming dan wei chuang jian lian jie 。",
+    "pinyin_first": "/api/ref/getbacklink  h q z d k d f x l j （backlinks） h t j （mentions）。 f x l j s z q t k z m q y y l g k d n r ， t j s z q t k z t d l g k d m c h b m d w c j l j 。"
+  },
+  {
+    "category": "ref",
+    "file": "ref/getBacklink2.html",
+    "path": "/api/ref/getBacklink2",
+    "name": "获取反向链接与提及 (增强版)",
+    "description": "根据指定的块 ID，获取其反向链接和提及列表。此接口提供了对反向链接和提及的分别筛选和排序功能。",
+    "pinyin_full": "/api/ref/getbacklink2  gen ju zhi ding de kuai  id， huo qu qi fan xiang lian jie he ti ji lie biao 。 ci jie kou ti gong le dui fan xiang lian jie he ti ji de fen bie shai xuan he pai xu gong neng 。",
+    "pinyin_first": "/api/ref/getbacklink2  g j z d d k  id， h q q f x l j h t j l b 。 c j k t g l d f x l j h t j d f b s x h p x g n 。"
+  },
+  {
+    "category": "ref",
+    "file": "ref/getBacklinkDoc.html",
+    "path": "/api/ref/getBacklinkDoc",
+    "name": "获取文档的反向链接",
+    "description": "获取指定文档的反向链接文档列表。返回的结果是包含引用了该文档中任意块的其他文档列表，以及这些文档中具体的引用位置（块ID）。",
+    "pinyin_full": "/api/ref/getbacklinkdoc  huo qu zhi ding wen dang de fan xiang lian jie wen dang lie biao 。 fan hui de jie guo shi bao han yin yong le gai wen dang zhong ren yi kuai de qi ta wen dang lie biao ， yi ji zhe xie wen dang zhong ju ti de yin yong wei zhi （ kuai id）。",
+    "pinyin_first": "/api/ref/getbacklinkdoc  h q z d w d d f x l j w d l b 。 f h d j g s b h y y l g w d z r y k d q t w d l b ， y j z x w d z j t d y y w z （ k id）。"
+  },
+  {
+    "category": "ref",
+    "file": "ref/getBackmentionDoc.html",
+    "path": "/api/ref/getBackmentionDoc",
+    "name": "获取反向提及文档内容",
+    "description": "获取指定定义块（defID）在特定文档树（refTreeID）中的反向提及内容。可以根据关键词过滤，并控制是否包含子块内容以及是否高亮关键词。",
+    "pinyin_full": "/api/ref/getbackmentiondoc  huo qu zhi ding ding yi kuai （defid） zai te ding wen dang shu （reftreeid） zhong de fan xiang ti ji nei rong 。 ke yi gen ju guan jian ci guo lü ， bing kong zhi shi fou bao han zi kuai nei rong yi ji shi fou gao liang guan jian ci 。",
+    "pinyin_first": "/api/ref/getbackmentiondoc  h q z d d y k （defid） z t d w d s （reftreeid） z d f x t j n r 。 k y g j g j c g l ， b k z s f b h z k n r y j s f g l g j c 。"
+  },
+  {
+    "category": "ref",
+    "file": "ref/refreshBacklink.html",
+    "path": "/api/ref/refreshBacklink",
+    "name": "刷新反向链接",
+    "description": "根据提供的块 ID，刷新该块的反向链接信息，并刷新事务队列。此接口用于确保指定块的反链数据是最新的。",
+    "pinyin_full": "/api/ref/refreshbacklink  gen ju ti gong de kuai  id， shua xin gai kuai de fan xiang lian jie xin xi ， bing shua xin shi wu dui lie 。 ci jie kou yong yu que bao zhi ding kuai de fan lian shu ju shi zui xin de 。",
+    "pinyin_first": "/api/ref/refreshbacklink  g j t g d k  id， s x g k d f x l j x x ， b s x s w d l 。 c j k y y q b z d k d f l s j s z x d 。"
+  },
+  {
+    "category": "repo",
+    "file": "repo/getCloudRepoSnapshots.html",
+    "path": "/api/repo/getCloudRepoSnapshots",
+    "name": "获取云端仓库快照列表",
+    "description": "获取当前用户已登录的云端同步仓库的快照列表，支持分页。",
+    "pinyin_full": "/api/repo/getcloudreposnapshots  huo qu dang qian yong hu yi deng lu de yun duan tong bu cang ku de kuai zhao lie biao ， zhi chi fen ye 。",
+    "pinyin_first": "/api/repo/getcloudreposnapshots  h q d q y h y d l d y d t b c k d k z l b ， z c f y 。"
+  },
+  {
+    "category": "repo",
+    "file": "repo/getCloudRepoTagSnapshots.html",
+    "path": "/api/repo/getCloudRepoTagSnapshots",
+    "name": "获取云端仓库带标签快照列表",
+    "description": "获取当前云端仓库中所有带标签的快照信息列表。",
+    "pinyin_full": "/api/repo/getcloudrepotagsnapshots  huo qu dang qian yun duan cang ku zhong suo you dai biao qian de kuai zhao xin xi lie biao 。",
+    "pinyin_first": "/api/repo/getcloudrepotagsnapshots  h q d q y d c k z s y d b q d k z x x l b 。"
+  },
+  {
+    "category": "repo",
+    "file": "repo/importRepoKey.html",
+    "path": "/api/repo/importRepoKey",
+    "name": "导入仓库密钥",
+    "description": "导入一个 Base64 编码的仓库密钥（通常用于加密的仓库）。成功导入后，会返回处理（可能也是某种形式的编码或校验后）的密钥。",
+    "pinyin_full": "/api/repo/importrepokey  dao ru yi ge  base64  bian ma de cang ku mi yao （ tong chang yong yu jia mi de cang ku ）。 cheng gong dao ru hou ， hui fan hui chu li （ ke neng ye shi mou zhong xing shi de bian ma huo jiao yan hou ） de mi yao 。",
+    "pinyin_first": "/api/repo/importrepokey  d r y g  base64  b m d c k m y （ t c y y j m d c k ）。 c g d r h ， h f h c l （ k n y s m z x s d b m h j y h ） d m y 。"
+  },
+  {
+    "category": "repo",
+    "file": "repo/initRepoKey.html",
+    "path": "/api/repo/initRepoKey",
+    "name": "初始化仓库密钥",
+    "description": "初始化一个新的仓库密钥（如果当前仓库尚未设置密钥），或者返回当前已存在的仓库密钥。这个密钥通常用于仓库的加密功能。",
+    "pinyin_full": "/api/repo/initrepokey  chu shi hua yi ge xin de cang ku mi yao （ ru guo dang qian cang ku shang wei she zhi mi yao ）， huo zhe fan hui dang qian yi cun zai de cang ku mi yao 。 zhe ge mi yao tong chang yong yu cang ku de jia mi gong neng 。",
+    "pinyin_first": "/api/repo/initrepokey  c s h y g x d c k m y （ r g d q c k s w s z m y ）， h z f h d q y c z d c k m y 。 z g m y t c y y c k d j m g n 。"
+  },
+  {
+    "category": "repo",
+    "file": "repo/initRepoKeyFromPassphrase.html",
+    "path": "/api/repo/initRepoKeyFromPassphrase",
+    "name": "从口令初始化仓库密钥",
+    "description": "根据用户提供的口令（Passphrase），初始化一个新的仓库密钥。此接口用于通过一个易记的口令来生成和设置仓库的加密密钥。",
+    "pinyin_full": "/api/repo/initrepokeyfrompassphrase  gen ju yong hu ti gong de kou ling （passphrase）， chu shi hua yi ge xin de cang ku mi yao 。 ci jie kou yong yu tong guo yi ge yi ji de kou ling lai sheng cheng he she zhi cang ku de jia mi mi yao 。",
+    "pinyin_first": "/api/repo/initrepokeyfrompassphrase  g j y h t g d k l （passphrase）， c s h y g x d c k m y 。 c j k y y t g y g y j d k l l s c h s z c k d j m m y 。"
+  },
+  {
+    "category": "repo",
+    "file": "repo/openRepoSnapshotDoc.html",
+    "path": "/api/repo/openRepoSnapshotDoc",
+    "name": "打开仓库快照中的文档",
+    "description": "根据提供的历史快照中的文档 ID，获取该文档的详细内容，包括标题、正文内容、用于显示的文本以及更新时间。",
+    "pinyin_full": "/api/repo/openreposnapshotdoc  gen ju ti gong de li shi kuai zhao zhong de wen dang  id， huo qu gai wen dang de xiang xi nei rong ， bao kuo biao ti 、 zheng wen nei rong 、 yong yu xian shi de wen ben yi ji geng xin shi jian 。",
+    "pinyin_first": "/api/repo/openreposnapshotdoc  g j t g d l s k z z d w d  id， h q g w d d x x n r ， b k b t 、 z w n r 、 y y x s d w b y j g x s j 。"
+  },
+  {
+    "category": "repo",
+    "file": "repo/purgeRepo.html",
+    "path": "/api/repo/purgeRepo",
+    "name": "清理本地仓库历史",
+    "description": "警告：这是一个非常危险的操作！",
+    "pinyin_full": "/api/repo/purgerepo  jing gao ： zhe shi yi ge fei chang wei xian de cao zuo ！",
+    "pinyin_first": "/api/repo/purgerepo  j g ： z s y g f c w x d c z ！"
+  },
+  {
+    "category": "repo",
+    "file": "repo/removeCloudRepoTagSnapshot.html",
+    "path": "/api/repo/removeCloudRepoTagSnapshot",
+    "name": "移除云端仓库标签快照",
+    "description": "根据提供的标签名称，从当前用户已登录的云端同步仓库中移除（删除）指定的标签快照。",
+    "pinyin_full": "/api/repo/removecloudrepotagsnapshot  gen ju ti gong de biao qian ming cheng ， cong dang qian yong hu yi deng lu de yun duan tong bu cang ku zhong yi chu （ shan chu ） zhi ding de biao qian kuai zhao 。",
+    "pinyin_first": "/api/repo/removecloudrepotagsnapshot  g j t g d b q m c ， c d q y h y d l d y d t b c k z y c （ s c ） z d d b q k z 。"
+  },
+  {
+    "category": "repo",
+    "file": "repo/removeRepoTagSnapshot.html",
+    "path": "/api/repo/removeRepoTagSnapshot",
+    "name": "移除本地仓库标签快照",
+    "description": "根据提供的标签名称，从当前本地工作空间（仓库）中移除（删除）指定的标签快照。",
+    "pinyin_full": "/api/repo/removerepotagsnapshot  gen ju ti gong de biao qian ming cheng ， cong dang qian ben di gong zuo kong jian （ cang ku ） zhong yi chu （ shan chu ） zhi ding de biao qian kuai zhao 。",
+    "pinyin_first": "/api/repo/removerepotagsnapshot  g j t g d b q m c ， c d q b d g z k j （ c k ） z y c （ s c ） z d d b q k z 。"
+  },
+  {
+    "category": "repo",
+    "file": "repo/resetRepo.html",
+    "path": "/api/repo/resetRepo",
+    "name": "重置本地仓库密钥",
+    "description": "警告：这是一个非常危险的操作！",
+    "pinyin_full": "/api/repo/resetrepo  jing gao ： zhe shi yi ge fei chang wei xian de cao zuo ！",
+    "pinyin_first": "/api/repo/resetrepo  j g ： z s y g f c w x d c z ！"
+  },
+  {
+    "category": "repo",
+    "file": "repo/setRepoIndexRetentionDays.html",
+    "path": "/api/repo/setRepoIndexRetentionDays",
+    "name": "设置历史快照索引保留天数",
+    "description": "设置当前工作空间（仓库）的本地历史快照索引的保留天数。索引是用于快速访问和检索历史版本的数据。设置一个合理的保留天数有助于平衡历史追溯能力和磁盘空间占用。",
+    "pinyin_full": "/api/repo/setrepoindexretentiondays  she zhi dang qian gong zuo kong jian （ cang ku ） de ben di li shi kuai zhao suo yin de bao liu tian shu 。 suo yin shi yong yu kuai su fang wen he jian suo li shi ban ben de shu ju 。 she zhi yi ge he li de bao liu tian shu you zhu yu ping heng li shi zhui su neng li he ci pan kong jian zhan yong 。",
+    "pinyin_first": "/api/repo/setrepoindexretentiondays  s z d q g z k j （ c k ） d b d l s k z s y d b l t s 。 s y s y y k s f w h j s l s b b d s j 。 s z y g h l d b l t s y z y p h l s z s n l h c p k j z y 。"
+  },
+  {
+    "category": "repo",
+    "file": "repo/setRetentionIndexesDaily.html",
+    "path": "/api/repo/setRetentionIndexesDaily",
+    "name": "设置每日历史快照索引保留数量",
+    "description": "设置当前工作空间（仓库）每日自动生成的本地历史快照索引的最大保留数量。这指的是每天保留的索引文件的个数，用于控制每日快照的精细度和存储空间。",
+    "pinyin_full": "/api/repo/setretentionindexesdaily  she zhi dang qian gong zuo kong jian （ cang ku ） mei ri zi dong sheng cheng de ben di li shi kuai zhao suo yin de zui da bao liu shu liang 。 zhe zhi de shi mei tian bao liu de suo yin wen jian de ge shu ， yong yu kong zhi mei ri kuai zhao de jing xi du he cun chu kong jian 。",
+    "pinyin_first": "/api/repo/setretentionindexesdaily  s z d q g z k j （ c k ） m r z d s c d b d l s k z s y d z d b l s l 。 z z d s m t b l d s y w j d g s ， y y k z m r k z d j x d h c c k j 。"
+  },
+  {
+    "category": "repo",
+    "file": "repo/tagSnapshot.html",
+    "path": "/api/repo/tagSnapshot",
+    "name": "为快照打标签",
+    "description": "为指定的本地历史快照（通过其 ID 定位）创建一个标签（通过名称指定）。标签可以帮助用户快速定位到重要的历史版本。",
+    "pinyin_full": "/api/repo/tagsnapshot  wei zhi ding de ben di li shi kuai zhao （ tong guo qi  id  ding wei ） chuang jian yi ge biao qian （ tong guo ming cheng zhi ding ）。 biao qian ke yi bang zhu yong hu kuai su ding wei dao zhong yao de li shi ban ben 。",
+    "pinyin_first": "/api/repo/tagsnapshot  w z d d b d l s k z （ t g q  id  d w ） c j y g b q （ t g m c z d ）。 b q k y b z y h k s d w d z y d l s b b 。"
+  },
+  {
+    "category": "repo",
+    "file": "repo/uploadCloudSnapshot.html",
+    "path": "/api/repo/uploadCloudSnapshot",
+    "name": "上传本地快照至云端",
+    "description": "将指定的本地历史快照（通过其 ID 和关联的标签名定位）上传到当前配置的云端同步服务提供商。",
+    "pinyin_full": "/api/repo/uploadcloudsnapshot  jiang zhi ding de ben di li shi kuai zhao （ tong guo qi  id  he guan lian de biao qian ming ding wei ） shang chuan dao dang qian pei zhi de yun duan tong bu fu wu ti gong shang 。",
+    "pinyin_first": "/api/repo/uploadcloudsnapshot  j z d d b d l s k z （ t g q  id  h g l d b q m d w ） s c d d q p z d y d t b f w t g s 。"
+  },
+  {
+    "category": "search",
+    "file": "search/findReplace.html",
+    "path": "/api/search/findReplace",
+    "name": "查找替换",
+    "description": "在指定范围（整个工作空间、笔记本或文档）内查找文本，并将其替换为新的文本。",
+    "pinyin_full": "/api/search/findreplace  zai zhi ding fan wei （ zheng ge gong zuo kong jian 、 bi ji ben huo wen dang ） nei cha zhao wen ben ， bing jiang qi ti huan wei xin de wen ben 。",
+    "pinyin_first": "/api/search/findreplace  z z d f w （ z g g z k j 、 b j b h w d ） n c z w b ， b j q t h w x d w b 。"
+  },
+  {
+    "category": "search",
+    "file": "search/fullTextSearchAssetContent.html",
+    "path": "/api/search/fullTextSearchAssetContent",
+    "name": "资源文件内容全文搜索",
+    "description": "对已建立索引的资源文件（Assets）内容进行全文搜索。",
+    "pinyin_full": "/api/search/fulltextsearchassetcontent  dui yi jian li suo yin de zi yuan wen jian （assets） nei rong jin xing quan wen sou suo 。",
+    "pinyin_first": "/api/search/fulltextsearchassetcontent  d y j l s y d z y w j （assets） n r j x q w s s 。"
+  },
+  {
+    "category": "search",
+    "file": "search/fullTextSearchBlock.html",
+    "path": "/api/search/fullTextSearchBlock",
+    "name": "全文搜索块",
+    "description": "全文搜索所有块内容，支持各种搜索条件和过滤选项。可以按关键词、查询语法、SQL或正则表达式进行搜索，并支持按创建时间、更新时间等排序。",
+    "pinyin_full": "/api/search/fulltextsearchblock  quan wen sou suo suo you kuai nei rong ， zhi chi ge zhong sou suo tiao jian he guo lü xuan xiang 。 ke yi an guan jian ci 、 cha xun yu fa 、sql huo zheng ze biao da shi jin xing sou suo ， bing zhi chi an chuang jian shi jian 、 geng xin shi jian deng pai xu 。",
+    "pinyin_first": "/api/search/fulltextsearchblock  q w s s s y k n r ， z c g z s s t j h g l x x 。 k y a g j c 、 c x y f 、sql h z z b d s j x s s ， b z c a c j s j 、 g x s j d p x 。"
+  },
+  {
+    "category": "search",
+    "file": "search/getAssetContent.html",
+    "path": "/api/search/getAssetContent",
+    "name": "获取资源文件内容片段",
+    "description": "获取指定资源文件（Asset）的内容片段，并高亮指定的查询关键词。",
+    "pinyin_full": "/api/search/getassetcontent  huo qu zhi ding zi yuan wen jian （asset） de nei rong pian duan ， bing gao liang zhi ding de cha xun guan jian ci 。",
+    "pinyin_first": "/api/search/getassetcontent  h q z d z y w j （asset） d n r p d ， b g l z d d c x g j c 。"
+  },
+  {
+    "category": "search",
+    "file": "search/getEmbedBlock.html",
+    "path": "/api/search/getEmbedBlock",
+    "name": "获取动态嵌入块内容",
+    "description": "根据提供的块 ID 列表获取嵌入块内容。",
+    "pinyin_full": "/api/search/getembedblock  gen ju ti gong de kuai  id  lie biao huo qu qian ru kuai nei rong 。",
+    "pinyin_first": "/api/search/getembedblock  g j t g d k  id  l b h q q r k n r 。"
+  },
+  {
+    "category": "search",
+    "file": "search/listInvalidBlockRefs.html",
+    "path": "/api/search/listInvalidBlockRefs",
+    "name": "列出失效的块引用",
+    "description": "列出工作空间中所有包含失效块引用的块。",
+    "pinyin_full": "/api/search/listinvalidblockrefs  lie chu gong zuo kong jian zhong suo you bao han shi xiao kuai yin yong de kuai 。",
+    "pinyin_first": "/api/search/listinvalidblockrefs  l c g z k j z s y b h s x k y y d k 。"
+  },
+  {
+    "category": "search",
+    "file": "search/removeTemplate.html",
+    "path": "/api/template/removeTemplate",
+    "name": "删除模板片段",
+    "description": "删除指定的模板片段文件。",
+    "pinyin_full": "/api/template/removetemplate  shan chu zhi ding de mu ban pian duan wen jian 。",
+    "pinyin_first": "/api/template/removetemplate  s c z d d m b p d w j 。"
+  },
+  {
+    "category": "search",
+    "file": "search/searchAsset.html",
+    "path": "/api/search/searchAsset",
+    "name": "搜索资源文件",
+    "description": "根据关键词和文件扩展名搜索工作空间中的资源文件（Assets）。",
+    "pinyin_full": "/api/search/searchasset  gen ju guan jian ci he wen jian kuo zhan ming sou suo gong zuo kong jian zhong de zi yuan wen jian （assets）。",
+    "pinyin_first": "/api/search/searchasset  g j g j c h w j k z m s s g z k j z d z y w j （assets）。"
+  },
+  {
+    "category": "search",
+    "file": "search/searchEmbedBlock.html",
+    "path": "/api/search/searchEmbedBlock",
+    "name": "查询嵌入块",
+    "description": "执行嵌入块中的 SQL 查询语句，并返回匹配的块内容。",
+    "pinyin_full": "/api/search/searchembedblock  zhi xing qian ru kuai zhong de  sql  cha xun yu ju ， bing fan hui pi pei de kuai nei rong 。",
+    "pinyin_first": "/api/search/searchembedblock  z x q r k z d  sql  c x y j ， b f h p p d k n r 。"
+  },
+  {
+    "category": "search",
+    "file": "search/searchRefBlock.html",
+    "path": "/api/search/searchRefBlock",
+    "name": "搜索引用块",
+    "description": "根据关键词搜索引用了特定块 ID 的块。",
+    "pinyin_full": "/api/search/searchrefblock  gen ju guan jian ci sou suo yin yong le te ding kuai  id  de kuai 。",
+    "pinyin_first": "/api/search/searchrefblock  g j g j c s s y y l t d k  id  d k 。"
+  },
+  {
+    "category": "search",
+    "file": "search/searchTag.html",
+    "path": "/api/search/searchTag",
+    "name": "搜索标签",
+    "description": "在笔记中搜索标签，可根据关键词查找相关标签。",
+    "pinyin_full": "/api/search/searchtag  zai bi ji zhong sou suo biao qian ， ke gen ju guan jian ci cha zhao xiang guan biao qian 。",
+    "pinyin_first": "/api/search/searchtag  z b j z s s b q ， k g j g j c c z x g b q 。"
+  },
+  {
+    "category": "search",
+    "file": "search/searchTemplate.html",
+    "path": "/api/search/searchTemplate",
+    "name": "搜索模板",
+    "description": "根据关键词搜索工作空间中的模板片段。",
+    "pinyin_full": "/api/search/searchtemplate  gen ju guan jian ci sou suo gong zuo kong jian zhong de mu ban pian duan 。",
+    "pinyin_first": "/api/search/searchtemplate  g j g j c s s g z k j z d m b p d 。"
+  },
+  {
+    "category": "search",
+    "file": "search/searchWidget.html",
+    "path": "/api/search/searchWidget",
+    "name": "搜索挂件块",
+    "description": "根据关键词搜索工作空间中的挂件块 (widget)。",
+    "pinyin_full": "/api/search/searchwidget  gen ju guan jian ci sou suo gong zuo kong jian zhong de gua jian kuai  (widget)。",
+    "pinyin_first": "/api/search/searchwidget  g j g j c s s g z k j z d g j k  (widget)。"
+  },
+  {
+    "category": "search",
+    "file": "search/updateEmbedBlock.html",
+    "path": "/api/search/updateEmbedBlock",
+    "name": "更新嵌入块",
+    "description": "更新指定嵌入块 (query_embed 类型) 的 SQL 查询语句。",
+    "pinyin_full": "/api/search/updateembedblock  geng xin zhi ding qian ru kuai  (query_embed  lei xing )  de  sql  cha xun yu ju 。",
+    "pinyin_first": "/api/search/updateembedblock  g x z d q r k  (query_embed  l x )  d  sql  c x y j 。"
+  },
+  {
+    "category": "setting",
+    "file": "setting/addVirtualBlockRefExclude.html",
+    "path": "/api/setting/addVirtualBlockRefExclude",
+    "name": "添加虚拟引用排除关键词",
+    "description": "添加一批关键词到虚拟块引用的排除列表中。当系统生成虚拟引用（例如，通过某些算法自动发现的潜在关联内容）时，如果目标块或其上下文包含了这些排除列表中的关键词，则这些虚拟引用可能不会被显示或建议。",
+    "pinyin_full": "/api/setting/addvirtualblockrefexclude  tian jia yi pi guan jian ci dao xu ni kuai yin yong de pai chu lie biao zhong 。 dang xi tong sheng cheng xu ni yin yong （ li ru ， tong guo mou xie suan fa zi dong fa xian de qian zai guan lian nei rong ） shi ， ru guo mu biao kuai huo qi shang xia wen bao han le zhe xie pai chu lie biao zhong de guan jian ci ， ze zhe xie xu ni yin yong ke neng bu hui bei xian shi huo jian yi 。",
+    "pinyin_first": "/api/setting/addvirtualblockrefexclude  t j y p g j c d x n k y y d p c l b z 。 d x t s c x n y y （ l r ， t g m x s f z d f x d q z g l n r ） s ， r g m b k h q s x w b h l z x p c l b z d g j c ， z z x x n y y k n b h b x s h j y 。"
+  },
+  {
+    "category": "setting",
+    "file": "setting/login2faCloudUser.html",
+    "path": "/api/setting/login2faCloudUser",
+    "name": "使用 2FA 登录云用户",
+    "description": "使用两步验证 (2FA) 代码登录云端用户。此操作需要在获取到临时 token 后进行，通常是 /api/setting/getCloudUser 在特定条件下返回2FA质询时，或类似场景。成功登录后会返回新的用户状态和认证信息。",
+    "pinyin_full": "/api/setting/login2faclouduser  shi yong liang bu yan zheng  (2fa)  dai ma deng lu yun duan yong hu 。 ci cao zuo xu yao zai huo qu dao lin shi  token  hou jin xing ， tong chang shi  /api/setting/getclouduser  zai te ding tiao jian xia fan hui 2fa zhi xun shi ， huo lei si chang jing 。 cheng gong deng lu hou hui fan hui xin de yong hu zhuang tai he ren zheng xin xi 。",
+    "pinyin_first": "/api/setting/login2faclouduser  s y l b y z  (2fa)  d m d l y d y h 。 c c z x y z h q d l s  token  h j x ， t c s  /api/setting/getclouduser  z t d t j x f h 2fa z x s ， h l s c j 。 c g d l h h f h x d y h z t h r z x x 。"
+  },
+  {
+    "category": "setting",
+    "file": "setting/logoutCloudUser.html",
+    "path": "/api/setting/logoutCloudUser",
+    "name": "登出云用户",
+    "description": "登出当前已登录的云端账户。调用此接口后，当前的云端用户会话将失效。",
+    "pinyin_full": "/api/setting/logoutclouduser  deng chu dang qian yi deng lu de yun duan zhang hu 。 diao yong ci jie kou hou ， dang qian de yun duan yong hu hui hua jiang shi xiao 。",
+    "pinyin_first": "/api/setting/logoutclouduser  d c d q y d l d y d z h 。 d y c j k h ， d q d y d y h h h j s x 。"
+  },
+  {
+    "category": "setting",
+    "file": "setting/refreshVirtualBlockRef.html",
+    "path": "/api/setting/refreshVirtualBlockRef",
+    "name": "刷新虚拟块引用缓存",
+    "description": "刷新（重置）虚拟块引用的缓存。当虚拟块引用的相关设置（例如，通过 /api/setting/addVirtualBlockRefInclude 或 /api/setting/addVirtualBlockRefExclude 修改了关键词列表，或者修改了虚拟引用的命名规则等）发生改变后，调用此接口可以清除旧的缓存，使得后续的虚拟引用查找能够基于最新的配置进行。操作成功后会广播一个 setConf 事件，通知前端配置已更新。",
+    "pinyin_full": "/api/setting/refreshvirtualblockref  shua xin （ zhong zhi ） xu ni kuai yin yong de huan cun 。 dang xu ni kuai yin yong de xiang guan she zhi （ li ru ， tong guo  /api/setting/addvirtualblockrefinclude  huo  /api/setting/addvirtualblockrefexclude  xiu gai le guan jian ci lie biao ， huo zhe xiu gai le xu ni yin yong de ming ming gui ze deng ） fa sheng gai bian hou ， diao yong ci jie kou ke yi qing chu jiu de huan cun ， shi de hou xu de xu ni yin yong cha zhao neng gou ji yu zui xin de pei zhi jin xing 。 cao zuo cheng gong hou hui guang bo yi ge  setconf  shi jian ， tong zhi qian duan pei zhi yi geng xin 。",
+    "pinyin_first": "/api/setting/refreshvirtualblockref  s x （ z z ） x n k y y d h c 。 d x n k y y d x g s z （ l r ， t g  /api/setting/addvirtualblockrefinclude  h  /api/setting/addvirtualblockrefexclude  x g l g j c l b ， h z x g l x n y y d m m g z d ） f s g b h ， d y c j k k y q c j d h c ， s d h x d x n y y c z n g j y z x d p z j x 。 c z c g h h g b y g  setconf  s j ， t z q d p z y g x 。"
+  },
+  {
+    "category": "setting",
+    "file": "setting/setAccount.html",
+    "path": "/api/setting/setAccount",
+    "name": "设置账户显示选项",
+    "description": "更新用户账户相关的显示配置信息。此接口用于设置是否在界面上显示标题和VIP标识。",
+    "pinyin_full": "/api/setting/setaccount  geng xin yong hu zhang hu xiang guan de xian shi pei zhi xin xi 。 ci jie kou yong yu she zhi shi fou zai jie mian shang xian shi biao ti he vip biao shi 。",
+    "pinyin_first": "/api/setting/setaccount  g x y h z h x g d x s p z x x 。 c j k y y s z s f z j m s x s b t h vip b s 。"
+  },
+  {
+    "category": "setting",
+    "file": "setting/setAI.html",
+    "path": "/api/setting/setAI",
+    "name": "配置 AI 设置",
+    "description": "配置思源笔记的 AI 相关设置。你需要传入一个包含 AI 配置的对象。",
+    "pinyin_full": "/api/setting/setai  pei zhi si yuan bi ji de  ai  xiang guan she zhi 。 ni xu yao chuan ru yi ge bao han  ai  pei zhi de dui xiang 。",
+    "pinyin_first": "/api/setting/setai  p z s y b j d  ai  x g s z 。 n x y c r y g b h  ai  p z d d x 。"
+  },
+  {
+    "category": "setting",
+    "file": "setting/setAppearance.html",
+    "path": "/api/setting/setAppearance",
+    "name": "设置外观",
+    "description": "更新思源笔记的整体外观配置。请求体应为一个完整的ในส่วน conf.Appearance 对象。",
+    "pinyin_full": "/api/setting/setappearance  geng xin si yuan bi ji de zheng ti wai guan pei zhi 。 qing qiu ti ying wei yi ge wan zheng de ในส่วน conf.appearance  dui xiang 。",
+    "pinyin_first": "/api/setting/setappearance  g x s y b j d z t w g p z 。 q q t y w y g w z d ในส่วน conf.appearance  d x 。"
+  },
+  {
+    "category": "setting",
+    "file": "setting/setExport.html",
+    "path": "/api/setting/setExport",
+    "name": "设置导出配置",
+    "description": "更新导出相关的配置信息。这些配置项对应于思源笔记\"设置 - 导出\"面板中的选项。",
+    "pinyin_full": "/api/setting/setexport  geng xin dao chu xiang guan de pei zhi xin xi 。 zhe xie pei zhi xiang dui ying yu si yuan bi ji \" she zhi  -  dao chu \" mian ban zhong de xuan xiang 。",
+    "pinyin_first": "/api/setting/setexport  g x d c x g d p z x x 。 z x p z x d y y s y b j \" s z  -  d c \" m b z d x x 。"
+  },
+  {
+    "category": "setting",
+    "file": "setting/setFiletree.html",
+    "path": "/api/setting/setFiletree",
+    "name": "设置文件树配置",
+    "description": "更新文件树（文档列表侧边栏）相关的配置信息。这些配置项对应于思源笔记\"设置 - 文件树\"面板中的选项。",
+    "pinyin_full": "/api/setting/setfiletree  geng xin wen jian shu （ wen dang lie biao ce bian lan ） xiang guan de pei zhi xin xi 。 zhe xie pei zhi xiang dui ying yu si yuan bi ji \" she zhi  -  wen jian shu \" mian ban zhong de xuan xiang 。",
+    "pinyin_first": "/api/setting/setfiletree  g x w j s （ w d l b c b l ） x g d p z x x 。 z x p z x d y y s y b j \" s z  -  w j s \" m b z d x x 。"
+  },
+  {
+    "category": "setting",
+    "file": "setting/setFlashcard.html",
+    "path": "/api/setting/setFlashcard",
+    "name": "设置闪卡配置",
+    "description": "更新闪卡（制卡和复习）相关的配置信息。这些配置项对应于思源笔记 \"设置 - 闪卡\" 面板中的选项。",
+    "pinyin_full": "/api/setting/setflashcard  geng xin shan ka （ zhi ka he fu xi ） xiang guan de pei zhi xin xi 。 zhe xie pei zhi xiang dui ying yu si yuan bi ji  \" she zhi  -  shan ka \"  mian ban zhong de xuan xiang 。",
+    "pinyin_first": "/api/setting/setflashcard  g x s k （ z k h f x ） x g d p z x x 。 z x p z x d y y s y b j  \" s z  -  s k \"  m b z d x x 。"
+  },
+  {
+    "category": "storage",
+    "file": "storage/getLocalStorage.html",
+    "path": "/api/storage/getLocalStorage",
+    "name": "获取本地存储",
+    "description": "获取思源笔记本地存储中指定键的值。本地存储可用于保存各种配置和自定义数据，类似于浏览器的localStorage但在思源笔记的后端实现。",
+    "pinyin_full": "/api/storage/getlocalstorage  huo qu si yuan bi ji ben di cun chu zhong zhi ding jian de zhi 。 ben di cun chu ke yong yu bao cun ge zhong pei zhi he zi ding yi shu ju ， lei si yu liu lan qi de localstorage dan zai si yuan bi ji de hou duan shi xian 。",
+    "pinyin_first": "/api/storage/getlocalstorage  h q s y b j b d c c z z d j d z 。 b d c c k y y b c g z p z h z d y s j ， l s y l l q d localstorage d z s y b j d h d s x 。"
+  },
+  {
+    "category": "storage",
+    "file": "storage/setLocalStorage.html",
+    "path": "/api/storage/setLocalStorage",
+    "name": "设置本地存储",
+    "description": "将值保存到思源笔记的本地存储中。可以用于保存插件配置、用户偏好设置或其他需要持久化的数据。如果指定的键已存在，则会覆盖原有的值。",
+    "pinyin_full": "/api/storage/setlocalstorage  jiang zhi bao cun dao si yuan bi ji de ben di cun chu zhong 。 ke yi yong yu bao cun cha jian pei zhi 、 yong hu pian hao she zhi huo qi ta xu yao chi jiu hua de shu ju 。 ru guo zhi ding de jian yi cun zai ， ze hui fu gai yuan you de zhi 。",
+    "pinyin_first": "/api/storage/setlocalstorage  j z b c d s y b j d b d c c z 。 k y y y b c c j p z 、 y h p h s z h q t x y c j h d s j 。 r g z d d j y c z ， z h f g y y d z 。"
+  },
+  {
+    "category": "system",
+    "file": "system/currentTime.html",
+    "path": "/api/system/currentTime",
+    "name": "获取当前时间",
+    "description": "获取思源笔记服务器的当前系统时间，返回Unix时间戳（毫秒）。",
+    "pinyin_full": "/api/system/currenttime  huo qu si yuan bi ji fu wu qi de dang qian xi tong shi jian ， fan hui unix shi jian chuo （ hao miao ）。",
+    "pinyin_first": "/api/system/currenttime  h q s y b j f w q d d q x t s j ， f h unix s j c （ h m ）。"
+  },
+  {
+    "category": "system",
+    "file": "system/version.html",
+    "path": "/api/system/version",
+    "name": "获取思源笔记版本",
+    "description": "获取思源笔记当前安装的版本号。",
+    "pinyin_full": "/api/system/version  huo qu si yuan bi ji dang qian an zhuang de ban ben hao 。",
+    "pinyin_first": "/api/system/version  h q s y b j d q a z d b b h 。"
+  },
+  {
+    "category": "tag",
+    "file": "tag/getTag.html",
+    "path": "/api/tag/getTag",
+    "name": "获取标签",
+    "description": "获取思源笔记中的所有标签及其下的子标签。标签是组织内容的重要方式，允许用户对块和文档进行分类和筛选。",
+    "pinyin_full": "/api/tag/gettag  huo qu si yuan bi ji zhong de suo you biao qian ji qi xia de zi biao qian 。 biao qian shi zu zhi nei rong de zhong yao fang shi ， yun xu yong hu dui kuai he wen dang jin xing fen lei he shai xuan 。",
+    "pinyin_first": "/api/tag/gettag  h q s y b j z d s y b q j q x d z b q 。 b q s z z n r d z y f s ， y x y h d k h w d j x f l h s x 。"
+  },
+  {
+    "category": "tag",
+    "file": "tag/removeTag.html",
+    "path": "/api/tag/removeTag",
+    "name": "移除标签",
+    "description": "移除系统中的指定标签。此操作将从所有包含该标签的块中删除该标签。请谨慎使用，因为这将影响所有引用此标签的内容。",
+    "pinyin_full": "/api/tag/removetag  yi chu xi tong zhong de zhi ding biao qian 。 ci cao zuo jiang cong suo you bao han gai biao qian de kuai zhong shan chu gai biao qian 。 qing jin shen shi yong ， yin wei zhe jiang ying xiang suo you yin yong ci biao qian de nei rong 。",
+    "pinyin_first": "/api/tag/removetag  y c x t z d z d b q 。 c c z j c s y b h g b q d k z s c g b q 。 q j s s y ， y w z j y x s y y y c b q d n r 。"
+  },
+  {
+    "category": "tag",
+    "file": "tag/renameTag.html",
+    "path": "/api/tag/renameTag",
+    "name": "重命名标签",
+    "description": "将已有的标签重命名为新名称。此操作会修改所有包含该标签的块，将原标签更新为新标签。",
+    "pinyin_full": "/api/tag/renametag  jiang yi you de biao qian zhong ming ming wei xin ming cheng 。 ci cao zuo hui xiu gai suo you bao han gai biao qian de kuai ， jiang yuan biao qian geng xin wei xin biao qian 。",
+    "pinyin_first": "/api/tag/renametag  j y y d b q z m m w x m c 。 c c z h x g s y b h g b q d k ， j y b q g x w x b q 。"
+  },
+  {
+    "category": "template",
+    "file": "template/docSaveAsTemplate.html",
+    "path": "/api/template/docSaveAsTemplate",
+    "name": "文档保存为模板",
+    "description": "将指定文档的内容保存为一个新的模板文件。",
+    "pinyin_full": "/api/template/docsaveastemplate  jiang zhi ding wen dang de nei rong bao cun wei yi ge xin de mu ban wen jian 。",
+    "pinyin_first": "/api/template/docsaveastemplate  j z d w d d n r b c w y g x d m b w j 。"
+  },
+  {
+    "category": "template",
+    "file": "template/render.html",
+    "path": "/api/template/render",
+    "name": "渲染模板",
+    "description": "使用 Go template 语法渲染给定的模板字符串。模板中可以包含变量、条件判断、循环等。",
+    "pinyin_full": "/api/template/render  shi yong  go template  yu fa xuan ran gei ding de mu ban zi fu chuan 。 mu ban zhong ke yi bao han bian liang 、 tiao jian pan duan 、 xun huan deng 。",
+    "pinyin_first": "/api/template/render  s y  go template  y f x r g d d m b z f c 。 m b z k y b h b l 、 t j p d 、 x h d 。"
+  },
+  {
+    "category": "template",
+    "file": "template/renderSprig.html",
+    "path": "/api/template/renderSprig",
+    "name": "使用Sprig渲染模板",
+    "description": "使用 Sprig 库 提供的扩展函数来渲染 Go template 模板字符串。Sprig 提供了许多实用的模板函数，例如字符串操作、数学计算、日期处理等。",
+    "pinyin_full": "/api/template/rendersprig  shi yong  sprig  ku   ti gong de kuo zhan han shu lai xuan ran  go template  mu ban zi fu chuan 。sprig  ti gong le xu duo shi yong de mu ban han shu ， li ru zi fu chuan cao zuo 、 shu xue ji suan 、 ri qi chu li deng 。",
+    "pinyin_first": "/api/template/rendersprig  s y  sprig  k   t g d k z h s l x r  go template  m b z f c 。sprig  t g l x d s y d m b h s ， l r z f c c z 、 s x j s 、 r q c l d 。"
+  },
+  {
+    "category": "websocket",
+    "file": "websocket/broadcast.html",
+    "path": "/ws/broadcast",
+    "name": "/ws/broadcast",
+    "description": "这是 /ws/broadcast 接口的文档。需要补充详细说明。",
+    "pinyin_full": "/ws/broadcast  zhe shi  /ws/broadcast  jie kou de wen dang 。 xu yao bu chong xiang xi shuo ming 。",
+    "pinyin_first": "/ws/broadcast  z s  /ws/broadcast  j k d w d 。 x y b c x x s m 。"
+  }
+]

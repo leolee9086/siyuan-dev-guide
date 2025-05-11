@@ -1,0 +1,202 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>获取文档历史内容 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+    
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/history/getDocHistoryContent</span>
+    </div>
+    
+    <h1>获取文档历史内容</h1>
+    
+    <div class="github-source">
+        <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/model/history.go#L165" target="_blank" title="查看源文件 (推测)">源文件 (GitHub, 推测位置)</a>
+    </div>
+    
+    <div class="auth-tags">
+        <span class="chip auth-required">需要认证</span>
+        <span class="chip admin-required">需要管理员权限</span>
+    </div>
+    
+    <h2>接口描述</h2>
+    <p>获取指定历史快照中某个特定文档的内容。这允许用户查看或预览文档在过去某个时间点的具体状态。</p>
+    <p>接口会读取指定的历史 <code>.sy</code> 文件，解析其内容（JSON AST），并将其渲染为只读格式返回。如果提供了关键词，会在内容中进行高亮（仅对非大文档生效）。</p>
+    
+    <h2>请求参数 (JSON Body)</h2>
+    <table class="param-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>必选</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>historyPath</td>
+                <td>string</td>
+                <td><span class="required">是</span></td>
+                <td>目标历史文档文件的绝对路径（相对于工作空间 <code>data/</code> 目录）。例如: <code>/history/20231027110000/20231027105900-abcdefg/20231027105901-hijklmn.sy</code>。此路径通常需要结合 <code>/api/history/getNotebookHistory</code> 返回的 <code>hCreated</code> 和 <code>items[].path</code> 手动构造（注意 <code>items[].path</code> 可能需要拼接笔记本 ID）。</td>
+            </tr>
+            <tr>
+                <td>k</td>
+                <td>string</td>
+                <td><span class="optional">否</span></td>
+                <td>用于在返回内容中高亮显示的关键词。多个词用空格分隔。</td>
+            </tr>
+            <tr>
+                <td>highlight</td>
+                <td>boolean</td>
+                <td><span class="optional">否</span></td>
+                <td>是否执行关键词高亮，默认为 <code>true</code>。仅当参数 <code>k</code> 非空时有效，且对大文档无效。</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <h2>返回值</h2>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>code</td>
+                <td>number</td>
+                <td>返回码，0 表示成功，非 0 表示失败。</td>
+            </tr>
+            <tr>
+                <td>msg</td>
+                <td>string</td>
+                <td>错误信息，成功时为空字符串。</td>
+            </tr>
+            <tr>
+                <td>data</td>
+                <td>object</td>
+                <td>包含文档历史内容数据。</td>
+            </tr>
+            <tr>
+                <td class="indent-1">data.id</td>
+                <td>string</td>
+                <td>文档 ID。</td>
+            </tr>
+             <tr>
+                <td class="indent-1">data.rootID</td>
+                <td>string</td>
+                <td>文档的根块 ID。</td>
+            </tr>
+             <tr>
+                <td class="indent-1">data.content</td>
+                <td>string</td>
+                <td>渲染后的只读历史文档内容。<strong>格式注意：</strong>对于普通大小的文档，此字段通常包含适用于 Protyle 编辑器的 HTML DOM 字符串；对于大文档（<code>isLargeDoc</code> 为 true），此字段可能包含纯文本或 Markdown 格式的内容。</td>
+            </tr>
+             <tr>
+                <td class="indent-1">data.isLargeDoc</td>
+                <td>boolean</td>
+                <td>指示该历史文档是否为大文档（文件大小 >= 1MB）。这会影响 <code>content</code> 字段的渲染格式和高亮是否生效。</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="example-tab">请求示例</div>
+            <div class="tab" data-target="response-tab">返回示例</div>
+        </div>
+        
+        <div id="example-tab" class="tab-content active">
+            <h3>请求示例</h3>
+            <pre><code>POST /api/history/getDocHistoryContent HTTP/1.1
+Host: 127.0.0.1:6806
+Content-Type: application/json
+Authorization: Token your-api-token
+
+{
+  "historyPath": "/history/20231027110000/20231027105900-abcdefg/20231027105901-hijklmn.sy",
+  "k": "重要 笔记",
+  "highlight": true
+}</code></pre>
+        </div>
+        
+        <div id="response-tab" class="tab-content">
+            <h3>返回示例 (普通文档)</h3>
+            <pre><code>{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "id": "20231027105901-hijklmn",
+    "rootID": "20231027105901-hijklmn",
+    "content": "&lt;div data-node-id=\"20231027105901-hijklmn\" data-type=\"NodeDocument\" class=\"protyle-wysiwyg\"&gt;&lt;div data-node-id=\"20231027110500-uvwxyz\" data-type=\"NodeParagraph\" class=\"p\"&gt;这是一段&lt;mark data-type=\"search-mark"&gt;重要&lt;/mark&gt;的&lt;mark data-type=\"search-mark"&gt;笔记&lt;/mark&gt;内容。&lt;/div&gt;&lt;!-- More HTML DOM nodes --&gt;&lt;/div&gt;",
+    "isLargeDoc": false
+  }
+}</code></pre>
+            <h3>返回示例 (大文档，无高亮)</h3>
+             <pre><code>{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "id": "20231028120000-largeid",
+    "rootID": "20231028120000-largeid",
+    "content": "# 大文档标题\n\n这是大文档的第一段...\n\n这是第二段... (内容可能是纯文本或Markdown)",
+    "isLargeDoc": true
+  }
+}</code></pre>
+        </div>
+    </div>
+    
+    <blockquote class="important-note">
+        <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+        <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+    </blockquote>
+    
+    <div class="test-area">
+        <h3>在线测试</h3>
+        <form id="api-test-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记中的'设置-关于'中查看API token (需要管理员权限)">
+            </div>
+            
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/history/getDocHistoryContent">
+            </div>
+            
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly>
+            </div>
+            
+            <div class="form-group">
+                <label for="api-params">请求参数 (JSON):</label>
+                <textarea id="api-params">{
+  "historyPath": "/history/YYYYMMDDHHMMSS/notebook_id/doc_id.sy",
+  "k": "",
+  "highlight": true
+}</textarea>
+            </div>
+            
+            <button type="submit" class="btn">发送请求</button>
+        </form>
+        
+        <div id="api-result" class="result"></div>
+    </div>
+    
+    <div class="nav-links">
+        <a href="../index.html">返回首页</a>
+        <a href="rollbackNotebookHistory.html">上一个接口: 回滚工作空间历史</a> 
+        <a href="rollbackDocHistory.html">下一个接口: 回滚文档历史</a>
+    </div>
+    
+    <script src="../api-tester.js"></script>
+
+ </body></html>

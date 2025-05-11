@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>API: /api/sync/setCloudSyncDir</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../script.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>API: /api/sync/setCloudSyncDir</h1>
+        <p><strong>HTTP Method:</strong> POST</p>
+        <p><strong>认证:</strong> 需要登录 (<code>model.CheckAuth</code>), 管理员权限 (<code>model.CheckAdminRole</code>), 非只读模式 (<code>model.CheckReadonly</code>)</p>
+
+        <h2>功能描述</h2>
+        <p>设置当前工作空间在当前所选的云服务提供商（如 S3, WebDAV 等）上的同步根文件夹（或存储桶内的顶层路径）的名称。</p>
+        <p>例如，如果设置为 "MyNotes"，那么所有同步数据都会存放在云端的 <code>MyNotes/</code> 目录下。</p>
+        <p class="warning"><strong>重要提示:</strong> 修改此设置后，下次同步时，思源笔记会尝试使用新的云端目录。如果该目录不存在，根据服务商和具体配置，可能会创建它或者同步失败。如果该目录已存在且包含其他非本工作空间的数据，可能会导致数据混乱或丢失。请谨慎操作，并确保理解所选云服务提供商的行为。</p>
+
+        <h2>请求参数 (JSON Body)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>参数名</th>
+                    <th>类型</th>
+                    <th>是否必需</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>name</code></td>
+                    <td>string</td>
+                    <td>是</td>
+                    <td>要设置的云端同步目录的名称。例如 <code>"SiYuanCloudSync"</code>。</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>请求示例</h3>
+        <pre><code class="language-json">{
+    "name": "SiYuanBackup"
+}</code></pre>
+
+        <h2>响应</h2>
+        <p>成功时，HTTP 状态码为 200，响应体中的 <code>code</code> 为 0，<code>msg</code> 为空，<code>data</code> 为 <code>null</code>。</p>
+
+        <h3>响应示例 (成功)</h3>
+        <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": null
+}</code></pre>
+
+        <h3>响应示例 (失败，例如未登录或非管理员)</h3>
+        <pre><code class="language-json">{
+    "code": -1,
+    "msg": "用户需要登录", // 或 "管理员才能操作", "readonly mode" 等
+    "data": null
+}</code></pre>
+
+        <h2>在线测试</h2>
+        <div class="api-test">
+            <label for="param-name">云端同步目录名称 (<code>name</code>):</label>
+            <input type="text" id="param-name" value="SiYuanCloudSync">
+            <button onclick="testSetCloudSyncDir()">发送请求</button>
+            <h3>响应:</h3>
+            <pre id="response-output">等待请求...</pre>
+        </div>
+    </div>
+
+    <script>
+        function testSetCloudSyncDir() {
+            const name = document.getElementById('param-name').value;
+            const outputDiv = document.getElementById('response-output');
+            outputDiv.textContent = '正在发送请求...';
+
+            if (!name) {
+                outputDiv.textContent = '错误：云端同步目录名称不能为空。';
+                return;
+            }
+
+            fetch('/api/sync/setCloudSyncDir', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // 'Authorization': 'Token YOUR_API_TOKEN_HERE' // 如果需要认证
+                },
+                body: JSON.stringify({ name: name })
+            })
+            .then(response => response.json())
+            .then(data => {
+                outputDiv.textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                outputDiv.textContent = '请求失败: ' + error;
+                console.error('Error:', error);
+            });
+        }
+        // 确保代码高亮
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+        });
+    </script>
+</body>
+</html> 

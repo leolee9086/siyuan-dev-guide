@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>获取块面包屑 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>获取块面包屑 (`/api/block/getBlockBreadcrumb`)</h1>
+            <nav>
+                <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/block.go#L520" target="_blank">在 GitHub 上查看源码</a>
+                <a href="../pages/block.html">返回块 API 列表</a>
+                <a href="../index.html">返回 API 主页</a>
+            </nav>
+        </header>
+        <main>
+            <div class="api-header" style="display:none;">
+                <span class="method">POST</span>
+                <span class="endpoint">/api/block/getBlockBreadcrumb</span>
+            </div>
+
+            <h2>接口描述</h2>
+            <p>获取指定块 ID 的面包屑路径信息，即从其根节点（通常是文档）到该块自身的路径节点列表。</p>
+
+            <h2>请求参数</h2>
+            <table class="param-table">
+                <thead>
+                    <tr>
+                        <th>参数名</th>
+                        <th>类型</th>
+                        <th>必选</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>id</td>
+                        <td>string</td>
+                        <td><span class="required">是</span></td>
+                        <td>需要获取面包屑的块 ID。</td>
+                    </tr>
+                    <tr>
+                        <td>excludeTypes</td>
+                        <td>string[]</td>
+                        <td><span class="optional">否</span></td>
+                        <td>一个字符串数组，指定在面包屑路径中需要排除的块类型。例如，传入 `["d"]` 可以排除文档块节点。常见的类型缩写包括：
+                            <ul>
+                                <li><code>d</code>: 文档 (Document)</li>
+                                <li><code>h</code>: 标题 (Heading)</li>
+                                <li><code>l</code>: 列表 (List)</li>
+                                <li><code>i</code>: 列表项 (ListItem)</li>
+                                <li><code>p</code>: 段落 (Paragraph)</li>
+                                <li><code>b</code>: 引述 (Blockquote)</li>
+                                <li><code>t</code>: 表格 (Table)</li>
+                                <li><code>c</code>: 代码块 (CodeBlock)</li>
+                                <li><code>m</code>: 数学公式块 (MathBlock)</li>
+                                <li><code>s</code>: 超级块 (SuperBlock)</li>
+                                <li><code>html</code>: HTML 块</li>
+                                <li><code>av</code>: 属性视图 (AttributeView)</li>
+                            </ul>
+                            注意：此处的类型是内部类型表示，可能与前端显示或 `type` 字段的完整名称（如 `NodeDocument`）不同。
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>返回值</h2>
+            <p>返回一个标准的 API 响应 JSON 对象。</p>
+             <table class="response-table">
+                <thead>
+                    <tr>
+                        <th>字段名</th>
+                        <th>类型</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>code</td>
+                        <td>number</td>
+                        <td><code>0</code> 表示成功，非 <code>0</code> 表示失败。</td>
+                    </tr>
+                    <tr>
+                        <td>msg</td>
+                        <td>string</td>
+                        <td>如果失败，则包含错误信息。</td>
+                    </tr>
+                    <tr>
+                        <td>data</td>
+                        <td>BlockPath[] | null</td>
+                        <td>一个对象数组 (<code>BlockPath[]</code>)，按从根节点到目标节点的顺序排列。如果找不到块或发生错误，可能为 <code>null</code> 或空数组 <code>[]</code>。
+                     <br><code>BlockPath</code> 对象结构如下:
+                        <table class="nested-table">
+                            <thead><tr><th>字段名</th><th>类型</th><th>描述</th></tr></thead>
+                            <tbody>
+                                <tr><td>id</td><td>string</td><td>路径节点的块 ID。</td></tr>
+                                <tr><td>name</td><td>string</td><td>路径节点的名称。通常是文档标题、标题内容或块的主要文本内容的缩略（经过 HTML 转义）。文档块的 name 可能是 "笔记本名/文档路径"。</td></tr>
+                                <tr><td>type</td><td>string</td><td>路径节点的块类型 (例如 "NodeDocument", "NodeHeading", "NodeParagraph", "NodeListItem" 等)。</td></tr>
+                                <tr><td>subType</td><td>string</td><td>路径节点的块子类型 (例如 "h1"-"h6" 对于标题, "task" 对于任务列表项)。</td></tr>
+                                <tr><td>children</td><td>array</td><td>子路径数组 (在此 API 中通常为空数组 <code>[]</code>)。</td></tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="tab-container">
+            <div class="tabs">
+                <div class="tab active" data-target="example-tab">请求示例</div>
+                <div class="tab" data-target="response-tab-success">成功响应</div>
+                <div class="tab" data-target="response-tab-fail-notfound">失败响应 (Not Found)</div>
+                <div class="tab" data-target="response-tab-fail-param">失败响应 (Param Error)</div>
+            </div>
+
+            <div id="example-tab" class="tab-content active">
+                <h3>请求示例</h3>
+                <pre><code class="language-json">POST /api/block/getBlockBreadcrumb HTTP/1.1
+Host: 127.0.0.1:6806
+Content-Type: application/json
+Authorization: Token your-api-token
+
+{
+  "id": "20231018102400-abcde1f",
+  "excludeTypes": ["d"]
+}</code></pre>
+            </div>
+
+            <div id="response-tab-success" class="tab-content">
+                 <h3>成功响应示例</h3>
+                 <pre><code class="language-json">{
+   "code": 0,
+   "msg": "",
+   "data": [
+     {
+       "id": "20200811211906-nbe3hp1",
+    <div class="auth-tags">
+        <span class="chip auth-required">需要认证</span>
+    </div>
+
+    <h2>接口描述</h2>
+    <p>获取指定块 ID 的面包屑路径信息，即从其根节点（通常是文档）到该块自身的路径节点列表。</p>
+
+    <h2>请求参数</h2>
+    <table class="param-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>必选</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>id</td>
+                <td>string</td>
+                <td><span class="required">是</span></td>
+                <td>需要获取面包屑的块 ID。</td>
+            </tr>
+            <tr>
+                <td>excludeTypes</td>
+                <td>string[]</td>
+                <td><span class="optional">否</span></td>
+                <td>一个字符串数组，指定在面包屑路径中需要排除的块类型。例如，传入 `["d"]` 可以排除文档块节点。常见的类型缩写包括：
+                    <ul>
+                        <li><code>d</code>: 文档 (Document)</li>
+                        <li><code>h</code>: 标题 (Heading)</li>
+                        <li><code>l</code>: 列表 (List)</li>
+                        <li><code>i</code>: 列表项 (ListItem)</li>
+                        <li><code>p</code>: 段落 (Paragraph)</li>
+                        <li><code>b</code>: 引述 (Blockquote)</li>
+                        <li><code>t</code>: 表格 (Table)</li>
+                        <li><code>c</code>: 代码块 (CodeBlock)</li>
+                        <li><code>m</code>: 数学公式块 (MathBlock)</li>
+                        <li><code>s</code>: 超级块 (SuperBlock)</li>
+                        <li><code>html</code>: HTML 块</li>
+                        <li><code>av</code>: 属性视图 (AttributeView)</li>
+                    </ul>
+                    注意：此处的类型是内部类型表示，可能与前端显示或 `type` 字段的完整名称（如 `NodeDocument`）不同。
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>返回值</h2>
+    <p>返回一个标准的 API 响应 JSON 对象。</p>
+     <table class="response-table">
+        <thead>
+            <tr>
+                <th>字段名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>code</td>
+                <td>number</td>
+                <td><code>0</code> 表示成功，非 <code>0</code> 表示失败。</td>
+            </tr>
+            <tr>
+                <td>msg</td>
+                <td>string</td>
+                <td>如果失败，则包含错误信息。</td>
+            </tr>
+            <tr>
+                <td>data</td>
+                <td>BlockPath[] | null</td>
+                <td>一个对象数组 (<code>BlockPath[]</code>)，按从根节点到目标节点的顺序排列。如果找不到块或发生错误，可能为 <code>null</code> 或空数组 <code>[]</code>。
+                 <br><code>BlockPath</code> 对象结构如下:
+                    <table class="nested-table">
+                        <thead><tr><th>字段名</th><th>类型</th><th>描述</th></tr></thead>
+                        <tbody>
+                            <tr><td>id</td><td>string</td><td>路径节点的块 ID。</td></tr>
+                            <tr><td>name</td><td>string</td><td>路径节点的名称。通常是文档标题、标题内容或块的主要文本内容的缩略（经过 HTML 转义）。文档块的 name 可能是 "笔记本名/文档路径"。</td></tr>
+                            <tr><td>type</td><td>string</td><td>路径节点的块类型 (例如 "NodeDocument", "NodeHeading", "NodeParagraph", "NodeListItem" 等)。</td></tr>
+                            <tr><td>subType</td><td>string</td><td>路径节点的块子类型 (例如 "h1"-"h6" 对于标题, "task" 对于任务列表项)。</td></tr>
+                            <tr><td>children</td><td>array</td><td>子路径数组 (在此 API 中通常为空数组 <code>[]</code>)。</td></tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="example-tab">请求示例</div>
+            <div class="tab" data-target="response-tab-success">成功响应</div>
+            <div class="tab" data-target="response-tab-fail-notfound">失败响应 (Not Found)</div>
+            <div class="tab" data-target="response-tab-fail-param">失败响应 (Param Error)</div>
+        </div>
+
+        <div id="example-tab" class="tab-content active">
+            <h3>请求示例</h3>
+            <pre><code class="language-json">POST /api/block/getBlockBreadcrumb HTTP/1.1
+Host: 127.0.0.1:6806
+Content-Type: application/json
+Authorization: Token your-api-token
+
+{
+  "id": "20231018102400-abcde1f",
+  "excludeTypes": ["d"]
+}</code></pre>
+        </div>
+
+        <div id="response-tab-success" class="tab-content">
+             <h3>成功响应示例</h3>
+             <pre><code class="language-json">{
+  "code": 0,
+  "msg": "",
+  "data": [
+    {
+      "id": "20200811211906-nbe3hp1",
+      "name": "API 文档规范",
+      "type": "NodeHeading",
+      "subType": "h2",
+      "children": []
+    },
+    {
+      "id": "20231018102400-abcde1f",
+      "name": "这是一个段落",
+      "type": "NodeParagraph",
+      "subType": "",
+      "children": []
+    }
+  ]
+}</code></pre>
+        </div>
+
+         <div id="response-tab-fail-notfound" class="tab-content">
+            <h3>失败响应示例 (块不存在)</h3>
+            <pre><code class="language-json">{
+  "code": 0, 
+  "msg": "",
+  "data": [] 
+}</code></pre>
+         </div>
+
+         <div id="response-tab-fail-param" class="tab-content">
+            <h3>失败响应示例 (参数错误)</h3>
+             <pre><code class="language-json">{
+  "code": -1,
+  "msg": "json: cannot unmarshal string into Go struct field .id of type string",
+  "data": null
+}</code></pre>
+         </div>
+    </div>
+
+    <h2>备注</h2>
+    <ul>
+        <li>面包屑路径包含了从根节点（通常是文档块）到指定块的所有符合条件的父级块。</li>
+        <li><code>excludeTypes</code> 参数可以用来过滤掉不希望在面包屑中显示的节点类型。</li>
+        <li>返回的 <code>name</code> 字段经过 HTML 转义，前端显示时可能需要解码。</li>
+        <li>对于列表项等块，其 <code>name</code> 可能是其首个子块内容的缩略。</li>
+    </ul>
+
+    <blockquote class="important-note">
+        <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+        <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+    </blockquote>
+
+    <div class="test-area">
+        <h3>在线测试</h3>
+        <form id="api-test-form">
+             <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记的 设置->关于 中查看 API Token">
+            </div>
+
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/block/getBlockBreadcrumb" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="api-params">请求参数 (JSON):</label>
+                <textarea id="api-params">{
+  "id": "",
+  "excludeTypes": []
+}</textarea>
+                <small>请填入 <code>id</code> (必需) 和可选的 <code>excludeTypes</code> 数组。</small>
+            </div>
+
+            <button type="submit" class="btn">发送请求</button>
+        </form>
+
+        <div id="api-result" class="result"></div>
+    </div>
+
+    <div class="nav-links">
+        <a href="checkBlockRef.html">上一个接口: 检查块是否为引用</a>
+        <a href="getBlockDOM.html">下一个接口: 获取块 DOM</a>
+    </div>
+
+    <script src="../api-tester.js"></script>
+</body>
+</html> 

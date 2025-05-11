@@ -1,0 +1,132 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>transferBlockRef API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>转移块引用 API (`/api/block/transferBlockRef`)</h1>
+            <nav>
+                <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/block.go#L68" target="_blank">在 GitHub 上查看源码</a>
+                <a href="../pages/block.html">返回块 API 列表</a>
+                <a href="../index.html">返回 API 主页</a>
+            </nav>
+        </header>
+        <main>
+            <section id="description">
+                <h2>接口描述</h2>
+                <p>该接口用于将所有对源块（`fromID`）的引用转移到目标块（`toID`）。</p>
+                <p>执行后，所有原来引用 `fromID` 的块将改为引用 `toID`。原来引用 `toID` 的块保持不变。</p>
+                <p>与 <a href="swapBlockRef.html">`swapBlockRef`</a> 不同，这是一个单向的引用转移。</p>
+            </section>
+
+            <section id="request">
+                <h2>请求</h2>
+                <p><strong>方法:</strong> POST</p>
+                <p><strong>路径:</strong> `/api/block/transferBlockRef`</p>
+                <p><strong>认证:</strong> 需要 Token</p>
+                <h3>请求体 (JSON)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>参数</th>
+                            <th>类型</th>
+                            <th>必需</th>
+                            <th>描述</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>`fromID`</td>
+                            <td>string</td>
+                            <td>是</td>
+                            <td>源块的 ID，即被替换引用的块。</td>
+                        </tr>
+                        <tr>
+                            <td>`toID`</td>
+                            <td>string</td>
+                            <td>是</td>
+                            <td>目标块的 ID，即新的引用目标。</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h3>请求示例</h3>
+                <pre><code class="language-json">{
+    "fromID": "20230517100000-abcdefgh",
+    "toID": "20230517100000-ijklmnop"
+}</code></pre>
+            </section>
+
+            <section id="response">
+                <h2>响应</h2>
+                <h3>成功响应 (200 OK)</h3>
+                <p>成功转移引用后，返回一个空数据对象。</p>
+                <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": null
+}</code></pre>
+                <h3>失败响应</h3>
+                <p>如果请求失败（例如，ID 无效或块不存在），将返回错误信息。</p>
+                <pre><code class="language-json">{
+    "code": -1,
+    "msg": "Invalid block ID pattern [无效的ID]", // 或 "Block not found [id=...]"
+    "data": null
+}</code></pre>
+            </section>
+
+            <section id="online-test">
+                <h2>在线测试</h2>
+                <form id="test-form">
+                     <div class="form-group">
+                        <label for="param-fromID">fromID (必填):</label>
+                        <input type="text" id="param-fromID" name="fromID" required="">
+                    </div>
+                    <div class="form-group">
+                        <label for="param-toID">toID (必填):</label>
+                        <input type="text" id="param-toID" name="toID" required="">
+                    </div>
+                    <button type="submit">发送请求</button>
+                </form>
+                <h3>测试结果:</h3>
+                <pre><code id="test-result"></code></pre>
+            </section>
+        </main>
+        <footer>
+            <p>© 2023 Siyuan Note API 文档</p>
+        </footer>
+    </div>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        document.getElementById('test-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const fromID = document.getElementById('param-fromID').value;
+            const toID = document.getElementById('param-toID').value;
+            const resultContainer = document.getElementById('test-result');
+            resultContainer.textContent = '请求中...';
+
+            try {
+                const response = await fetch('/api/block/transferBlockRef', { // Updated API path
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Token ${getAuthToken()}` // 从 localStorage 或其他地方获取 Token
+                    },
+                    body: JSON.stringify({ fromID, toID })
+                });
+                const result = await response.json();
+                resultContainer.textContent = JSON.stringify(result, null, 2);
+            } catch (error) {
+                resultContainer.textContent = `请求失败: ${error}`;
+            }
+        });
+    </script>
+
+ </body></html>

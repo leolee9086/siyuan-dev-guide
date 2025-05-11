@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>API: /api/system/addMicrosoftDefenderExclusion</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../script.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>思源笔记 API 文档</h1>
+    </header>
+    <nav>
+        <a href="../index.html">返回首页</a>
+        <a href="index.html">返回 system 分类</a>
+    </nav>
+    <main>
+        <h2>/api/system/addMicrosoftDefenderExclusion</h2>
+        <p><strong>方法:</strong> POST</p>
+        <p><strong>认证:</strong> `model.CheckAuth`, `model.CheckAdminRole`, `model.CheckReadonly` (需要登录，管理员权限，非只读模式)</p>
+        <p><strong>功能:</strong> (仅限 Windows 系统) 尝试将思源笔记的安装目录和工作空间目录添加到 Microsoft Defender (Windows 安全中心) 的排除列表中。</p>
+        <p>此操作旨在帮助避免 Microsoft Defender 可能引起的性能问题或对思源笔记文件的误报。执行此操作通常需要管理员权限。在非 Windows 系统上调用此 API 不会执行任何操作。</p>
+
+        <h3>请求参数</h3>
+        <p>此 API 不需要任何请求参数。</p>
+
+        <h3>请求示例</h3>
+        <p>由于不需要请求体，可以直接发送 POST 请求。</p>
+
+        <h3>响应结果</h3>
+        <p>成功时 (或在非 Windows 系统上调用时)，返回的 JSON 对象中 <code>code</code> 为 0，<code>msg</code> 为空字符串，<code>data</code> 为 <code>null</code>。</p>
+        <pre><code class="language-json">
+{
+    "code": 0,
+    "msg": "",
+    "data": null
+}
+        </code></pre>
+        <p>在 Windows 系统上执行失败时 (例如，没有足够的权限执行 PowerShell 命令，或命令执行出错)，<code>code</code> 非 0，<code>msg</code> 包含具体的错误信息。</p>
+        <pre><code class="language-json">
+{
+    "code": -1,
+    "msg": "Failed to add Microsoft Defender exclusion: ...error details...",
+    "data": null
+}
+        </code></pre>
+        <p><strong>注意:</strong> 如果用户在思源笔记的设置中选择了"不再提示添加排除"，则通过 <code>/api/system/ignoreAddMicrosoftDefenderExclusion</code> 设置后，此 API 可能不再主动触发或其行为可能受到影响 (具体需参考 `model.AddMicrosoftDefenderExclusion` 的内部逻辑)。</p>
+
+        <h3>在线测试</h3>
+        <div class="test-area">
+            <p>此 API 不需要参数。</p>
+            <button onclick="testAPI()">发送请求</button>
+            <h4>响应:</h4>
+            <pre id="response-output"></pre>
+        </div>
+
+        <script>
+            async function testAPI() {
+                const responseOutput = document.getElementById('response-output');
+                responseOutput.textContent = '正在请求...';
+
+                try {
+                    const response = await fetch('/api/system/addMicrosoftDefenderExclusion', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // 'Authorization': 'Token YOUR_API_TOKEN_HERE' // 如果需要认证
+                        }
+                        // 此API不需要body
+                    });
+                    const result = await response.json();
+                    responseOutput.textContent = JSON.stringify(result, null, 2);
+                } catch (error) {
+                    console.error('API 测试失败:', error);
+                    responseOutput.textContent = '发生错误，请查看控制台。\n' + error.message;
+                }
+            }
+        </script>
+    </main>
+    <footer>
+        <p>本文档由 AI 自动生成，可能存在不准确之处，请以实际 API 行为为准。</p>
+    </footer>
+</body>
+</html> 

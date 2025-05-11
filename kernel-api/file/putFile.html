@@ -1,0 +1,166 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>putFile API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>写入文件 API (`/api/file/putFile`)</h1>
+            <nav>
+                <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/file.go#L361" target="_blank">在 GitHub 上查看源码</a>
+                <a href="../pages/file.html">返回文件 API 列表</a>
+                <a href="../index.html">返回 API 主页</a>
+            </nav>
+        </header>
+        <main>
+            <section id="description">
+                <h2>接口描述</h2>
+                <p>该接口用于向工作空间指定路径写入文件内容。如果文件已存在，将会被覆盖；如果不存在，将会创建新文件（包括必要的父目录）。</p>
+                <p>通常用于上传资源文件、创建配置文件或写入其他类型的文件。</p>
+                <p class="important-note"><strong>注意:</strong> 路径参数相对于工作空间根目录。要写入 <code>data</code> 目录，路径必须以 <code>data/</code> 开头。要写入临时目录 <code>temp</code>，路径必须以 <code>temp/</code> 开头。写入其他受限目录可能会失败。</p>
+            </section>
+
+            <section id="request">
+                <h2>请求</h2>
+                <p><strong>方法:</strong> POST</p>
+                <p><strong>路径:</strong> `/api/file/putFile`</p>
+                <p><strong>认证:</strong> 需要 Token</p>
+                <h3>请求体 (multipart/form-data)</h3>
+                <p>请求体必须是 <code>multipart/form-data</code> 格式。</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>字段名</th>
+                            <th>类型</th>
+                            <th>必需</th>
+                            <th>描述</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>`path`</td>
+                            <td>string</td>
+                            <td>是</td>
+                            <td>目标文件或目录路径，相对于工作空间根目录。例如 <code>data/assets/my-image.png</code> (数据目录) 或 <code>temp/my-upload.zip</code> (临时目录)。<strong>必须包含正确的路径前缀 (如 <code>data/</code> 或 <code>temp/</code>)。</strong></td>
+                        </tr>
+                        <tr>
+                            <td>`file`</td>
+                            <td>file</td>
+                            <td>否 (当 `isDir=true` 时非必需)</td>
+                            <td>要上传的文件内容。当 `isDir=false` 时必需。</td>
+                        </tr>
+                         <tr>
+                            <td>`isDir`</td>
+                            <td>string ("true" or "false")</td>
+                            <td>是</td>
+                            <td>指明 `path` 是否是目录。如果为 "true"，则只创建目录；如果为 "false"，则写入 `file` 字段提供的文件内容。</td>
+                        </tr>
+                         <tr>
+                            <td>`modTime`</td>
+                            <td>string (毫秒时间戳)</td>
+                            <td>是</td>
+                            <td>文件的修改时间戳（毫秒）。</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h3>请求示例 (使用 curl)</h3>
+                <p>写入数据目录下的文件:</p>
+                <pre><code class="language-bash"># 假设当前目录下有 my-local-image.jpg 文件
+API_TOKEN="YOUR_API_TOKEN"
+TARGET_PATH="data/assets/uploaded-image.jpg"
+MOD_TIME=$(date +%s000) # 获取当前时间的毫秒时间戳 (示例, bash可能不同)
+
+curl -X POST http://127.0.0.1:6806/api/file/putFile \
+     -H "Authorization: Token $API_TOKEN" \
+     -F "path=$TARGET_PATH" \
+     -F "file=@my-local-image.jpg" \
+     -F "isDir=false" \
+     -F "modTime=$MOD_TIME"</code></pre>
+                <p>写入临时目录下的文件:</p>
+                <pre><code class="language-bash">API_TOKEN="YOUR_API_TOKEN"
+TARGET_PATH="temp/uploaded-archive.zip"
+MOD_TIME=$(date +%s000)
+
+curl -X POST http://127.0.0.1:6806/api/file/putFile \
+     -H "Authorization: Token $API_TOKEN" \
+     -F "path=$TARGET_PATH" \
+     -F "file=@local-archive.zip" \
+     -F "isDir=false" \
+     -F "modTime=$MOD_TIME"</code></pre>
+                 <p>创建数据目录下的目录:</p>
+                 <pre><code class="language-bash">API_TOKEN="YOUR_API_TOKEN"
+TARGET_PATH="data/widgets/new-widget"
+MOD_TIME=$(date +%s000)
+
+curl -X POST http://127.0.0.1:6806/api/file/putFile \
+     -H "Authorization: Token $API_TOKEN" \
+     -F "path=$TARGET_PATH" \
+     -F "isDir=true" \
+     -F "modTime=$MOD_TIME"</code></pre>
+            </section>
+
+            <section id="response">
+                <h2>响应</h2>
+                <h3>成功响应 (200 OK)</h3>
+                <p>成功写入文件或创建目录后，返回一个空数据对象。</p>
+                <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": null
+}</code></pre>
+                <h3>失败响应</h3>
+                <p>如果请求失败（例如，路径无效、写入权限不足、数据解析错误等），将返回错误信息。</p>
+                <pre><code class="language-json">{
+    "code": -1,
+    "msg": "Invalid path [path=...]", // 或 "Write file failed: ...", "Parse form file failed: ..."
+    "data": null
+}</code></pre>
+            </section>
+
+            <section id="online-test">
+                <h2>在线测试</h2>
+                 <p><strong>注意:</strong> 由于浏览器无法直接在表单中构造 <code>multipart/form-data</code> 并上传本地文件，且参数类型与之前文档描述不同，在线测试功能**暂不可用**。请使用 `curl` 或其他工具进行测试。</p>
+                <form id="test-form" style="display: none;">
+                     <!-- 保留表单结构但隐藏，防止脚本报错 -->
+                     <div class="form-group">
+                        <label for="param-path">path (必填):</label>
+                        <input type="text" id="param-path" name="path" required="" placeholder="e.g., data/assets/my-file.txt">
+                    </div>
+                     <!-- 文件内容字段移除 -->
+                     <div class="form-group">
+                        <label for="param-isDir">isDir (必填):</label>
+                        <select id="param-isDir" name="isDir" required="">
+                            <option value="false" selected="">false (文件)</option>
+                            <option value="true">true (目录)</option>
+                        </select>
+                    </div>
+                      <div class="form-group">
+                        <label for="param-modTime">modTime (必填, ms 时间戳):</label>
+                        <input type="number" id="param-modTime" name="modTime" required="" placeholder="例如：1678886400000">
+                    </div>
+                    <button type="submit">发送请求 (不可用)</button>
+                </form>
+                <h3>测试结果:</h3>
+                <pre><code id="test-result">在线测试暂不可用</code></pre>
+            </section>
+        </main>
+        <footer>
+            <p>© 2023 Siyuan Note API 文档</p>
+        </footer>
+    </div>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        // 在线测试脚本已失效，注释掉或移除
+        /* document.getElementById('test-form').addEventListener('submit', async function(event) {
+            // ... 原有逻辑不再适用 ...
+        }); */
+    </script>
+
+ </body></html>

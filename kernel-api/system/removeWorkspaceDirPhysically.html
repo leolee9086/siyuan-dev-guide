@@ -1,0 +1,147 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/system/removeWorkspaceDirPhysically"> <!-- API Endpoint Meta Tag -->
+    <title>物理删除工作空间目录 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .danger {
+            color: #ffffff; /* White text */
+            background-color: #d32f2f; /* Red background */
+            border: 1px solid #b71c1c; /* Darker red border */
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .danger strong {
+            font-size: 1.2em;
+        }
+        .warning {
+            color: #d32f2f; /* Red text */
+            background-color: #ffcdd2; /* Light red background */
+            border: 1px solid #d32f2f;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        .warning strong {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>物理删除工作空间目录 (removeWorkspaceDirPhysically)</h1>
+        <nav>
+            <a href="../index.html">首页</a> | 
+            <a href="index.html">System API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/workspace.go#L159" target="_blank">GitHub Source (workspace.go)</a>
+        </nav>
+    </header>
+    <main>
+        <section id="danger-zone">
+            <div class="danger">
+                <strong>极度危险的操作！数据将永久丢失且无法恢复！</strong><br>
+                调用此 API 将会递归删除您指定的目录以及其中的<strong>所有</strong>文件和子目录！请务必再三确认路径无误，并确保您已做好数据备份！<br>
+                如果删除的是当前工作空间，程序将在删除后立即退出！
+            </div>
+        </section>
+
+        <section id="description">
+            <h2>功能描述</h2>
+            <p>此 API 端点 <code>POST /api/system/removeWorkspaceDirPhysically</code> 用于从磁盘上<strong>物理删除</strong>一个指定的目录及其全部内容。</p>
+            <p>与 <code>/api/system/removeWorkspaceDir</code> 不同，后者仅从列表中移除工作空间引用，而此 API 会彻底删除文件系统中的数据。</p>
+            <p class="warning"><strong>警告：</strong>这是一个不可逆的操作。强烈建议在执行前进行完整的数据备份。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体必须是 JSON 格式，包含以下参数：</p>
+            <ul>
+                <li><code>path</code> (string): <strong>必填</strong>。要从磁盘上彻底删除的工作空间目录的绝对路径。</li>
+            </ul>
+            <p><strong>请求示例:</strong></p>
+            <pre><code class="language-json">
+{
+  "path": "/path/to/permanently/delete/workspace"
+}
+            </code></pre>
+        </section>
+
+        <section id="response-format">
+            <h2>响应结果</h2>
+            <p>如果删除的目标不是当前工作空间，且删除成功（或目标路径不存在/不是目录），将返回一个 JSON 对象，<code>code</code> 为 0，<code>data</code> 为 <code>null</code>。</p>
+            <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": null
+}
+            </code></pre>
+            <p>如果删除的目标是<strong>当前工作空间</strong>，并且删除成功，API <strong>不会返回响应</strong>，因为程序会立即退出。</p>
+            <p>如果删除过程中发生错误（例如权限不足），将返回非 0 的 <code>code</code> 和具体的错误信息 <code>msg</code>。</p>
+            <pre><code class="language-json">
+{
+  "code": -1,
+  "msg": "remove /path/to/delete/workspace: permission denied", // 示例错误信息
+  "data": null
+}
+            </code></pre>
+        </section>
+
+        <section id="online-testing">
+            <h2>在线测试</h2>
+            <div class="danger">
+                <strong>极度危险！请勿轻易尝试！</strong> 在线测试此 API 将永久删除您指定的目录及其所有内容，且无法撤销！如果删除的是当前工作空间，程序会退出！除非您完全理解风险并已备份数据，否则<strong>绝对不要</strong>使用此测试功能！
+            </div>
+            <div class="api-tester">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="请输入您的 API Token (可选)" value=""><br>
+
+                <label for="endpoint">Endpoint:</label>
+                <input type="text" id="endpoint" value="/api/system/removeWorkspaceDirPhysically" readonly=""><br>
+
+                <label for="method">Method:</label>
+                <input type="text" id="method" value="POST" readonly=""><br>
+
+                <label for="params">Parameters (JSON):</label><br>
+                <textarea id="params" rows="4" placeholder="{
+  &quot;path&quot;: &quot;&quot; // 请极其谨慎地填入要删除的路径！
+}"></textarea><br>
+
+                <button onclick="confirmSendRequest('【高危警告】您确定要永久删除指定的目录及其所有内容吗？此操作无法撤销，数据将丢失！如果删除的是当前工作空间，程序将退出！')">发送请求 (极度危险)</button>
+
+                <h3>响应结果:</h3>
+                <pre id="response-output"></pre>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>思源笔记 API 文档 | 最后更新时间：<span id="last-updated"></span></p>
+    </footer>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        // 更新最后更新时间
+        document.getElementById('last-updated').textContent = new Date().toLocaleString();
+
+        // 添加确认弹窗逻辑
+        function confirmSendRequest(message) {
+            // 再次确认
+            if (confirm(message)) {
+                const confirmation = prompt("此操作风险极高！请输入 '确认删除' 以继续：");
+                if (confirmation === "确认删除") {
+                    sendRequest();
+                } else {
+                    alert("操作已取消。");
+                }
+            }
+        }
+    </script>
+
+ </body></html>

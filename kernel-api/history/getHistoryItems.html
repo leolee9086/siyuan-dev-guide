@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>获取历史条目 - 思源笔记 API 文档</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../stylesheets/styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/history/getHistoryItems</span>
+    </div>
+
+    <h1>获取历史条目</h1>
+
+    <div class="auth-tags">
+        <span class="chip">需要认证</span>
+    </div>
+
+    <h2>接口描述</h2>
+    <p>根据创建时间和查询条件获取历史记录中的具体条目。</p>
+    <p>这个接口通常在用户点击某个历史时间点时被调用，用于获取该时间点对应的详细修改记录。</p>
+
+    <h2>实现链接</h2>
+    <ul>
+        <li>后端路由: <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/router.go" target="_blank">siyuan/kernel/api/router.go</a></li>
+        <li>处理函数: <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/history.go" target="_blank">siyuan/kernel/api/history.go</a> (<code>getHistoryItems</code> 函数)</li>
+        <li>核心逻辑: <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/model/history.go" target="_blank">siyuan/kernel/model/history.go</a> (<code>FullTextSearchHistoryItems</code> 函数)</li>
+    </ul>
+
+    <h2>请求体 (JSON)</h2>
+    <pre><code class="language-json">{
+  "created": "历史记录的创建时间戳 (秒)",
+  "query": "搜索关键词 (通常是文档 ID)",
+  "notebook": "笔记本 ID (可选, 用于过滤)",
+  "op": "操作类型 (可选, 如 'all', 'update', 'delete' 等)",
+  "type": "历史记录类型 (3 表示文档历史)"
+}
+</code></pre>
+    <ul>
+        <li><code>created</code>: (<code>string</code>) 必填。需要查询的具体历史记录的创建时间戳 (秒)，通常从 <code>searchHistory</code> 接口返回的列表中获取。</li>
+        <li><code>query</code>: (<code>string</code>) 必填。通常传递文档 ID，以获取该文档在该时间点的历史条目。也可以是其他搜索关键词。</li>
+        <li><code>notebook</code>: (<code>string</code>) 可选。如果提供了笔记本 ID，则只在该笔记本范围内查找。</li>
+        <li><code>op</code>: (<code>string</code>) 可选。过滤操作类型，例如只看 'update' 操作。默认为 'all'。</li>
+        <li><code>type</code>: (<code>number</code>) 必填。指定要查询的历史类型。
+            <ul>
+                <li><code>3</code>: 文档历史 (doc)</li>
+                <!-- 其他类型待补充 -->
+            </ul>
+        </li>
+    </ul>
+
+    <!-- Add Tabs for examples -->
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="request-example-tab">请求示例</div>
+            <div class="tab" data-target="response-example-tab">返回示例</div>
+        </div>
+
+        <div id="request-example-tab" class="tab-content active">
+            <h3>请求示例</h3>
+             <pre><code class="language-json">{
+  "created": "1667280000",
+  "query": "20231027105900-abcdefg",
+  "notebook": "",
+  "op": "all",
+  "type": 3
+}
+</code></pre>
+        </div>
+
+        <div id="response-example-tab" class="tab-content">
+            <h3>返回示例</h3>
+            <pre><code class="language-json">{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "items": [
+      {
+        "title": "文档A",
+        "path": "20231101100000-u/20231027105900-abcdefg.sy",
+        "op": "update",
+        "notebook": "20231027105900-abcdefg"
+      }
+    ]
+  }
+}
+</code></pre>
+        </div>
+    </div>
+
+    <h2>响应体 (JSON)</h2>
+    <pre><code class="language-json">{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "items": [
+      {
+        "title": "文档或资源标题",
+        "path": "历史文件路径 (相对于 data/history/)",
+        "op": "操作类型",
+        "notebook": "所属笔记本 ID (仅文档历史)"
+      }
+      // ... 可能有多个条目
+    ]
+  }
+}
+</code></pre>
+    <ul>
+        <li><code>data.items</code>: (<code>array</code>) 包含在该时间点、满足查询条件的具体历史条目对象数组。</li>
+        <li><code>item.title</code>: (<code>string</code>) 被修改的文档或资源的标题。</li>
+        <li><code>item.path</code>: (<code>string</code>) 该历史条目对应的实际文件路径，位于 <code>data/history/</code> 目录下。</li>
+        <li><code>item.op</code>: (<code>string</code>) 该条目对应的操作类型 (如 'update', 'delete' 等)。</li>
+        <li><code>item.notebook</code>: (<code>string</code>) 如果是文档历史，这里是文档所属的笔记本 ID。</li>
+    </ul>
+
+    <blockquote class="important-note">
+        <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+        <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+    </blockquote>
+
+    <!-- Add Test Area -->
+    <div class="test-area">
+        <h3>在线测试</h3>
+        <form id="api-test-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记中的 设置-关于 中查看 API Token">
+            </div>
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/history/getHistoryItems">
+            </div>
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly>
+            </div>
+            <div class="form-group">
+                <label for="api-params">请求参数 (JSON):</label>
+                <textarea id="api-params" rows="8">{
+  "created": "从searchHistory获取的时间戳",
+  "query": "通常是文档ID",
+  "notebook": "",
+  "op": "all",
+  "type": 3
+}</textarea>
+            </div>
+            <button type="submit" class="btn">发送请求</button>
+        </form>
+        <div id="api-result" class="result"></div>
+    </div>
+
+    <script src="../api-tester.js"></script>
+
+</body></html>

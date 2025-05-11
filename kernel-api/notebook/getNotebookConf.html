@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>获取笔记本配置 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+    <a href="./index.html" class="back-link">← 返回 Notebook API 列表</a>
+
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/notebook/getNotebookConf</span>
+    </div>
+
+    <h1>获取笔记本配置</h1>
+    <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/notebook.go#L301" target="_blank" class="github-link">在 GitHub 上查看源码 (notebook.go)</a>
+    <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/conf/box.go#L20" target="_blank" class="github-link">BoxConf 定义 (box.go)</a>
+
+    <div class="auth-tags">
+        <span class="chip auth-required">需要认证</span>
+    </div>
+
+    <h2>接口描述</h2>
+    <p>获取指定笔记本的配置信息，包括笔记本的 ID、名称以及详细的配置对象 (<code>BoxConf</code>)。</p>
+    <p>此接口会调用内核的 <code>model.Conf.GetBox(notebookID).GetConf()</code> 方法来获取数据。</p>
+
+    <h2>请求参数</h2>
+    <p>请求体为一个 JSON 对象，包含以下字段：</p>
+    <table class="request-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>必需</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>notebook</td>
+                <td>string</td>
+                <td>是</td>
+                <td>要获取配置的笔记本的 ID。</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>返回值</h2>
+    <p>返回标准的 JSON 结构，其中 <code>data</code> 字段包含笔记本的 ID、名称和配置对象：</p>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>code</td>
+                <td>number</td>
+                <td>返回码，0 表示成功，其他表示失败。</td>
+            </tr>
+            <tr>
+                <td>msg</td>
+                <td>string</td>
+                <td>错误信息，成功时为空字符串。</td>
+            </tr>
+            <tr>
+                <td>data</td>
+                <td>object</td>
+                <td>成功时，包含笔记本配置信息的对象；失败或笔记本不存在时可能为 null。</td>
+            </tr>
+            <tr>
+                <td>data.box</td>
+                <td>string</td>
+                <td>笔记本的 ID。</td>
+            </tr>
+            <tr>
+                <td>data.name</td>
+                <td>string</td>
+                <td>笔记本的当前名称。</td>
+            </tr>
+            <tr>
+                <td>data.conf</td>
+                <td>object</td>
+                <td>笔记本的详细配置对象 (<code>BoxConf</code>)。</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3><code>data.conf</code> (BoxConf) 对象结构</h3>
+    <p><code>BoxConf</code> 对象包含以下字段：</p>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>字段名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>name</td>
+                <td>string</td>
+                <td>笔记本名称。</td>
+            </tr>
+            <tr>
+                <td>sort</td>
+                <td>number</td>
+                <td>排序字段（用于自定义排序时的顺序）。</td>
+            </tr>
+            <tr>
+                <td>icon</td>
+                <td>string</td>
+                <td>笔记本图标的 Emoji 字符或图片文件名。</td>
+            </tr>
+            <tr>
+                <td>closed</td>
+                <td>boolean</td>
+                <td>笔记本是否处于关闭状态。</td>
+            </tr>
+            <tr>
+                <td>refCreateSaveBox</td>
+                <td>string</td>
+                <td>当通过块引用创建新文档时，默认保存到的目标笔记本 ID。如果为空，则保存在当前笔记本。</td>
+            </tr>
+            <tr>
+                <td>refCreateSavePath</td>
+                <td>string</td>
+                <td>当通过块引用创建新文档时，默认保存到的目标路径模板。</td>
+            </tr>
+            <tr>
+                <td>docCreateSaveBox</td>
+                <td>string</td>
+                <td>当直接新建文档时，默认保存到的目标笔记本 ID。如果为空，则保存在当前笔记本。</td>
+            </tr>
+            <tr>
+                <td>docCreateSavePath</td>
+                <td>string</td>
+                <td>当直接新建文档时，默认保存到的目标路径模板。</td>
+            </tr>
+            <tr>
+                <td>dailyNoteSavePath</td>
+                <td>string</td>
+                <td>新建日记时默认的保存路径模板。例如：<code>/daily note/{{now | date "2006/01"}}/{{now | date "2006-01-02"}}</code></td>
+            </tr>
+            <tr>
+                <td>dailyNoteTemplatePath</td>
+                <td>string</td>
+                <td>新建日记时使用的模板文档路径。</td>
+            </tr>
+            <tr>
+                <td>sortMode</td>
+                <td>number</td>
+                <td>文档列表的排序方式。具体值请参考 <code>kernel/util/sort.go</code> 中的 <code>SortMode*</code> 常量定义，例如 0 (文件名升序), 6 (自定义排序) 等。</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="example-tab">请求示例</div>
+            <div class="tab" data-target="response-tab">返回示例</div>
+        </div>
+
+        <div id="example-tab" class="tab-content active">
+            <h3>请求示例 (JSON)</h3>
+            <pre><code class="language-json">{
+  "notebook": "20200812220409-rng0qan"
+}</code></pre>
+        </div>
+
+        <div id="response-tab" class="tab-content">
+            <h3>成功返回示例</h3>
+            <pre><code class="language-json">{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "box": "20200812220409-rng0qan",
+    "name": "我的知识库",
+    "conf": {
+      "name": "我的知识库",
+      "sort": 0,
+      "icon": "",
+      "closed": false,
+      "refCreateSaveBox": "",
+      "refCreateSavePath": "",
+      "docCreateSaveBox": "",
+      "docCreateSavePath": "",
+      "dailyNoteSavePath": "/daily note/{{now | date "2006/01"}}/{{now | date "2006-01-02"}}"
+    }
+  }
+}</code></pre>
+            <h3>失败返回示例 (例如，笔记本ID无效或未找到)</h3>
+            <pre><code class="language-json">{
+  "code": -1, 
+  "msg": "notebook [20200812220409-invalid] not found",
+  "data": null
+}</code></pre>
+        </div>
+    </div>
+
+    <blockquote class="important-note">
+        <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+        <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+    </blockquote>
+
+    <script src="../script.js"></script>
+</body>
+
+</html>

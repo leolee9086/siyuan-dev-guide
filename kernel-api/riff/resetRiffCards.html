@@ -1,0 +1,144 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/riff/resetRiffCards"> <!-- API Endpoint Meta Tag -->
+    <title>重置闪卡复习状态 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <h1>重置闪卡复习状态 (resetRiffCards)</h1>
+        <nav>
+            <a href="../index.html">首页</a> | 
+            <a href="index.html">Riff API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/riff.go#L75" target="_blank">GitHub Source</a>
+        </nav>
+    </header>
+    <main>
+        <section id="description">
+            <h2>功能描述</h2>
+            <p>此 API 端点 <code>POST /api/riff/resetRiffCards</code> 用于重置指定范围内的闪卡的复习状态。</p>
+            <p>重置操作会将卡片的复习进度（如复习次数、间隔、状态等）恢复到初始状态，使其类似于一张新卡。</p>
+            <p>可以按笔记本、文档树或闪卡包的范围进行重置，并且可以选择性地只重置范围内的部分卡片。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体必须是 JSON 格式，包含以下参数：</p>
+            <ul>
+                <li><code>type</code> (string): <strong>必填</strong>。指定重置的范围类型。有效值：
+                    <ul>
+                        <li><code>"notebook"</code>: 按笔记本范围重置。</li>
+                        <li><code>"tree"</code>: 按文档树（以某个块为根）范围重置。</li>
+                        <li><code>"deck"</code>: 按闪卡包范围重置。</li>
+                    </ul>
+                </li>
+                <li><code>id</code> (string): <strong>必填</strong>。与 <code>type</code> 对应的 ID。
+                    <ul>
+                        <li>当 <code>type</code> 为 <code>"notebook"</code> 时，此为笔记本 ID。</li>
+                        <li>当 <code>type</code> 为 <code>"tree"</code> 时，此为文档树的根块 ID。</li>
+                        <li>当 <code>type</code> 为 <code>"deck"</code> 时，此为闪卡包 ID。</li>
+                    </ul>
+                </li>
+                <li><code>deckID</code> (string): <strong>必填</strong>。目标卡包 ID。即使 <code>type</code> 不是 <code>"deck"</code>，也需要提供此参数。通常，当 <code>type</code> 为 <code>"deck"</code> 时，此 ID 与 <code>id</code> 相同。</li>
+                <li><code>blockIDs</code> (array of strings): <em>可选</em>。一个块 ID 列表。
+                    <ul>
+                        <li>如果提供此列表，则<strong>仅</strong>重置列表中属于由 <code>type</code>, <code>id</code>, <code>deckID</code> 确定的范围内的闪卡。</li>
+                        <li>如果<strong>不提供</strong>此列表或提供一个空数组 (<code>[]</code>)，则重置由 <code>type</code>, <code>id</code>, <code>deckID</code> 确定的范围内的<strong>所有</strong>闪卡。</li>
+                    </ul>
+                </li>
+            </ul>
+            <p><strong>请求示例 (重置卡包 `deck-abc` 中的所有卡片):</strong></p>
+            <pre><code class="language-json">
+{
+  "type": "deck",
+  "id": "deck-abc",
+  "deckID": "deck-abc",
+  "blockIDs": [] // 或者省略 blockIDs 字段
+}
+            </code></pre>
+             <p><strong>请求示例 (重置笔记本 `nb-xyz` 中，卡包 `deck-123` 内的特定几张卡片):</strong></p>
+            <pre><code class="language-json">
+{
+  "type": "notebook",
+  "id": "nb-xyz",
+  "deckID": "deck-123",
+  "blockIDs": [
+    "20240101100000-hijklmn",
+    "20240102110000-opqrstu"
+  ]
+}
+            </code></pre>
+            <p><strong>请求示例 (重置文档树 `root-doc` 下的所有属于卡包 `deck-learn` 的卡片):</strong></p>
+            <pre><code class="language-json">
+{
+  "type": "tree",
+  "id": "root-doc",
+  "deckID": "deck-learn"
+}
+            </code></pre>
+        </section>
+
+        <section id="response-format">
+            <h2>响应结果</h2>
+            <p>成功的请求将返回一个 JSON 对象，<code>code</code> 为 0，<code>data</code> 为 <code>null</code>。</p>
+            <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": null
+}
+            </code></pre>
+            <p>如果操作失败（例如参数无效、ID 不存在等），将返回非 0 的 <code>code</code> 和具体的错误信息 <code>msg</code>。</p>
+            <pre><code class="language-json">
+{
+  "code": -1,
+  "msg": "无效的类型参数", // 示例错误信息
+  "data": null
+}
+            </code></pre>
+        </section>
+
+        <section id="online-testing">
+            <h2>在线测试</h2>
+            <p>您可以在下方输入参数进行在线测试。请谨慎操作，重置卡片状态后可能需要重新学习。</p>
+            <div class="api-tester">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="请输入您的 API Token (可选)" value=""><br>
+
+                <label for="endpoint">Endpoint:</label>
+                <input type="text" id="endpoint" value="/api/riff/resetRiffCards" readonly=""><br>
+
+                <label for="method">Method:</label>
+                <input type="text" id="method" value="POST" readonly=""><br>
+
+                <label for="params">Parameters (JSON):</label><br>
+                <textarea id="params" rows="10" placeholder="{
+  &quot;type&quot;: &quot;deck&quot;, // &quot;notebook&quot;, &quot;tree&quot;, or &quot;deck&quot;
+  &quot;id&quot;: &quot;&quot;, // notebook ID, root ID, or deck ID
+  &quot;deckID&quot;: &quot;&quot;, // target deck ID
+  &quot;blockIDs&quot;: [] // optional, list of block IDs to reset, empty or omit to reset all in scope
+}"></textarea><br>
+
+                <button onclick="sendRequest()">发送请求</button>
+
+                <h3>响应结果:</h3>
+                <pre id="response-output"></pre>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>思源笔记 API 文档 | 最后更新时间：<span id="last-updated"></span></p>
+    </footer>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        // 更新最后更新时间
+        document.getElementById('last-updated').textContent = new Date().toLocaleString();
+    </script>
+
+ </body></html>

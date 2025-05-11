@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>回滚资源历史 - 思源笔记 API 文档</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../stylesheets/styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/history/rollbackAssetsHistory</span>
+    </div>
+
+    <h1>回滚资源历史</h1>
+
+    <div class="auth-tags">
+        <span class="chip">需要认证</span>
+        <span class="chip">需要管理员权限</span>
+        <span class="chip">非只读模式</span>
+    </div>
+
+    <h2>接口描述</h2>
+    <p>回滚资源文件（assets）的历史版本。</p>
+    <p>可以将工作空间 <code>data/assets/</code> 目录下的某个文件恢复到指定的历史版本。</p>
+    <div class="warning">
+        <p><strong>警告：</strong>此操作会覆盖当前工作目录中的同名资源文件！请谨慎操作！</p>
+    </div>
+
+    <h2>请求体 (JSON)</h2>
+    <pre><code class="language-json">{
+  "historyPath": "要回滚的资源文件的历史路径"
+}
+</code></pre>
+    <ul>
+        <li><code>historyPath</code>: (<code>string</code>) 必填。要回滚的资源文件在历史记录中的路径。这个路径通常从 <code>getHistoryItems</code> (当 `type` 为 2 时) 或其他历史相关的 API 获取，它指向 <code>data/history/{时间戳}-{操作类型}/assets/...</code> 下的文件。注意：请求体中只需要提供相对于 <code>data/history/</code> 的路径，例如 <code>20231027100000-u/assets/important_image.png</code>，但在代码实现中会拼接工作空间路径。</li>
+        <!-- 确认前端调用时是否需要 workspace 前缀 -->
+    </ul>
+
+    <h2>响应体 (JSON)</h2>
+    <p>返回标准的响应体，<code>data</code> 字段为空。</p>
+    <pre><code class="language-json">{
+  "code": 0,
+  "msg": "",
+  "data": null
+}
+</code></pre>
+    <p><strong>注意：</strong></p>
+    <ul>
+        <li>如果回滚成功，目标资源文件会被历史版本覆盖。</li>
+        <li>如果历史路径无效或回滚过程中出错，<code>code</code> 将为非 0 值，<code>msg</code> 包含错误信息。</li>
+    </ul>
+
+    <h2>实现链接</h2>
+    <ul>
+        <li>后端路由: <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/router.go" target="_blank">siyuan/kernel/api/router.go</a></li>
+        <li>处理函数: <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/history.go" target="_blank">siyuan/kernel/api/history.go</a> (<code>rollbackAssetsHistory</code> 函数)</li>
+        <li>核心逻辑: <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/model/history.go" target="_blank">siyuan/kernel/model/history.go</a> (<code>RollbackAssetsHistory</code> 函数)</li>
+    </ul>
+
+    <!-- Add Tabs for examples -->
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="request-example-tab">请求示例</div>
+            <div class="tab" data-target="response-example-tab">返回示例</div>
+        </div>
+
+        <div id="request-example-tab" class="tab-content active">
+            <h3>请求示例</h3>
+             <pre><code class="language-json">{
+  "historyPath": "20231101100000-u/assets/image.png"
+}
+</code></pre>
+        </div>
+
+        <div id="response-example-tab" class="tab-content">
+            <h3>返回示例 (成功)</h3>
+            <pre><code class="language-json">{
+  "code": 0,
+  "msg": "",
+  "data": null
+}
+</code></pre>
+        </div>
+    </div>
+
+    <blockquote class="important-note">
+        <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+        <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+    </blockquote>
+
+    <!-- Add Test Area -->
+    <div class="test-area">
+        <h3>在线测试</h3>
+        <form id="api-test-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记中的 设置-关于 中查看 API Token">
+            </div>
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/history/rollbackAssetsHistory">
+            </div>
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly>
+            </div>
+            <div class="form-group">
+                <label for="api-params">请求参数 (JSON):</label>
+                <textarea id="api-params" rows="3">{
+  "historyPath": "请填写历史文件路径"
+}</textarea>
+            </div>
+            <button type="submit" class="btn">发送请求</button>
+        </form>
+        <div id="api-result" class="result"></div>
+    </div>
+
+    <script src="../api-tester.js"></script>
+
+</body>
+</html>

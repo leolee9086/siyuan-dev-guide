@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>搜索历史记录 - 思源笔记 API 文档</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../stylesheets/styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/history/searchHistory</span>
+    </div>
+
+    <h1>搜索历史记录</h1>
+
+    <div class="auth-tags">
+        <span class="chip">需要认证</span>
+    </div>
+
+    <h2>接口描述</h2>
+    <p>根据条件搜索历史记录，返回按时间分组的快照列表。</p>
+    <p>这个接口主要用于历史记录面板的列表展示，用户可以通过它浏览不同时间点的历史快照。</p>
+
+    <h2>实现链接</h2>
+    <ul>
+        <li>后端路由: <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/router.go" target="_blank">siyuan/kernel/api/router.go</a></li>
+        <li>处理函数: <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/history.go" target="_blank">siyuan/kernel/api/history.go</a> (<code>searchHistory</code> 函数)</li>
+        <li>核心逻辑: <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/model/history.go" target="_blank">siyuan/kernel/model/history.go</a> (<code>FullTextSearchHistory</code> 函数)</li>
+    </ul>
+
+    <h2>请求体 (JSON)</h2>
+    <pre><code class="language-json">{
+  "query": "搜索关键词",
+  "notebook": "笔记本 ID (可选, 用于过滤)",
+  "op": "操作类型 (可选, 如 'all', 'update', 'delete' 等)",
+  "type": "历史记录类型",
+  "page": "页码 (从 1 开始)"
+}
+</code></pre>
+    <ul>
+        <li><code>query</code>: (<code>string</code>) 必填。搜索的关键词，可以为空字符串表示不进行关键词过滤。</li>
+        <li><code>notebook</code>: (<code>string</code>) 可选。如果提供了笔记本 ID，则只在该笔记本范围内搜索。</li>
+        <li><code>op</code>: (<code>string</code>) 可选。过滤操作类型，例如只看 'update' 操作。默认为 'all'。</li>
+        <li><code>type</code>: (<code>number</code>) 必填。指定要搜索的历史类型。
+            <ul>
+                <li><code>0</code>: 文档名 (doc name)</li>
+                <li><code>1</code>: 文档内容 (doc content)</li>
+                <li><code>2</code>: 资源文件 (asset)</li>
+                <li><code>3</code>: 文档 ID (doc id)</li>
+            </ul>
+        </li>
+        <li><code>page</code>: (<code>number</code>) 必填。要获取的页码，从 1 开始。每页包含固定数量 (目前是 32) 的历史时间点。</li>
+    </ul>
+
+    <h2>响应体 (JSON)</h2>
+    <pre><code class="language-json">{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "histories": [
+      "1666861200", // 时间戳 (秒)
+      "1666857600",
+      // ... 更多时间戳
+    ],
+    "pageCount": 5, // 总页数
+    "totalCount": 150 // 总历史时间点数量
+  }
+}
+</code></pre>
+    <ul>
+        <li><code>data.histories</code>: (<code>array</code>) 包含符合条件的、去重后的历史记录创建时间戳 (秒) 字符串数组，按时间降序排列。</li>
+        <li><code>data.pageCount</code>: (<code>number</code>) 根据查询条件计算的总页数。</li>
+        <li><code>data.totalCount</code>: (<code>number</code>) 符合查询条件的总历史时间点数量 (去重后)。</li>
+    </ul>
+    <p><strong>注意：</strong></p>
+    <ul>
+        <li>此接口只返回时间戳列表，要获取具体时间点下的修改条目，需要使用这些时间戳调用 <code>getHistoryItems</code> 接口。</li>
+    </ul>
+
+    <!-- Add Tabs for examples -->
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="request-example-tab">请求示例</div>
+            <div class="tab" data-target="response-example-tab">返回示例</div>
+        </div>
+
+        <div id="request-example-tab" class="tab-content active">
+            <h3>请求示例</h3>
+            <pre><code class="language-json">{
+  "query": "关键词",
+  "notebook": "20231026090000-uvwxyz",
+  "op": "update",
+  "type": 1,
+  "page": 1
+}
+</code></pre>
+        </div>
+
+        <div id="response-example-tab" class="tab-content">
+            <h3>返回示例</h3>
+            <pre><code class="language-json">{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "histories": [
+      "1667280000",
+      "1667193600"
+      // ... more timestamps
+    ],
+    "pageCount": 2,
+    "totalCount": 45
+  }
+}
+</code></pre>
+        </div>
+    </div>
+
+    <blockquote class="important-note">
+        <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+        <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+    </blockquote>
+
+    <!-- Add Test Area -->
+    <div class="test-area">
+        <h3>在线测试</h3>
+        <form id="api-test-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记中的 设置-关于 中查看 API Token">
+            </div>
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/history/searchHistory">
+            </div>
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly>
+            </div>
+            <div class="form-group">
+                <label for="api-params">请求参数 (JSON):</label>
+                <textarea id="api-params" rows="7">{
+  "query": "",
+  "notebook": "",
+  "op": "all",
+  "type": 1,
+  "page": 1
+}</textarea>
+            </div>
+            <button type="submit" class="btn">发送请求</button>
+        </form>
+        <div id="api-result" class="result"></div>
+    </div>
+
+    <script src="../api-tester.js"></script>
+
+</body></html>

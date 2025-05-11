@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/system/getEmojiConf">
+    <title>获取 Emoji 配置 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../common/css/styles.css">
+</head>
+<body>
+    <header class="api-header">
+        <h1>获取 Emoji 配置 (getEmojiConf)</h1>
+        <nav>
+            <a href="../index.html">首页</a> |
+            <a href="index.html">System API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/system.go" target="_blank">GitHub Source (api/system.go)</a>
+        </nav>
+        <div class="endpoint-container">
+            <span class="endpoint">POST /api/system/getEmojiConf</span>
+        </div>
+    </header>
+    <main>
+        <section id="description">
+            <h2>接口描述</h2>
+            <p>此 API 端点 <code>POST /api/system/getEmojiConf</code> 用于获取思源笔记中所有可用的 Emoji表情配置，包括内置 Emoji 和用户自定义 Emoji。</p>
+            <p>它会首先加载内置的 Emoji 配置文件 (<code>appearance/emojis/conf.json</code>)，然后扫描用户数据目录下的自定义 Emoji (<code>data/emojis/</code>) 并将其合并到结果中。自定义 Emoji 会被优先展示。</p>
+            <p>此接口需要用户认证。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>此 API 不需要任何请求参数。发送一个空的 JSON 对象 <code>{}</code> 即可。</p>
+            <p><strong>请求示例 (空JSON对象):</strong></p>
+            <pre><code class="language-json">{}</code></pre>
+        </section>
+
+        <section id="response-body">
+            <h2>响应体</h2>
+            <p>响应体是一个 JSON 数组，其中每个元素代表一个 Emoji 分组对象。结构如下：</p>
+            <ul>
+                <li><code>code</code> (number): 状态码，0 表示成功，-1 表示失败。</li>
+                <li><code>msg</code> (string): 状态信息，成功时为空字符串。</li>
+                <li><code>data</code> (array): 包含 Emoji 分组对象的数组。
+                    <ul>
+                        <li><strong>自定义 Emoji 分组 (通常是第一个元素):</strong>
+                            <ul>
+                                <li><code>id</code> (string): 固定为 "custom"。</li>
+                                <li><code>title</code> (string): 分组标题，如 "Custom" (英文环境)。</li>
+                                <li><code>title_zh_cn</code> (string): 中文标题，如 "自定义"。</li>
+                                <li><code>title_ja_jp</code> (string): 日文标题，如 "カスタム"。</li>
+                                <li><code>items</code> (array): 包含自定义 Emoji 对象的数组。每个 Emoji 对象结构如下：
+                                    <ul>
+                                        <li><code>unicode</code> (string): Emoji 图片的相对路径 (相对于 <code>/emojis/</code> 目录)，例如 <code>"cool.png"</code> 或 <code>"subdir/awesome.gif"</code>。</li>
+                                        <li><code>description</code> (string): Emoji 的描述，通常是去除扩展名的文件名。</li>
+                                        <li><code>description_zh_cn</code> (string): 中文描述。</li>
+                                        <li><code>description_ja_jp</code> (string): 日文描述。</li>
+                                        <li><code>keywords</code> (string): 用于搜索的关键词。</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li><strong>内置 Emoji 分组 (后续元素):</strong>
+                            <p>这些分组对象来自 <code>appearance/emojis/conf.json</code> 文件。其具体结构可能类似自定义分组，包含 <code>id</code>, <code>title</code> (及各语言版本), 和一个 <code>items</code> 数组。<code>items</code> 中的每个 Emoji 对象结构也可能包含 <code>unicode</code> (这里可能是真实的 Unicode 字符或代号), <code>description</code>, <code>keywords</code> 等字段。</p>
+                            <p><em>注意: 内置 Emoji 的具体字段请参考 <code>appearance/emojis/conf.json</code> 的实际内容。</em></p>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <p><strong>成功响应示例 (部分):</strong></p>
+            <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": [
+        {
+            "id": "custom",
+            "title": "Custom",
+            "title_zh_cn": "自定义",
+            "title_ja_jp": "カスタム",
+            "items": [
+                {
+                    "unicode": "my_custom_emoji.png",
+                    "description": "my_custom_emoji",
+                    "description_zh_cn": "my_custom_emoji",
+                    "description_ja_jp": "my_custom_emoji",
+                    "keywords": "my_custom_emoji"
+                }
+                // ... more custom emojis
+            ]
+        },
+        {
+            "id": "people",
+            "title": "People",
+            // ... title translations
+            "items": [
+                {
+                    "unicode": "😀",
+                    "description": "grinning face",
+                    // ... keywords, etc.
+                }
+                // ... more built-in emojis in this category
+            ]
+        }
+        // ... more built-in emoji categories
+    ]
+}</code></pre>
+            <p><strong>失败响应示例:</strong></p>
+            <pre><code class="language-json">{
+    "code": -1,
+    "msg": "read emojis conf.json failed: open appearance/emojis/conf.json: no such file or directory",
+    "data": null
+}</code></pre>
+        </section>
+
+        <section id="authentication">
+            <h2>认证与授权</h2>
+            <p>此 API 需要有效的用户认证。请求时必须在 HTTP Header 中提供 <code>Authorization</code> 字段，其值为 API Token。</p>
+            <p>如果认证失败，服务器通常会返回 HTTP 401 Unauthorized 状态码。</p>
+        </section>
+
+        <section id="notes">
+            <h2>备注</h2>
+            <ul>
+                <li>自定义 Emoji 存储在 <code>[思源工作空间]/data/emojis/</code> 目录下。您可以直接在此目录中添加图片文件 (如 .png, .gif, .jpg) 或包含图片文件的子目录来扩展 Emoji 列表。</li>
+                <li>自定义 Emoji 的 <code>unicode</code> 字段实际上是其相对于 <code>/emojis/</code> 的访问路径，前端可以通过 <code>&lt;img src="/emojis/[unicode_value]"&gt;</code> 来显示。</li>
+                <li>内置 Emoji 的 <code>unicode</code> 字段通常是标准的 Emoji 字符。</li>
+            </ul>
+        </section>
+
+        <div class="test-area">
+            <h2>在线测试</h2>
+            <p>您可以使用下面的按钮来测试此 API。请确保您已在浏览器中登录思源笔记，或者在请求头中正确设置了 <code>Authorization</code> Token。</p>
+            <form id="getEmojiConfForm">
+                <button type="button" onclick="sendRequest('getEmojiConfForm', '/api/system/getEmojiConf', 'POST', '{}', true)">发送请求 (需要认证)</button>
+            </form>
+            <h3>响应:</h3>
+            <pre><code id="getEmojiConfResponse" class="language-json">点击发送请求查看响应</code></pre>
+        </div>
+    </main>
+    <blockquote>
+        <p>感谢您对思源笔记的关注与支持！</p>
+        <p><a href="https://afdian.com/a/leolee9086?tab=feed" target="_blank">在爱发电上赞助我们</a></p>
+    </blockquote>
+    <footer>
+        <p>&copy; 2024 <a href="https://b3log.org/siyuan">思源笔记 B3log.org</a>. All rights reserved.</p>
+    </footer>
+    <script src="../common/js/api-tester.js"></script>
+    <script src="../common/js/theme-toggle.js"></script>
+</body>
+</html> 

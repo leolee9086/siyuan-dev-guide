@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/transactions">
+    <title>执行事务操作 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../common/css/styles.css">
+</head>
+<body>
+    <header class="api-header">
+        <h1>执行事务操作 (performTransactions)</h1>
+        <nav>
+            <a href="../index.html">首页</a> |
+            <a href="index.html">Transactions API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/transaction.go#L30" target="_blank">GitHub Source (api/transaction.go L30)</a>
+        </nav>
+        <div class="endpoint-container">
+            <span class="endpoint">POST /api/transactions</span>
+        </div>
+    </header>
+    <main>
+        <section id="description">
+            <h2>接口描述</h2>
+            <p><code>POST /api/transactions</code> 是思源笔记中一个核心且功能强大的 API 端点，用于批量执行一系列数据修改操作（称为"事务"）。几乎所有对块、属性、文档结构等的修改都会通过此接口进行。</p>
+            <p>每个请求可以包含一个或多个事务 (<code>transactions</code>)，每个事务又包含一个或多个具体的操作 (<code>doOperations</code>)。这种设计允许将多个相关的修改原子化处理或批量提交。</p>
+            <p>此接口的灵活性和复杂性都很高，因为 <code>doOperations</code> 中的 <code>action</code> 类型和对应的 <code>data</code> 结构多种多样。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体为一个 JSON 对象，包含以下主要字段：</p>
+            <pre><code class="language-json">{
+    "transactions": [
+        {
+            "timestamp": 0, // 后端会使用外层的 reqId 覆盖此值
+            "doOperations": [
+                {
+                    "action": "string",     // 必需，具体的操作名称
+                    "id": "string",         // 操作目标块的 ID (大多数操作需要)
+                    "parentID": "string",   // 父块 ID (例如 insertBlock, moveBlock)
+                    "previousID": "string", // 前一个同级块 ID (例如 insertBlock, moveBlock)
+                    "nextID": "string",     // 后一个同级块 ID
+                    "data": "any",          // 操作的具体数据，结构随 action 不同而变化
+                    "dataType": "string",   // 数据类型，例如 "markdown", "dom"
+                    "isDetached": false,    // 是否为分离的操作
+                    "retData": null         // (仅用于后端返回)
+                }
+                // ... 更多 operations ...
+            ],
+            "undoOperations": [] // 可选，用于撤销的操作列表
+        }
+        // ... 更多 transactions ...
+    ],
+    "reqId": 1678886400000, // 必需，请求的唯一ID (通常是客户端生成的时间戳)
+    "app": "string",        // 必需，发起请求的应用标识 (例如 "SiYuan")
+    "session": "string"     // 必需，当前会话ID (例如前端的 wsClientId)
+}</code></pre>
+
+            <h3><code>doOperations</code> 常见 Action 示例</h3>
+            <p>由于 <code>action</code> 类型繁多，这里仅列举一些常见的示例。开发者应查阅思源笔记源码 (<code>kernel/model/</code> 目录下各操作函数) 以获取特定操作的准确参数结构。</p>
+            
+            <h4>1. 更新块内容 (updateBlock)</h4>
+            <pre><code class="language-json">{
+    "action": "updateBlock",
+    "id": "块ID",
+    "data": "新的 Markdown 内容",
+    "dataType": "markdown"
+}</code></pre>
+
+            <h4>2. 插入块 (insertBlock)</h4>
+            <pre><code class="language-json">{
+    "action": "insertBlock",
+    "dataType": "markdown",
+    "data": "新块的 Markdown 内容",
+    "previousID": "前一个同级块的ID", // 或 nextID
+    "parentID": "父块ID (如果插入到文档顶层，则为文档ID)"
+}</code></pre>
+            <p><code>previousID</code> 和 <code>nextID</code> 用于指定插入位置，<code>parentID</code> 指定父容器。</p>
+
+            <h4>3. 设置块属性 (setBlockAttrs)</h4>
+            <pre><code class="language-json">{
+    "action": "setBlockAttrs",
+    "id": "块ID",
+    "data": {
+        "custom-attr-name": "属性值",
+        "updated": "新的更新时间戳"
+        // ... 其他 name-value 对 ...
+    }
+}</code></pre>
+
+            <h4>4. 删除块 (deleteBlock)</h4>
+            <pre><code class="language-json">{
+    "action": "deleteBlock",
+    "id": "要删除的块ID"
+}</code></pre>
+
+            <h4>5. 移动块 (moveBlock)</h4>
+            <pre><code class="language-json">{
+    "action": "moveBlock",
+    "id": "要移动的块ID",
+    "previousID": "目标位置的前一个同级块ID", // 或 nextID
+    "parentID": "目标父块ID"
+}</code></pre>
+            <p>更多 <code>action</code> 类型包括但不限于：<code>prependBlock</code>, <code>appendBlock</code>, <code>foldBlock</code>, <code>unfoldBlock</code>, <code>setBlockReminder</code>, <code>doc2Heading</code>, <code>heading2Doc</code>, <code>li2Doc</code>, <code>setAttrViewName</code> (修改属性视图的名称) 等。</p>
+        </section>
+
+        <section id="response-body">
+            <h2>响应体</h2>
+            <p><strong>成功响应 (HTTP 200 OK):</strong></p>
+            <p>API 返回一个 JSON 对象，其中 <code>data</code> 字段包含了处理后的 <code>transactions</code> 数组。每个 <code>operation</code> 对象内部的 <code>retData</code> 字段会包含该操作的执行结果（如果操作有返回数据）。</p>
+            <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": [
+        {
+            "timestamp": 1678886400000, // (与请求中的 reqId 一致)
+            "doOperations": [
+                {
+                    "action": "updateBlock",
+                    "id": "20230512000000-xxxxxxx",
+                    "data": "**Updated**",
+                    // ...其他输入字段...
+                    "retData": { "updateCount": 1 } // 示例性的 retData
+                }
+            ],
+            "undoOperations": []
+        }
+        // ...
+    ]
+}</code></pre>
+            <p>响应头中还会包含 <code>Server-Timing: total;dur=&lt;milliseconds&gt;</code>，指示服务器处理请求的总时长。</p>
+
+            <p><strong>失败响应:</strong></p>
+            <ul>
+                <li>如果请求体 JSON 解析失败: <code>{"code": -1, "msg": "parses request failed", "data": null}</code></li>
+                <li>如果系统未启动完成: <code>{"code": -1, "msg": "Kernel is booting, please wait [progress: XX%]", "data": {"closeTimeout": 5000}}</code></li>
+                <li>单个操作的失败可能不会导致顶层 <code>code</code> 变为非零，但其对应的 <code>retData</code> 可能会指示错误或无效果。</li>
+            </ul>
+            <p><em>注意: 认证失败 (如未提供 API Token、非管理员等) 会由中间件处理，并返回相应的 HTTP 错误状态码 (如 401, 403)。</em></p>
+        </section>
+
+        <section id="authentication">
+            <h2>认证与授权</h2>
+            <p>调用此 API 端点需要有效的用户认证 (通过 <code>Authorization</code> HTTP头部传递 API Token)。</p>
+            <p>此外，执行此操作需要：</p>
+            <ul>
+                <li><strong>管理员角色 (<code>model.CheckAdminRole</code>)</strong></li>
+                <li><strong>非只读模式 (<code>model.CheckReadonly</code>)</strong></li>
+            </ul>
+        </section>
+
+        <section id="notes">
+            <h2>备注</h2>
+            <ul>
+                <li>这是思源笔记中进行数据修改最核心的接口之一。</li>
+                <li>后端通过 <code>model.PerformTransactions()</code> 执行实际操作。</li>
+                <li>操作完成后，内核会通过 WebSocket (事件类型 "transactions") 将处理后的事务推送给客户端，以实现实时同步和界面更新。</li>
+                <li>部分操作 (如移动大纲标题) 可能会触发额外的 WebSocket 事件 (如 "reloadDoc")。</li>
+                <li>由于其复杂性和核心地位，建议开发者在使用此接口前，仔细研究相关的前端调用逻辑或后端模型层代码。</li>
+            </ul>
+        </section>
+
+        <div class="test-area">
+            <h2>在线测试</h2>
+            <p>由于此 API 的请求结构复杂且多样，请在下方手动构造完整的 JSON 请求体来测试。请确保 JSON 格式正确，并包含 <code>transactions</code>, <code>reqId</code>, <code>app</code>, 和 <code>session</code> 字段。</p>
+            <form id="performTransactionsForm">
+                <div>
+                    <label for="apiTokenForTx">API Token (用于授权):</label>
+                    <input type="password" id="apiTokenForTx" name="apiTokenForTx" required>
+                </div>
+                <div>
+                    <label for="txReqId">请求 ID (reqId, 时间戳):</label>
+                    <input type="number" id="txReqId" name="txReqId" required>
+                </div>
+                <div>
+                    <label for="txApp">应用标识 (app):</label>
+                    <input type="text" id="txApp" name="txApp" value="SiYuan" required>
+                </div>
+                <div>
+                    <label for="txSession">会话 ID (session):</label>
+                    <input type="text" id="txSession" name="txSession" placeholder="例如: 前端 wsClientId" required>
+                </div>
+                <div>
+                    <label for="transactionsPayload">事务数据 (transactions 数组):</label>
+                    <textarea id="transactionsPayload" name="transactionsPayload" rows="15" placeholder="在此输入 transactions JSON 数组..."></textarea>
+                </div>
+                <button type="button" onclick="sendPerformTransactionsRequest()">执行事务</button>
+            </form>
+            <button type="button" onclick="loadTxExample('updateBlock')">加载"更新块"示例</button>
+            <button type="button" onclick="loadTxExample('insertBlock')">加载"插入块"示例</button>
+            <button type="button" onclick="loadTxExample('setAttrs')">加载"设置属性"示例</button>
+            <h3>响应:</h3>
+            <pre><code id="performTransactionsResponse" class="language-json">点击按钮查看响应</code></pre>
+        </div>
+    </main>
+    <blockquote>
+        <p>感谢您对思源笔记的关注与支持！</p>
+        <p><a href="https://afdian.com/a/leolee9086?tab=feed" target="_blank">在爱发电上赞助我们</a></p>
+    </blockquote>
+    <footer>
+        <p>&copy; 2024-2025 <a href="https://b3log.org/siyuan">思源笔记 B3log.org</a>. All rights reserved.</p>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('txReqId').value = Date.now();
+        });
+
+        const exampleTransactions = {
+            updateBlock: JSON.stringify([
+                {
+                    doOperations: [
+                        {
+                            action: "updateBlock",
+                            id: "在此输入块ID",
+                            data: "新的 **Markdown** 内容",
+                            dataType: "markdown"
+                        }
+                    ]
+                }
+            ], null, 2),
+            insertBlock: JSON.stringify([
+                {
+                    doOperations: [
+                        {
+                            action: "insertBlock",
+                            dataType: "markdown",
+                            data: "这是一个通过 API 插入的新块。",
+                            previousID: "在此输入前一个同级块ID或留空", 
+                            parentID: "在此输入父块ID/文档ID"
+                        }
+                    ]
+                }
+            ], null, 2),
+            setAttrs: JSON.stringify([
+                {
+                    doOperations: [
+                        {
+                            action: "setBlockAttrs",
+                            id: "在此输入块ID",
+                            data: {
+                                "custom-test-attr": "来自API测试的值",
+                                "updated": String(Date.now())
+                            }
+                        }
+                    ]
+                }
+            ], null, 2)
+        };
+
+        function loadTxExample(type) {
+            const payloadTextarea = document.getElementById('transactionsPayload');
+            if (exampleTransactions[type]) {
+                payloadTextarea.value = exampleTransactions[type];
+            } else {
+                alert('未找到示例: ' + type);
+            }
+            document.getElementById('txReqId').value = Date.now(); // 更新 reqId
+        }
+
+        async function sendPerformTransactionsRequest() {
+            const apiToken = document.getElementById('apiTokenForTx').value;
+            const reqId = parseInt(document.getElementById('txReqId').value, 10);
+            const app = document.getElementById('txApp').value;
+            const session = document.getElementById('txSession').value;
+            const transactionsPayloadStr = document.getElementById('transactionsPayload').value;
+            const responseCode = document.getElementById('performTransactionsResponse');
+
+            if (!apiToken) { alert('请输入 API Token!'); responseCode.textContent = '操作取消：未提供 API Token。'; return; }
+            if (isNaN(reqId)) { alert('请输入有效的请求 ID (reqId)!'); responseCode.textContent = '操作取消：reqId 无效。'; return; }
+            if (!app) { alert('请输入应用标识 (app)!'); responseCode.textContent = '操作取消：未提供 app。'; return; }
+            if (!session) { alert('请输入会话 ID (session)!'); responseCode.textContent = '操作取消：未提供 session。'; return; }
+            if (!transactionsPayloadStr) { alert('请输入事务数据 (transactions)!'); responseCode.textContent = '操作取消：未提供 transactions。'; return; }
+
+            let transactions;
+            try {
+                transactions = JSON.parse(transactionsPayloadStr);
+            } catch (e) {
+                alert('事务数据 (transactions) JSON 格式错误: ' + e.message);
+                responseCode.textContent = '操作取消：transactions JSON 格式错误。\n' + e.message;
+                return;
+            }
+
+            const fullPayload = {
+                transactions: transactions,
+                reqId: reqId,
+                app: app,
+                session: session
+            };
+
+            responseCode.textContent = '正在执行事务...';
+
+            try {
+                const response = await fetch('/api/transactions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Token ' + apiToken
+                    },
+                    body: JSON.stringify(fullPayload)
+                });
+                const serverTiming = response.headers.get('Server-Timing');
+                const result = await response.json();
+                let responseText = JSON.stringify(result, null, 2);
+                if (serverTiming) {
+                    responseText += `\n\nServer-Timing: ${serverTiming}`;
+                }
+                responseCode.textContent = responseText;
+                
+                if (result.code === 0) {
+                    alert('事务请求已发送并处理。请检查响应中的 retData 以了解各操作详情。');
+                } else {
+                    alert('事务请求处理失败或部分失败: ' + result.msg);
+                }
+            } catch (error) {
+                console.error('Error during performTransactions request:', error);
+                responseCode.textContent = JSON.stringify({ code: -1, msg: '请求失败: ' + error.message, data:null }, null, 2);
+                alert('请求失败: ' + error.message);
+            }
+        }
+    </script>
+    <script src="../common/js/theme-toggle.js"></script>
+    <script src="../common/js/api-tester.js"></script>
+</body>
+</html> 

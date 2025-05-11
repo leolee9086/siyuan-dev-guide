@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>getBazaarTheme API</title>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../github-markdown.css">
+<link rel="stylesheet" href="../styles.css">
+<style>
+    .markdown-body {
+        box-sizing: border-box;
+        min-width: 200px;
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 45px;
+    }
+    @media (max-width: 767px) {
+        .markdown-body {
+            padding: 15px;
+        }
+    }
+    .package-list { list-style: none; padding-left: 0; }
+    .package-item { margin-bottom: 1em; border: 1px solid #eee; padding: 1em; }
+    .package-item h4 { margin-top: 0; }
+    /* 复制按钮样式 */
+    .copy-button {
+        position: absolute;
+        top: 0.5em;
+        right: 0.5em;
+        padding: 0.3em 0.6em;
+        font-size: 0.8em;
+        background-color: #eee;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+    .copy-button:hover { background-color: #ddd; }
+    pre { position: relative; } /* 父元素需要相对定位 */
+</style>
+</head>
+<body class="markdown-body">
+<blockquote>
+<p>本文档非官方出品，主要由 AI 辅助编写，不保证绝对准确。如有疑问，请以 <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/bazaar.go">kernel/api/bazaar.go</a> 中的源码为准。</p>
+<p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<h1>getBazaarTheme</h1>
+<p class="api-path-display"><strong>方法：</strong><span class="method">POST</span> <strong>路径：</strong><span class="endpoint">/api/bazaar/getBazaarTheme</span></p>
+<p>获取集市中可用的主题包列表。主题决定了思源笔记的整体外观风格。</p>
+<p><strong>新手提示：</strong> 通过这个 API，你可以拿到所有能在集市里下载的主题列表，就像你在思源笔记"设置"->"集市"->"主题"里看到的那样。还可以用关键词搜索特定的主题。</p>
+<p><strong>注意</strong>: 此 API 需要认证。</p>
+<h2>地址</h2>
+<p><code>POST /api/bazaar/getBazaarTheme</code></p>
+<h2>请求体 (JSON)</h2>
+<pre><code class="language-json">{
+  "keyword": "可选的关键词"
+}
+</code></pre>
+<ul>
+<li><code>keyword</code>: (<code>string</code>) 可选。用于搜索主题包名称、作者或描述的关键词。如果为空或不提供，则返回所有可用的主题包。</li>
+</ul>
+<h2>响应体 (JSON)</h2>
+<p>标准响应体，其中 `data.packages` 字段是一个数组，包含主题包对象。</p>
+<pre><code class="language-json">{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "packages": [
+      {
+        "name": "主题包名称",
+        "author": "作者",
+        "version": "版本号",
+        "repoURL": "仓库地址",
+        "repoHash": "仓库哈希",
+        "description": "描述",
+        "modes": [0, 1], // 支持的模式: 0=亮色, 1=暗色
+        "previews": [ { "screenshot": "预览图URL", "mode": 0 }, ... ],
+        "displayName": "显示名称",
+        "funding": [], // 赞助信息
+        // ... 可能还有其他字段
+      }
+      // ... 更多主题包
+    ]
+  }
+}
+</code></pre>
+<p><strong>注意:</strong> `packages` 数组中每个对象的具体字段和结构取决于后端 `model.BazaarThemes` 函数的实现，请以实际返回为准。</p>
+<h2>示例</h2>
+<div style="position: relative;"> <!-- 包裹 pre 和 button -->
+<pre id="example-fetch-code"><code class="language-javascript">// 获取所有可用的主题包
+fetch('/api/bazaar/getBazaarTheme', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Token YOUR_API_TOKEN' // 替换为你的 API Token
+  },
+  body: JSON.stringify({ keyword: "" })
+})
+.then(response => response.json())
+.then(data => {
+  if (data.code === 0) {
+    console.log('获取集市主题包列表成功:', data.data.packages);
+    // 在界面上渲染 data.data.packages 列表
+  } else {
+    console.error('获取集市主题包列表失败:', data.msg);
+  }
+})
+.catch(error => console.error('请求错误:', error));
+
+// 搜索包含 "dark" 关键词的主题包
+// fetch('/api/bazaar/getBazaarTheme', {
+//   method: 'POST',
+//   headers: {
+//     'Content-Type': 'application/json',
+//     'Authorization': 'Token YOUR_API_TOKEN' // 替换为你的 API Token
+//   },
+//   body: JSON.stringify({ keyword: "dark" })
+// })
+// // ... 后续处理同上
+</code></pre>
+<button class="copy-button" onclick="copyCode('example-fetch-code')">复制</button>
+</div>
+
+<!-- 在线测试区域 -->
+<div class="test-area">
+    <h3>在线测试</h3>
+    <form id="api-test-form">
+        <div class="form-group">
+            <label for="api-token">API Token:</label>
+            <input type="text" id="api-token" placeholder="在思源笔记中的"设置-关于"中查看API token">
+        </div>
+        <div class="form-group">
+            <label for="api-endpoint">接口地址:</label>
+            <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/bazaar/getBazaarTheme">
+        </div>
+        <div class="form-group">
+            <label for="api-method">请求方法:</label>
+            <input type="text" id="api-method" value="POST" readonly>
+        </div>
+        <div class="form-group">
+            <label for="api-params">请求参数 (JSON):</label>
+            <textarea id="api-params">{
+  "keyword": ""
+}</textarea>
+        </div>
+        <button type="submit" class="btn">发送请求</button>
+    </form>
+    <div id="api-result" class="result"></div>
+</div>
+
+<script src="../api-tester.js"></script>
+<script>
+// 复制按钮的 JavaScript 函数
+function copyCode(elementId) {
+    const codeElement = document.getElementById(elementId);
+    if (codeElement) {
+        const code = codeElement.textContent || codeElement.innerText;
+        navigator.clipboard.writeText(code).then(() => {
+            // 可选：给用户一个复制成功的提示
+            const button = codeElement.nextElementSibling; // 假设按钮紧跟在 pre 后面
+            if (button && button.classList.contains('copy-button')) {
+                const originalText = button.textContent;
+                button.textContent = '已复制!';
+                setTimeout(() => { button.textContent = originalText; }, 2000);
+            }
+        }).catch(err => {
+            console.error('复制失败:', err);
+            // 可以在这里提示用户复制失败
+        });
+    }
+}
+</script>
+
+</body>
+</html> 

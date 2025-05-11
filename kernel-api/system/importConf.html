@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/system/importConf">
+    <title>导入配置 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../common/css/styles.css">
+</head>
+<body>
+    <header class="api-header">
+        <h1>导入配置 (importConf)</h1>
+        <nav>
+            <a href="../index.html">首页</a> |
+            <a href="index.html">System API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/system.go#L353" target="_blank">GitHub Source (api/system.go L353)</a>
+        </nav>
+        <div class="endpoint-container">
+            <span class="endpoint">POST /api/system/importConf</span>
+        </div>
+    </header>
+    <main>
+        <section id="description">
+            <h2>接口描述</h2>
+            <p>此 API 端点 <code>POST /api/system/importConf</code> 用于导入用户配置。它接收一个上传的文件（通常是 <code>.zip</code> 压缩包或单个 <code>.json</code> 文件），并使用该文件的内容来更新或覆盖当前思源笔记应用的各项配置。</p>
+            <p>支持的配置项包括文件树、标签、编辑器、导出、关系图、UI 布局、系统设置、快捷键、搜索、闪卡、AI 及集市相关设置。</p>
+            <p><strong>警告：这是一个高风险操作，导入的配置会直接覆盖现有配置。强烈建议在执行此操作前备份当前配置 (通过 <code>/api/system/exportConf</code> API)。</strong></p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>此 API 的请求类型为 <code>multipart/form-data</code>。</p>
+            <ul>
+                <li><strong><code>file</code></strong> (file, 必需):
+                    <ul>
+                        <li>包含配置数据的文件。</li>
+                        <li>可接受的文件类型：
+                            <ul>
+                                <li><code>.json</code>: 单个 JSON 配置文件。</li>
+                                <li><code>.zip</code>: 包含一个 JSON 配置文件的 ZIP 压缩包 (压缩包内JSON文件名不限，但应只有一个JSON文件)。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <p><strong>cURL 请求示例:</strong></p>
+            <pre><code class="language-bash"># 导入 conf.json 文件
+curl -X POST \
+     -H "Authorization: YOUR_API_TOKEN" \
+     -F "file=@/path/to/your/conf.json" \
+     http://127.0.0.1:6806/api/system/importConf
+
+# 导入 conf.zip 文件
+curl -X POST \
+     -H "Authorization: YOUR_API_TOKEN" \
+     -F "file=@/path/to/your/conf.zip" \
+     http://127.0.0.1:6806/api/system/importConf</code></pre>
+        </section>
+
+        <section id="response-body">
+            <h2>响应体</h2>
+            <p><strong>成功响应 (HTTP 200 OK):</strong></p>
+            <p>操作成功时，API 返回标准的成功 JSON 响应结构：</p>
+            <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": null
+}</code></pre>
+            <p><strong>失败响应 (HTTP 200 OK, 但 code 非 0):</strong></p>
+            <p>如果操作过程中发生错误，API 仍可能返回 HTTP 200 OK，但 JSON 体内的 <code>code</code> 字段将为非零值 (通常为 <code>-1</code>)，<code>msg</code> 字段会包含错误描述。常见的错误原因包括：</p>
+            <ul>
+                <li>上传文件处理失败 (如文件读取错误、非预期文件数量)。</li>
+                <li>文件类型不支持 (既不是 <code>.json</code> 也不是有效的 <code>.zip</code>)。</li>
+                <li><code>.zip</code> 包解压失败或内容不符合预期 (例如，包含多个文件或没有文件)。</li>
+                <li>JSON 配置文件解析失败 (格式错误)。</li>
+                <li>内部服务器错误 (如临时目录创建失败)。</li>
+            </ul>
+            <p><strong>失败响应示例:</strong></p>
+            <pre><code class="language-json">{
+    "code": -1,
+    "msg": "invalid upload file", // 具体的错误信息会在此处显示
+    "data": null
+}</code></pre>
+        </section>
+
+        <section id="authentication">
+            <h2>认证与授权</h2>
+            <p>此 API 需要有效的用户认证和管理员权限，并且不能在只读模式下操作：</p>
+            <ul>
+                <li>必须在 HTTP Header 中提供 <code>Authorization</code> 字段，其值为 API Token。</li>
+                <li>调用者必须具有管理员角色 (<code>model.CheckAdminRole</code>)。</li>
+                <li>不能在只读模式 (<code>model.CheckReadonly</code>) 下执行此操作，因为需要写入配置。</li>
+            </ul>
+            <p>如果认证失败、权限不足或处于只读模式，服务器可能会返回相应的 HTTP 错误状态码 (如 401, 403) 或在 JSON 响应中指示错误。</p>
+        </section>
+
+        <section id="notes">
+            <h2>备注</h2>
+            <ul>
+                <li><strong>重要:</strong> 此操作会直接覆盖当前几乎所有的用户配置。请务必在导入前通过 <code>/api/system/exportConf</code> 备份现有配置。</li>
+                <li>导入操作完成后，部分设置可能需要重启思源笔记或刷新UI才能完全生效。</li>
+                <li>如果导入的 <code>.zip</code> 文件包含多个文件，或解压后没有找到 JSON 文件，操作将会失败。</li>
+                <li>导入的 JSON 文件必须是合法的思源配置格式。</li>
+            </ul>
+        </section>
+
+        <div class="test-area">
+            <h2>在线测试</h2>
+            <p>您可以使用下面的表单来测试此 API。请确保您已在浏览器中以管理员身份登录思源笔记，或者在后续的 JavaScript 实现中能够正确处理认证头。</p>
+            <p><strong>警告: 此操作会覆盖您当前的思源笔记配置，请谨慎操作并提前备份！</strong></p>
+            <form id="importConfForm" enctype="multipart/form-data">
+                <div>
+                    <label for="confFile">选择配置文件 (.json 或 .zip):</label>
+                    <input type="file" id="confFile" name="file" accept=".json,.zip" required>
+                </div>
+                <button type="button" onclick="uploadFileForImportConf()">导入配置</button>
+            </form>
+            <h3>响应:</h3>
+            <pre><code id="importConfResponse" class="language-json">点击"导入配置"按钮查看响应</code></pre>
+        </div>
+    </main>
+    <blockquote>
+        <p>感谢您对思源笔记的关注与支持！</p>
+        <p><a href="https://afdian.com/a/leolee9086?tab=feed" target="_blank">在爱发电上赞助我们</a></p>
+    </blockquote>
+    <footer>
+        <p>&copy; 2024-2025 <a href="https://b3log.org/siyuan">思源笔记 B3log.org</a>. All rights reserved.</p>
+    </footer>
+    <script>
+        async function uploadFileForImportConf() {
+            const form = document.getElementById('importConfForm');
+            const fileInput = document.getElementById('confFile');
+            const responseCode = document.getElementById('importConfResponse');
+            const token = localStorage.getItem('token'); // 或者其他获取token的方式
+
+            if (!fileInput.files.length) {
+                responseCode.textContent = JSON.stringify({ code: -1, msg: '请先选择一个文件' }, null, 2);
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            responseCode.textContent = '正在上传并导入...';
+
+            try {
+                const response = await fetch('/api/system/importConf', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': token || '', // 如果是浏览器内测试，确保token已设置或通过其他方式处理认证
+                    },
+                    body: formData
+                });
+                const result = await response.json();
+                responseCode.textContent = JSON.stringify(result, null, 2);
+                if (result.code === 0) {
+                    alert('配置导入成功！部分更改可能需要刷新或重启应用以生效。');
+                } else {
+                    alert('配置导入失败: ' + result.msg);
+                }
+            } catch (error) {
+                console.error('Error importing conf:', error);
+                responseCode.textContent = JSON.stringify({ code: -1, msg: '导入请求失败: ' + error.message }, null, 2);
+                alert('导入请求失败: ' + error.message);
+            }
+        }
+    </script>
+    <script src="../common/js/theme-toggle.js"></script>
+</body>
+</html> 

@@ -1,0 +1,113 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/riff/addRiffCards"> <!-- API Endpoint Meta Tag -->
+    <title>添加闪卡 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <h1>添加闪卡 (addRiffCards)</h1>
+        <nav>
+            <a href="../index.html">首页</a> | 
+            <a href="index.html">Riff API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/riff.go#L337" target="_blank">GitHub Source</a>
+        </nav>
+    </header>
+    <main>
+        <section id="description">
+            <h2>功能描述</h2>
+            <p>此 API 端点 <code>POST /api/riff/addRiffCards</code> 用于将指定的块（Blocks）制作为闪卡并添加到指定的闪卡包（Deck）中。</p>
+            <p>一个块可以被添加到多个闪卡包中。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体必须是 JSON 格式，包含以下参数：</p>
+            <ul>
+                <li><code>deckID</code> (string): <strong>必填</strong>。目标闪卡包的 ID。</li>
+                <li><code>blockIDs</code> (array of strings): <strong>必填</strong>。要添加为闪卡的块 ID 列表。</li>
+            </ul>
+            <p><strong>请求示例:</strong></p>
+            <pre><code class="language-json">
+{
+  "deckID": "20231027111111-abcdefg",
+  "blockIDs": [
+    "20240101100000-hijklmn",
+    "20240102110000-opqrstu"
+  ]
+}
+            </code></pre>
+        </section>
+
+        <section id="response-format">
+            <h2>响应结果</h2>
+            <p>成功的请求将返回一个 JSON 对象，<code>code</code> 为 0，<code>data</code> 字段包含更新后的目标闪卡包的详细信息。</p>
+            <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "id": "20231027111111-abcdefg", // 卡包 ID
+    "name": "我的第一个卡包", // 卡包名
+    "box": "20210816155902-kpf7v8m", // 所属笔记本 ID (Box ID)
+    "cardCount": 15, // 卡包内卡片总数
+    "dueCardCount": 3, // 到期需复习卡片数
+    "newCardCount": 5, // 新卡数量
+    "todayReviewedCardCount": 2, // 今日已复习卡片数
+    "conf": { // 卡包配置
+      // ... 具体配置项 ...
+    }
+  }
+}
+            </code></pre>
+            <ul>
+                <li><code>code</code>: 0 表示成功，非 0 表示失败（例如 deckID 无效、blockIDs 包含无效 ID 等）。</li>
+                <li><code>msg</code>: 错误信息（如果 code 非 0）。</li>
+                <li><code>data</code>: 更新后的闪卡包信息对象，包含卡包 ID (<code>id</code>), 名称 (<code>name</code>), 所属笔记本 ID (<code>box</code>), 卡片总数 (<code>cardCount</code>), 到期卡片数 (<code>dueCardCount</code>), 新卡数 (<code>newCardCount</code>), 今日已复习数 (<code>todayReviewedCardCount</code>) 以及卡包配置 (<code>conf</code>) 等。</li>
+            </ul>
+        </section>
+
+        <section id="online-testing">
+            <h2>在线测试</h2>
+            <p>您可以在下方输入闪卡包 ID 和要添加的块 ID 列表进行在线测试。</p>
+            <div class="api-tester">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="请输入您的 API Token (可选)" value=""><br>
+
+                <label for="endpoint">Endpoint:</label>
+                <input type="text" id="endpoint" value="/api/riff/addRiffCards" readonly=""><br>
+
+                <label for="method">Method:</label>
+                <input type="text" id="method" value="POST" readonly=""><br>
+
+                <label for="params">Parameters (JSON):</label><br>
+                <textarea id="params" rows="8" placeholder="{
+  &quot;deckID&quot;: &quot;&quot;,
+  &quot;blockIDs&quot;: [
+    &quot;&quot;
+  ]
+}"></textarea><br>
+
+                <button onclick="sendRequest()">发送请求</button>
+
+                <h3>响应结果:</h3>
+                <pre id="response-output"></pre>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>思源笔记 API 文档 | 最后更新时间：<span id="last-updated"></span></p>
+    </footer>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        // 更新最后更新时间
+        document.getElementById('last-updated').textContent = new Date().toLocaleString();
+    </script>
+
+ </body></html>

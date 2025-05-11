@@ -1,0 +1,186 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>获取集市插件列表 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+    
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/bazaar/getBazaarPlugin</span>
+    </div>
+    
+    <h1>获取集市插件列表</h1>
+
+    <div class="github-source">
+        <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/bazaar.go#L78" target="_blank" title="查看源文件">源文件 (GitHub)</a>
+    </div>
+    
+    <div class="auth-tags">
+        <span class="chip auth-required">需要认证</span>
+    </div>
+    
+    <h2>接口描述</h2>
+    <p>从官方集市获取可用的插件列表。可以通过关键词进行筛选。</p>
+    
+    <h2>请求参数</h2>
+    <table class="param-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>必选</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+             <tr>
+                <td>frontend</td>
+                <td>string</td>
+                <td><span class="required">是</span></td>
+                <td>前端类型，例如 "desktop" 或 "mobile"。用于筛选兼容的插件。</td>
+            </tr>
+             <tr>
+                <td>keyword</td>
+                <td>string</td>
+                <td><span class="optional">否</span></td>
+                <td>搜索关键词，用于在插件名称、描述、作者中进行模糊匹配。如果为空，则返回所有插件。</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <h2>返回值</h2>
+     <p>返回插件包信息列表。</p>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>code</td><td>number</td><td>返回码，0表示成功</td></tr>
+            <tr><td>msg</td><td>string</td><td>返回信息</td></tr>
+            <tr><td>data</td><td>object</td><td>包含插件列表的对象。</td></tr>
+            <tr><td>data.packages</td><td>object[]</td><td>插件包信息数组。每个包包含以下字段（可能不完整）：
+                <ul>
+                    <li><code>name</code>: 包名 (string)</li>
+                    <li><code>author</code>: 作者 (string)</li>
+                    <li><code>version</code>: 版本号 (string)</li>
+                    <li><code>displayName</code>: 显示名称 (string)</li>
+                    <li><code>description</code>: 描述 (string)</li>
+                    <li><code>repoURL</code>: 仓库地址 (string)</li>
+                    <li><code>repoHash</code>: 仓库哈希 (string)</li>
+                    <li><code>iconURL</code>: 图标地址 (string)</li>
+                    <li><code>funding</code>: 赞助信息 (object, optional)</li>
+                    <li><code>installed</code>: 是否已安装 (boolean)</li>
+                    <li><code>hasUpdate</code>: 是否有更新 (boolean)</li>
+                 </ul>
+             </td></tr>
+        </tbody>
+    </table>
+    
+    <!-- 示例和测试区域 -->
+    <div class="tab-container">
+        <div class="tabs">
+            <button class="tab-button active" data-tab="request-example">请求示例</button>
+            <button class="tab-button" data-tab="response-example">返回示例</button>
+            <button class="tab-button" data-tab="test-area">在线测试</button>
+        </div>
+        <div id="request-example" class="tab-content active">
+            <p>获取所有桌面端插件:</p>
+            <pre><code class="language-json">{
+  "frontend": "desktop",
+  "keyword": ""
+}</code></pre>
+            <p>搜索包含 "enhance" 关键词的插件:</p>
+             <pre><code class="language-json">{
+  "frontend": "desktop",
+  "keyword": "enhance"
+}</code></pre>
+        </div>
+        <div id="response-example" class="tab-content">
+             <p>成功返回 (部分示例):</p>
+            <pre><code class="language-json">{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "packages": [
+      {
+        "name": "siyuan-plugin-sync-provider",
+        "author": "Vanessa",
+        "version": "0.1.0",
+        "displayName": "同步服务提供", 
+        "description": "提供 S3、WebDAV 同步支持。",
+        "repoURL": "https://github.com/siyuan-note/plugin-sync-provider",
+        "repoHash": "abcdef1234567890",
+        "iconURL": "icon.png",
+        "funding": {},
+        "installed": true,
+        "hasUpdate": false
+      },
+      {
+        "name": "siyuan-plugin-periodic-notes",
+        "author": "langren1353",
+        "version": "1.2.0",
+        "displayName": "周期笔记",
+        "description": "用于创建和管理周期性笔记，如日记、周报等。",
+        "repoURL": "https://github.com/langren1353/siyuan-plugin-periodic-notes",
+        "repoHash": "fedcba0987654321",
+        "iconURL": "icon.png",
+        "funding": {},
+        "installed": false,
+        "hasUpdate": false
+      }
+      // ... more packages
+    ]
+  }
+}</code></pre>
+        </div>
+        <div id="test-area" class="tab-content">
+            <div class="test-area-inner">
+                <form id="api-test-form">
+                    <div class="form-group">
+                        <label for="api-token">API Token:</label>
+                        <input type="text" id="api-token" placeholder="在思源笔记中的'设置-关于'中查看API token" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="api-endpoint">接口地址:</label>
+                        <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/bazaar/getBazaarPlugin" readonly="">
+                    </div>
+                    <div class="form-group">
+                        <label for="api-method">请求方法:</label>
+                        <input type="text" id="api-method" value="POST" readonly="">
+                    </div>
+                    <div class="form-group">
+                        <label for="api-params">请求参数 (JSON):</label>
+                        <textarea id="api-params">{
+  "frontend": "desktop",
+  "keyword": ""
+}</textarea>
+                    </div>
+                    <button type="submit" class="btn">发送请求</button>
+                </form>
+                <div id="api-result" class="result"></div>
+            </div>
+        </div>
+    </div>
+
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<div class="nav-links">
+        <a href="../index.html">返回首页</a>
+        <a href="../pages/bazaar.html">返回 Bazaar API</a>
+        <!-- 没有上一个接口，这是 Bazaar 的第一个 -->
+        <a href="getInstalledPlugin.html">下一个接口: 获取已安装插件列表</a> 
+    </div>
+    
+    <script src="../api-tester.js"></script>
+
+ </body></html>

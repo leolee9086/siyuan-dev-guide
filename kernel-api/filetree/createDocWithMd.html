@@ -1,0 +1,246 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通过Markdown创建文档 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+    
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/filetree/createDocWithMd</span>
+    </div>
+    
+    <h1>通过Markdown创建文档</h1>
+    
+    <div class="auth-tags">
+        <span class="chip auth-required">需要认证</span>
+    </div>
+    
+    <h2>接口描述</h2>
+    <p>使用Markdown内容创建一个新的文档。此接口会将Markdown文本解析为思源笔记的块结构并创建文档。</p>
+    
+    <h2>请求参数</h2>
+    <table class="param-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>必选</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>notebook</td>
+                <td>string</td>
+                <td><span class="required">是</span></td>
+                <td>笔记本ID</td>
+            </tr>
+            <tr>
+                <td>path</td>
+                <td>string</td>
+                <td><span class="required">是</span></td>
+                <td>文档路径，不包含文件名，如"/foo/bar"</td>
+            </tr>
+            <tr>
+                <td>markdown</td>
+                <td>string</td>
+                <td><span class="required">是</span></td>
+                <td>Markdown文本内容</td>
+            </tr>
+            <tr>
+                <td>title</td>
+                <td>string</td>
+                <td><span class="optional">否</span></td>
+                <td>文档标题，默认使用Markdown内容的第一个标题</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <h2>返回值</h2>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>code</td>
+                <td>number</td>
+                <td>返回码，0表示成功</td>
+            </tr>
+            <tr>
+                <td>msg</td>
+                <td>string</td>
+                <td>返回信息</td>
+            </tr>
+            <tr>
+                <td>data</td>
+                <td>object</td>
+                <td>返回数据</td>
+            </tr>
+            <tr>
+                <td>data.id</td>
+                <td>string</td>
+                <td>新创建的文档ID</td>
+            </tr>
+            <tr>
+                <td>data.rootID</td>
+                <td>string</td>
+                <td>文档根ID</td>
+            </tr>
+            <tr>
+                <td>data.box</td>
+                <td>string</td>
+                <td>笔记本ID</td>
+            </tr>
+            <tr>
+                <td>data.path</td>
+                <td>string</td>
+                <td>文档路径</td>
+            </tr>
+            <tr>
+                <td>data.hPath</td>
+                <td>string</td>
+                <td>人类可读的文档路径</td>
+            </tr>
+            <tr>
+                <td>data.name</td>
+                <td>string</td>
+                <td>文档名称</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="example-tab">请求示例</div>
+            <div class="tab" data-target="response-tab">返回示例</div>
+        </div>
+        
+        <div id="example-tab" class="tab-content active">
+            <h3>请求示例</h3>
+            <pre><code>POST /api/filetree/createDocWithMd HTTP/1.1
+Host: 127.0.0.1:6806
+Content-Type: application/json
+Authorization: Token your-token
+
+{
+  "notebook": "20210808180117-czj9bvb",
+  "path": "/教程",
+  "markdown": "# Markdown示例\n\n这是一个通过API创建的Markdown文档。\n\n## 二级标题\n\n- 列表项1\n- 列表项2\n\n### 代码块\n\n```javascript\nconsole.log('Hello, World!');\n```",
+  "title": "Markdown示例文档"
+}</code></pre>
+        </div>
+        
+        <div id="response-tab" class="tab-content">
+            <h3>返回示例</h3>
+            <pre><code>{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "id": "20230601120000-abcdef1",
+    "rootID": "20230601120000-abcdef1",
+    "box": "20210808180117-czj9bvb",
+    "path": "/20210808180117-czj9bvb/20230601120000-abcdef1.sy",
+    "hPath": "/教程/Markdown示例文档",
+    "name": "Markdown示例文档"
+  }
+}</code></pre>
+        </div>
+    </div>
+    
+    <div class="code-example">
+        <h3>Markdown支持的格式</h3>
+        <pre><code># 一级标题
+## 二级标题
+### 三级标题
+
+这是普通段落文本。
+
+*斜体* **粗体** ***粗斜体***
+
+&gt; 这是引用文本
+
+- 无序列表项1
+- 无序列表项2
+  - 嵌套列表项
+
+1. 有序列表项1
+2. 有序列表项2
+
+[链接文本](https://example.com)
+
+![图片描述](https://example.com/image.jpg)
+
+`行内代码`
+
+```javascript
+// 代码块
+function hello() {
+  console.log('Hello World');
+}
+```
+
+---
+
+| 表格 | 表头 | 示例 |
+|------|------|------|
+| 内容1 | 内容2 | 内容3 |
+| 行2  | 行2  | 行2  |</code></pre>
+    </div>
+    
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<div class="test-area">
+        <h3>在线测试</h3>
+        <form id="api-test-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记中的" 设置-关于"中查看api="" token"="">
+            </div>
+            
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/filetree/createDocWithMd">
+            </div>
+            
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly="">
+            </div>
+            
+            <div class="form-group">
+                <label for="api-params">请求参数 (JSON):</label>
+                <textarea id="api-params" rows="10">{
+  "notebook": "输入笔记本ID",
+  "path": "/",
+  "markdown": "# 新文档标题\n\n这是一个通过API创建的Markdown文档。",
+  "title": "新文档"
+}</textarea>
+            </div>
+            
+            <button type="submit" class="btn">发送请求</button>
+        </form>
+        
+        <div id="api-result" class="result"></div>
+    </div>
+    
+    <div class="nav-links">
+        <a href="../index.html">返回首页</a>
+        <a href="../pages/filetree.html">返回文档API</a>
+        <a href="getDoc.html">上一个接口: 获取文档内容</a>
+        <a href="renameDoc.html">下一个接口: 重命名文档</a>
+    </div>
+    
+    <script src="../api-tester.js"></script>
+
+ </body></html>

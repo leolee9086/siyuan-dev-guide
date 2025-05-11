@@ -1,0 +1,178 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/network/forwardProxy"> <!-- API Endpoint Meta Tag -->
+    <title>HTTP 请求转发代理 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <h1>HTTP 请求转发代理 (forwardProxy)</h1>
+        <nav>
+            <a href="../index.html">首页</a> | 
+            <a href="index.html">Network API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/network.go#L151" target="_blank">GitHub Source</a>
+        </nav>
+    </header>
+    <main>
+        <section id="description">
+            <h2>功能描述</h2>
+            <p>此 API 端点 <code>POST /api/network/forwardProxy</code> 提供了一个通用的 HTTP 请求转发代理功能。</p>
+            <p>它允许客户端（如插件）通过思源笔记后端向任意指定的 URL 发送 HTTP 请求（GET, POST, PUT, DELETE 等），并获取完整的响应（状态码、响应头、响应体）。</p>
+            <p>主要用途包括：</p>
+            <ul>
+                <li><strong>绕过浏览器跨域限制 (CORS)</strong>：当前端 JavaScript 无法直接访问某些第三方 API 时，可以通过此代理进行访问。</li>
+                <li><strong>隐藏 API 密钥</strong>：将需要保密的认证信息放在后端进行请求转发。</li>
+                <li><strong>统一网络请求处理</strong>：方便插件集中管理外部 HTTP 调用。</li>
+            </ul>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体必须是 JSON 格式，包含以下参数：</p>
+            <ul>
+                <li><code>url</code> (string): <strong>必填</strong>。需要请求的目标 URL 地址。</li>
+                <li><code>method</code> (string): 可选。HTTP 请求方法，如 "GET", "POST", "PUT", "DELETE" 等。默认为 "POST"。</li>
+                <li><code>timeout</code> (number): 可选。请求超时时间（毫秒）。默认为 7000 (7秒)。</li>
+                <li><code>headers</code> (array): 可选。一个对象数组，用于设置自定义请求头。每个对象是一个键值对。例如：<br>
+                    <code>[{"Content-Type": "application/x-www-form-urlencoded"}, {"Authorization": "Bearer your_token"}]</code>
+                </li>
+                <li><code>contentType</code> (string): 可选。用于设置请求的 <code>Content-Type</code> 头。如果同时在 <code>headers</code> 中也设置了 Content-Type，此参数可能会被覆盖。默认为 "application/json"。</li>
+                <li><code>payload</code> (any): 可选。请求体内容。其格式取决于 <code>contentType</code> 和 <code>payloadEncoding</code>。</li>
+                <li><code>payloadEncoding</code> (string): 可选。指定 <code>payload</code> 字段（如果它是字符串）的编码方式。支持的值：
+                    <ul>
+                        <li><code>json</code> (默认): payload 会被当作 JSON 对象（或数组等）处理并发送。</li>
+                        <li><code>text</code>: payload 会被当作普通文本字符串处理。</li>
+                        <li><code>base64</code> 或 <code>base64-std</code>: payload 是 Base64 标准编码的字符串，服务器会先解码再作为请求体发送。</li>
+                        <li><code>base64-url</code>: payload 是 Base64 URL 安全编码的字符串，服务器会先解码再发送。</li>
+                        <li><code>base32</code> 或 <code>base32-std</code>: payload 是 Base32 标准编码的字符串，服务器会先解码再发送。</li>
+                        <li><code>base32-hex</code>: payload 是 Base32 Hex 编码的字符串，服务器会先解码再发送。</li>
+                        <li><code>hex</code>: payload 是 Hex 编码的字符串，服务器会先解码再发送。</li>
+                    </ul>
+                </li>
+            </ul>
+            <p><strong>请求示例:</strong></p>
+            <pre><code class="language-json">
+{
+  "url": "https://api.example.com/data",
+  "method": "GET",
+  "timeout": 5000,
+  "headers": [
+    {"Authorization": "Bearer your_api_key"}
+  ]
+}
+            </code></pre>
+             <pre><code class="language-json">
+{
+  "url": "https://api.example.com/submit",
+  "method": "POST",
+  "headers": [
+      {"X-Custom-ID": "12345"}
+  ],
+  "contentType": "application/json", // 明确指定 JSON
+  "payload": {
+      "name": "test",
+      "value": 100
+  },
+  "payloadEncoding": "json" // 对应 payload 是 JSON 对象
+}
+            </code></pre>
+             <pre><code class="language-json">
+{
+  "url": "https://api.example.com/binary",
+  "method": "POST",
+  "contentType": "application/octet-stream",
+  "payload": "SGVsbG8gV29ybGQ=", // "Hello World" 的 Base64 编码
+  "payloadEncoding": "base64"
+}
+            </code></pre>
+        </section>
+
+        <section id="response-format">
+            <h2>响应结果</h2>
+            <p>无论目标服务器返回什么，此 API 本身成功的请求将返回一个 JSON 对象，<code>code</code> 为 0。目标服务器的实际响应包含在 <code>data</code> 字段中。</p>
+            <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "StatusCode": 200, // 目标服务器返回的 HTTP 状态码
+    "Headers": {       // 目标服务器返回的响应头
+      "Content-Type": ["application/json"],
+      "Date": ["Wed, 21 Feb 2024 10:00:00 GMT"],
+      // ... 其他响应头
+    },
+    "Body": { ... } // 目标服务器返回的响应体 (已自动解码或处理)
+                      // - 如果响应是 JSON, 这里是解码后的 JSON 对象/数组
+                      // - 如果响应是文本 (text/plain, text/html), 这里是文本字符串
+                      // - 如果是其他二进制类型, 这里可能是 Base64 编码的字符串
+                      // - 如果请求失败或无响应体，可能为 null
+    "BodyContentType": "application/json", // 目标服务器响应的 Content-Type
+    "BodyEncoding": "json" // Siyuan 尝试解析 Body 的方式 ('json', 'text', 'base64-std') 
+  }
+}
+            </code></pre>
+            <ul>
+                <li><code>code</code>: 0 表示代理请求本身成功（不代表目标服务器响应是 2xx）。</li>
+                <li><code>msg</code>: 代理请求本身的错误信息（如果 code 非 0）。</li>
+                <li><code>data.StatusCode</code>: 目标服务器返回的 HTTP 状态码。</li>
+                <li><code>data.Headers</code>: 目标服务器返回的响应头 (Header)。</li>
+                <li><code>data.Body</code>: 目标服务器返回的响应体。思源后端会尝试根据响应的 `Content-Type` 来解析或编码：
+                    <ul>
+                        <li>如果是 `application/json`，会尝试解析为 JSON 对象/数组。</li>
+                        <li>如果是 `text/*` (如 `text/plain`, `text/html`)，会作为普通字符串返回。</li>
+                        <li>如果是其他类型（如 `image/*`, `application/octet-stream` 等），通常会返回 Base64 标准编码的字符串。</li>
+                        <li>如果解析失败或没有响应体，可能为 `null`。</li>
+                    </ul>
+                </li>
+                 <li><code>data.BodyContentType</code>: 目标服务器响应头中的原始 `Content-Type`。</li>
+                 <li><code>data.BodyEncoding</code>: 指示 `data.Body` 是如何被处理/编码的（`json`, `text`, `base64-std`）。</li>
+            </ul>
+            <p>如果代理请求过程中发生错误（例如 DNS 解析失败、连接超时、目标 URL 无效等），<code>code</code> 会是 -1 或其他非零值，并包含错误信息在 <code>msg</code> 字段中，此时 <code>data</code> 可能为 `null`。</p>
+        </section>
+
+        <section id="online-testing">
+            <h2>在线测试</h2>
+            <p>您可以在下方输入请求参数进行在线测试。</p>
+            <div class="api-tester">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="请输入您的 API Token (可选)" value=""><br>
+
+                <label for="endpoint">Endpoint:</label>
+                <input type="text" id="endpoint" value="/api/network/forwardProxy" readonly=""><br>
+
+                <label for="method">Method:</label>
+                <input type="text" id="method" value="POST" readonly=""><br>
+
+                <label for="params">Parameters (JSON):</label><br>
+                <textarea id="params" rows="15" placeholder="{
+  &quot;url&quot;: &quot;https://httpbin.org/get&quot;, // 测试 URL，会原样返回请求信息
+  &quot;method&quot;: &quot;GET&quot;,
+  &quot;timeout&quot;: 5000,
+  &quot;headers&quot;: [
+    {&quot;X-Test-Header&quot;: &quot;SiyuanProxy&quot;}
+  ]
+}"></textarea><br>
+
+                <button onclick="sendRequest()">发送请求</button>
+
+                <h3>响应结果:</h3>
+                <pre id="response-output"></pre>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>思源笔记 API 文档 | 最后更新时间：<span id="last-updated"></span></p>
+    </footer>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        // 更新最后更新时间
+        document.getElementById('last-updated').textContent = new Date().toLocaleString();
+    </script>
+
+ </body></html>

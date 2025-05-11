@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API: /api/setting/setKeymap</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>思源笔记 API 文档</h1>
+        </header>
+        <nav>
+            <a href="../index.html">返回首页</a>
+        </nav>
+        <main>
+            <article class="api-doc">
+                <h2>/api/setting/setKeymap</h2>
+                <p><span class="http-method post">POST</span> /api/setting/setKeymap</p>
+
+                <section class="api-auth">
+                    <h3>认证与权限</h3>
+                    <p>需要用户认证 (<code class="code-snippet">model.CheckAuth</code>)。</p>
+                    <p>需要管理员权限 (<code class="code-snippet">model.CheckAdminRole</code>)。</p>
+                    <p>接口会检查只读模式 (<code class="code-snippet">model.CheckReadonly</code>)，在只读模式下可能无法进行设置。</p>
+                </section>
+
+                <section class="api-description">
+                    <h3>接口描述</h3>
+                    <p>用于设置和更新思源笔记的全局快捷键配置。</p>
+                    <p>成功设置后，新的快捷键配置将立即生效。此操作会修改 <code>conf.json</code> 文件中的 <code>keymap</code> 部分。</p>
+                </section>
+
+                <section class="api-request">
+                    <h3>请求体 (Request Body)</h3>
+                    <p>请求体为一个 JSON 对象，其中包含一个名为 <code>data</code> 的字段。<code>data</code> 字段的值是一个 <code class="code-snippet">map[string]interface{}</code> 类型的对象，代表了完整的快捷键映射配置。</p>
+                    <p>这个映射的键通常是快捷键的功能分类（如 <code>"general"</code>, <code>"editor"</code>, <code>"fileTree"</code> 等），值是另一个映射，其中键是具体的操作命令（如 <code>"riffCard"</code>, <code>"undo"</code>），值是对应的快捷键组合字符串（如 <code>"⌘F1"</code>, <code>"Ctrl+Z"</code>）。</p>
+                    <p>具体的键名和结构可能会随着思源笔记版本的更新而变化，建议通过 <a href="../system/getConf.html">/api/system/getConf</a> 接口获取当前的完整配置作为参考。</p>
+
+                    <div class="code-example-block">
+                        <p><strong>请求体示例 (JSON):</strong></p>
+                        <pre><code class="language-json">
+{
+    "data": {
+        "general": {
+            "riffCard": "⌘F1",
+            "lockScreen": "⌘L",
+            "dailyNote": "⌘⇧N",
+            "selectFile": "⌘P",
+            "newFile": "⌘N",
+            "saveFile": "⌘S",
+            "closeTab": "⌘W",
+            "syncNow": "⌘⇧S",
+            "toggleDock": "⌘1",
+            "toggleOutline": "⌘2",
+            "toggleBacklinks": "⌘3",
+            "toggleGraphView": "⌘4",
+            "toggleBookmark": "⌘5",
+            "toggleTag": "⌘6",
+            "toggleGlobalGraph": "⌘7",
+            "goToNextTab": "Control+Tab",
+            "goToPreviousTab": "Control+Shift+Tab",
+            "search": "⌘⇧F"
+        },
+        "editor": {
+            "undo": "⌘Z",
+            "redo": "⌘⇧Z",
+            "bold": "⌘B",
+            "italic": "⌘I",
+            "underline": "⌘U",
+            "strikethrough": "⌘⇧X",
+            "inlineCode": "⌘E",
+            "inlineMath": "⌘M",
+            "clearInlineFormat": "⌘\\\\",
+            "copyBlockRef": "⌘⇧C",
+            "copyPlainText": "⌘⇧V",
+            "jumpToParentBlock": "Escape",
+            "quickMakeCard": "Alt+Q",
+            "quickMakeList": "Alt+L",
+            "quickMakeSuperBlock": "Alt+S",
+            "quickMakeDoc": "Alt+D",
+            "quickMakeHeading": "Alt+H"
+        }
+        // ... 可能还有其他分类，如 fileTree, graphView 等
+    }
+}
+                        </code></pre>
+                    </div>
+                </section>
+
+                <section class="api-response">
+                    <h3>响应体 (Response Body)</h3>
+                    <p>响应体为标准的思源笔记 API 返回结构：</p>
+                    <pre><code class="language-json">
+{
+    "code": 0,
+    "msg": "",
+    "data": null
+}
+                    </code></pre>
+                    <p>其中：</p>
+                    <ul>
+                        <li><code>code</code>: 错误码，<code class="code-snippet">0</code> 表示成功，其他值表示失败。</li>
+                        <li><code>msg</code>: 错误信息，成功时为空字符串。</li>
+                        <li><code>data</code>: 成功时为 <code class="code-snippet">null</code>。</li>
+                    </ul>
+                </section>
+
+                <section class="api-example">
+                    <h3>接口调用示例 (JavaScript)</h3>
+                    <p>假设我们想修改"闪卡"的快捷键为 "Alt+Shift+F"。</p>
+                    <div class="code-example-block">
+                        <button class="copy-code-btn">复制代码</button>
+                        <pre><code class="language-javascript">
+async function setCustomKeymap() {
+    // 首先，最好从 /api/system/getConf 获取当前的 keymap
+    let currentKeymap = {}; // 假设这是从 getConf 获取到的 keymap.general 和 keymap.editor 等
+    try {
+        const response = await fetch('/api/system/getConf');
+        const result = await response.json();
+        if (result.code === 0 && result.data && result.data.conf && result.data.conf.keymap) {
+            currentKeymap = JSON.parse(JSON.stringify(result.data.conf.keymap)); // 深拷贝
+        } else {
+            console.error("无法获取当前快捷键配置:", result.msg);
+            // 可以选择使用一个预设的默认结构或提示用户
+        }
+    } catch (error) {
+        console.error("获取当前快捷键配置失败:", error);
+        // 处理网络错误等
+    }
+
+    // 更新或添加快捷键
+    if (!currentKeymap.general) {
+        currentKeymap.general = {};
+    }
+    currentKeymap.general.riffCard = "Alt+Shift+F"; // 修改闪卡的快捷键
+
+    const requestBody = {
+        data: currentKeymap
+    };
+
+    try {
+        const response = await fetch('/api/setting/setKeymap', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // 'Authorization': 'Token YOUR_API_TOKEN' // 如果API Token已设置
+            },
+            body: JSON.stringify(requestBody)
+        });
+        const result = await response.json();
+
+        if (result.code === 0) {
+            console.log('快捷键设置成功:', result);
+            alert('快捷键已成功更新！');
+        } else {
+            console.error('快捷键设置失败:', result.msg);
+            alert('快捷键设置失败: ' + result.msg);
+        }
+    } catch (error) {
+        console.error('请求 /api/setting/setKeymap 失败:', error);
+        alert('请求失败: ' + error);
+    }
+}
+
+// setCustomKeymap(); // 调用函数
+                        </code></pre>
+                    </div>
+                     <p><b>注意:</b> 上述示例中的 <code>currentKeymap</code> 获取逻辑是为了保证基于现有配置进行修改。如果直接发送一个不完整的 <code>data</code> 对象，可能会覆盖掉其他未包含的快捷键设置。</p>
+                </section>
+
+                <section class="api-test-area">
+                    <h3>在线测试</h3>
+                    <p>你可以使用下面的表单来测试此 API。首先，建议点击"加载当前配置"按钮来填充当前的快捷键设置，然后再进行修改。</p>
+                    <form id="setKeymapForm">
+                        <div class="form-group">
+                            <label for="keymapData">快捷键配置 (JSON, data 字段的内容):</label>
+                            <textarea id="keymapData" rows="15" placeholder='{\n    "general": {\n        "riffCard": "⌘F1"\n    },\n    "editor": {\n        "undo": "⌘Z"\n    }\n    // ...其他分类和快捷键\n}'></textarea>
+                        </div>
+                        <button type="button" onclick="loadCurrentKeymap()">加载当前配置</button>
+                        <button type="submit">发送请求</button>
+                    </form>
+                    <div class="response-output" id="responseOutput"></div>
+                </section>
+            </article>
+        </main>
+        <footer>
+            <p>&copy; 2023-2025 思源笔记. All rights reserved.</p>
+        </footer>
+    </div>
+    <script src="../js/script.js"></script>
+    <script>
+        async function loadCurrentKeymap() {
+            const outputDiv = document.getElementById('responseOutput');
+            outputDiv.innerHTML = '<p>正在加载当前快捷键配置...</p>';
+            try {
+                const response = await fetch('/api/system/getConf');
+                const result = await response.json();
+                if (result.code === 0 && result.data && result.data.conf && result.data.conf.keymap) {
+                    document.getElementById('keymapData').value = JSON.stringify(result.data.conf.keymap, null, 4);
+                    outputDiv.innerHTML = '<p class="success">当前快捷键配置已加载到文本框中。</p>';
+                } else {
+                    outputDiv.innerHTML = `<p class="error">无法获取当前快捷键配置: ${result.msg || '未知错误'}</p>`;
+                }
+            } catch (error) {
+                outputDiv.innerHTML = `<p class="error">加载配置请求失败: ${error}</p>`;
+            }
+        }
+
+        document.getElementById('setKeymapForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const keymapDataText = document.getElementById('keymapData').value;
+            const outputDiv = document.getElementById('responseOutput');
+            let keymapDataObject;
+
+            try {
+                keymapDataObject = JSON.parse(keymapDataText);
+            } catch (e) {
+                outputDiv.innerHTML = `<p class="error">请求体 JSON 格式错误: ${e.message}</p>`;
+                return;
+            }
+            
+            const requestBody = {
+                data: keymapDataObject
+            };
+
+            outputDiv.innerHTML = '<p>正在发送请求...</p>';
+
+            try {
+                const response = await fetch('/api/setting/setKeymap', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                const result = await response.json();
+                displayResponse(outputDiv, result);
+            } catch (error) {
+                outputDiv.innerHTML = `<p class="error">请求失败: ${error}</p>`;
+            }
+        });
+    </script>
+</body>
+</html> 

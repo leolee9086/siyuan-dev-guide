@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>/api/search/getAssetContent - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../stylesheets/styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/search/getAssetContent</span>
+    </div>
+
+    <h1>获取资源文件内容片段</h1>
+
+    <div class="auth-tags">
+        <span class="chip">需要认证</span>
+    </div>
+
+    <h2>接口描述</h2>
+    <p>获取指定资源文件（Asset）的内容片段，并高亮指定的查询关键词。</p>
+    <p>通常用于资源文件搜索结果的预览区域，展示匹配到的内容上下文。</p>
+    <p>注意：需要先对资源文件内容建立索引。</p>
+
+    <h2>实现链接</h2>
+    <ul>
+        <li>后端路由: <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/router.go" target="_blank">siyuan/kernel/api/router.go</a></li>
+        <li>处理函数: <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/search.go" target="_blank">siyuan/kernel/api/search.go</a> (<code>getAssetContent</code> 函数)</li>
+        <li>核心逻辑: <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/model/asset_content.go" target="_blank">siyuan/kernel/model/asset_content.go</a> (<code>GetAssetContent</code> 函数)</li>
+    </ul>
+
+    <h2>请求参数</h2>
+    <table class="parameter-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>是否必须</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>id</td>
+                <td>string</td>
+                <td>是</td>
+                <td>要获取内容的资源文件在内部数据库中的 ID。这个 ID 通常从 <code>fullTextSearchAssetContent</code> 或 <code>searchAsset</code> 接口的响应中获取。<strong>注意：这不是块 ID。</strong></td>
+            </tr>
+            <tr>
+                <td>query</td>
+                <td>string</td>
+                <td>是</td>
+                <td>需要在返回内容中高亮的关键词。</td>
+            </tr>
+            <tr>
+                <td>queryMethod</td>
+                <td>number</td>
+                <td>是</td>
+                <td>查询方法，用于确定如何处理 `query`：0: 关键字, 1: 查询语法。</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>返回值</h2>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>code</td>
+                <td>number</td>
+                <td>返回码，0 表示成功。</td>
+            </tr>
+            <tr>
+                <td>msg</td>
+                <td>string</td>
+                <td>错误信息，成功时为空字符串。</td>
+            </tr>
+            <tr>
+                <td>data</td>
+                <td>object</td>
+                <td>包含结果数据的对象。</td>
+            </tr>
+            <tr>
+                <td class="indent-1">data.assetContent</td>
+                <td>object</td>
+                <td>包含资源文件信息的对象。如果找不到对应的资源文件或发生错误，可能为 `null`。</td>
+            </tr>
+            <tr>
+                <td class="indent-2">data.assetContent.id</td>
+                <td>string</td>
+                <td>资源文件数据库记录 ID。</td>
+            </tr>
+            <tr>
+                <td class="indent-2">data.assetContent.name</td>
+                <td>string</td>
+                <td>文件名。</td>
+            </tr>
+            <tr>
+                <td class="indent-2">data.assetContent.ext</td>
+                <td>string</td>
+                <td>文件扩展名。</td>
+            </tr>
+            <tr>
+                <td class="indent-2">data.assetContent.path</td>
+                <td>string</td>
+                <td>资源文件路径 (相对于 data/)。</td>
+            </tr>
+            <tr>
+                <td class="indent-2">data.assetContent.size</td>
+                <td>number</td>
+                <td>文件大小 (字节)。</td>
+            </tr>
+            <tr>
+                <td class="indent-2">data.assetContent.hSize</td>
+                <td>string</td>
+                <td>人类可读的文件大小。</td>
+            </tr>
+            <tr>
+                <td class="indent-2">data.assetContent.updated</td>
+                <td>number</td>
+                <td>文件最后更新时间戳 (秒)。</td>
+            </tr>
+            <tr>
+                <td class="indent-2">data.assetContent.content</td>
+                <td>string</td>
+                <td>匹配到的内容片段，关键词用 <code>&lt;mark&gt;</code> 标签高亮，换行符替换为 <code>&lt;br&gt;</code>。</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="request-example-tab">请求示例</div>
+            <div class="tab" data-target="response-example-tab">返回示例</div>
+        </div>
+
+        <div id="request-example-tab" class="tab-content active">
+            <h3>请求示例</h3>
+            <pre><code class="language-json">{
+  "id": "20231101100000-abcdef0",
+  "query": "思源笔记",
+  "queryMethod": 0
+}
+</code></pre>
+        </div>
+
+        <div id="response-example-tab" class="tab-content">
+            <h3>返回示例</h3>
+            <pre><code class="language-json">{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "assetContent": {
+      "id": "20231101100000-abcdef0",
+      "name": "产品介绍.pdf",
+      "ext": ".pdf",
+      "path": "assets/产品介绍.pdf",
+      "size": 150000,
+      "hSize": "146.48 KB",
+      "updated": 1667296800,
+      "content": "...本文档介绍了&lt;mark&gt;思源笔记&lt;/mark&gt;的主要功能，包括双向链接、块引用等特性...&lt;br&gt;...&lt;mark&gt;思源笔记&lt;/mark&gt;是本地优先的笔记软件..."
+    }
+  }
+}
+</code></pre>
+        </div>
+    </div>
+
+    <blockquote class="important-note">
+        <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+        <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+    </blockquote>
+
+    <div class="test-area">
+        <h3>在线测试</h3>
+        <form id="api-test-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记中的 设置-关于 中查看 API Token">
+            </div>
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/search/getAssetContent">
+            </div>
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly>
+            </div>
+            <div class="form-group">
+                <label for="api-params">请求参数 (JSON):</label>
+                <textarea id="api-params" rows="5">{
+  "id": "请填写资源文件数据库 ID",
+  "query": "思源笔记",
+  "queryMethod": 0
+}</textarea>
+            </div>
+            <button type="submit" class="btn">发送请求</button>
+        </form>
+        <div id="api-result" class="result"></div>
+    </div>
+
+    <script src="../api-tester.js"></script>
+
+</body>
+</html> 

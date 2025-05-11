@@ -1,0 +1,134 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/system/setAppearanceMode"> <!-- API Endpoint Meta Tag -->
+    <title>设置外观模式 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <h1>设置外观模式 (setAppearanceMode)</h1>
+        <nav>
+            <a href="../index.html">首页</a> | 
+            <a href="index.html">System API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/system.go#L358" target="_blank">GitHub Source</a>
+        </nav>
+    </header>
+    <main>
+        <section id="description">
+            <h2>功能描述</h2>
+            <p>此 API 端点 <code>POST /api/system/setAppearanceMode</code> 用于设置思源笔记的界面外观模式（例如亮色模式或暗色模式）。</p>
+            <p>调用此 API 会更新系统配置，并可能影响界面主题的加载。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体必须是 JSON 格式，包含以下参数：</p>
+            <ul>
+                <li><code>mode</code> (integer): <strong>必填</strong>。要设置的外观模式代码。
+                    <ul>
+                        <li><code>0</code>: 亮色模式 (Light Mode)。</li>
+                        <li><code>1</code>: 暗色模式 (Dark Mode)。</li>
+                        <li>（注意：可能存在其他模式代码，例如 <code>2</code> 可能代表"跟随系统"，具体请参考思源笔记官方设置。）</li>
+                    </ul>
+                </li>
+            </ul>
+            <p><strong>请求示例 (设置为暗色模式):</strong></p>
+            <pre><code class="language-json">
+{
+  "mode": 1
+}
+            </code></pre>
+            <p><strong>请求示例 (设置为亮色模式):</strong></p>
+             <pre><code class="language-json">
+{
+  "mode": 0
+}
+            </code></pre>
+        </section>
+
+        <section id="response-format">
+            <h2>响应结果</h2>
+            <p>成功的请求将返回一个 JSON 对象，<code>code</code> 为 0，<code>data</code> 包含一个名为 <code>appearance</code> 的对象，该对象代表<strong>整个更新后的外观设置</strong> (<code>conf.Appearance</code> 结构)。</p>
+            <p><code>appearance</code> 对象包含多个字段，例如：</p>
+            <ul>
+                <li><code>mode</code> (integer): 更新后的模式代码。</li>
+                <li><code>themeLight</code> (string): 亮色模式使用的主题名称。</li>
+                <li><code>themeDark</code> (string): 暗色模式使用的主题名称。</li>
+                <li><code>themeJS</code> (boolean): 当前模式对应的主题是否包含 <code>theme.js</code> 文件。</li>
+                <li><code>icon</code> (string): 使用的图标主题名称。</li>
+                <li><code>codeBlockThemeLight</code> (string): 亮色模式下代码块的主题。</li>
+                <li><code>codeBlockThemeDark</code> (string): 暗色模式下代码块的主题。</li>
+                <li>... 以及其他外观相关设置。</li>
+            </ul>
+            <p><strong>响应示例:</strong></p>
+            <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "appearance": {
+      "mode": 1, // 更新后的模式
+      "darkThemes": ["Midnight", "Dark+"],
+      "lightThemes": ["Daylight", "GitHub"],
+      "themeLight": "Daylight",
+      "themeDark": "Midnight",
+      "themeJS": true, // 当前主题 (Midnight) 存在 theme.js
+      "icon": "material", 
+      "codeBlockThemeLight": "github",
+      "codeBlockThemeDark": "dracula",
+      // ... 其他外观设置字段 ...
+    }
+  }
+}
+            </code></pre>
+            <p>如果操作失败（例如参数无效、保存配置失败等），将返回非 0 的 <code>code</code> 和具体的错误信息 <code>msg</code>。</p>
+            <pre><code class="language-json">
+{
+  "code": -1,
+  "msg": "Failed to save configuration", // 示例错误信息
+  "data": null
+}
+            </code></pre>
+        </section>
+
+        <section id="online-testing">
+            <h2>在线测试</h2>
+            <p>您可以在下方输入要设置的外观模式代码进行在线测试。</p>
+            <div class="api-tester">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="请输入您的 API Token (可选)" value=""><br>
+
+                <label for="endpoint">Endpoint:</label>
+                <input type="text" id="endpoint" value="/api/system/setAppearanceMode" readonly=""><br>
+
+                <label for="method">Method:</label>
+                <input type="text" id="method" value="POST" readonly=""><br>
+
+                <label for="params">Parameters (JSON):</label><br>
+                <textarea id="params" rows="4" placeholder="{
+  &quot;mode&quot;: 1 // 0: Light, 1: Dark
+}"></textarea><br>
+
+                <button onclick="sendRequest()">发送请求</button>
+
+                <h3>响应结果:</h3>
+                <pre id="response-output"></pre>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>思源笔记 API 文档 | 最后更新时间：<span id="last-updated"></span></p>
+    </footer>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        // 更新最后更新时间
+        document.getElementById('last-updated').textContent = new Date().toLocaleString();
+    </script>
+
+ </body></html>

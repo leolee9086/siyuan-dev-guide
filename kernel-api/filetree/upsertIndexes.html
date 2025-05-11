@@ -1,0 +1,92 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>更新或插入内核索引 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../pages/filetree.html" class="back-link">← 返回 FileTree API 列表</a>
+    <h1>更新或插入内核索引</h1>
+    <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/filetree.go#L139" target="_blank" class="github-link">在 GitHub 上查看源码</a>
+
+    <p class="endpoint"><code>POST /api/filetree/upsertIndexes</code></p>
+
+    <h2>描述</h2>
+    <p>根据提供的路径列表，在思源笔记的内核索引（数据库）中添加新的文档/文件夹条目，或者更新已存在的条目。这个操作会读取对应的 <code>.sy</code> 文件内容并更新索引信息。</p>
+    <p><strong>注意：</strong> 这通常是一个内部维护使用的 API，用于在外部创建或修改文件后，手动触发特定文件的索引更新。普通插件或用户通常不需要直接调用此 API。它主要用于确保索引与实际文件系统状态保持一致。</p>
+
+    <h2>请求参数</h2>
+    <p>请求体需要是 JSON 格式。</p>
+    <table>
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+                <th>必需</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>paths</code></td>
+                <td><code>array</code> of <code>string</code></td>
+                <td>要更新或插入索引的文档或文件夹路径列表，路径相对于笔记本根目录。例如：<code>["/new-folder", "/updated-doc.sy"]</code></td>
+                <td>是</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>响应结果</h2>
+    <p>响应体是 JSON 格式。<code>code</code> 为 0 表示成功。<code>data</code> 始终为 <code>null</code>。</p>
+    <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": null
+}
+    </code></pre>
+
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<div class="test-area">
+        <h3>在线测试</h3>
+        <form id="api-test-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记中的" 设置-关于"中查看api="" token"="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/filetree/upsertIndexes" readonly="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-params">请求参数 (JSON):</label>
+                <textarea id="api-params">{
+    "paths": [
+        "/path/to/upsert/in/index.sy"
+    ]
+}</textarea>
+            </div>
+
+            <button type="submit" class="btn">发送请求</button>
+        </form>
+
+        <div id="api-result" class="result"></div>
+    </div>
+
+    <footer>
+        <p>思源笔记 API 文档</p>
+    </footer>
+    <script src="../api-tester.js"></script>
+
+ </body></html>

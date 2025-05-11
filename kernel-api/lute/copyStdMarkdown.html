@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>copyStdMarkdown API</title>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../github-markdown.css">
+<link rel="stylesheet" href="../styles.css">
+<style>
+    .markdown-body {
+        box-sizing: border-box;
+        min-width: 200px;
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 45px;
+    }
+    @media (max-width: 767px) {
+        .markdown-body {
+            padding: 15px;
+        }
+    }
+</style>
+</head>
+<body class="markdown-body">
+<blockquote>
+<p>本文档非官方出品，主要由 AI 辅助编写，不保证绝对准确。如有疑问，请以 <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/lute.go">kernel/api/lute.go</a> 中的源码为准。</p>
+<p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<h1>copyStdMarkdown</h1>
+<p>获取指定块的标准 Markdown 文本。</p>
+<p><strong>注意</strong>: 此 API 需要认证。</p>
+<h2>地址</h2>
+<p><code>POST /api/lute/copyStdMarkdown</code></p>
+<h2>请求体 (JSON)</h2>
+<pre><code class="language-json">{
+  "id": "块 ID"
+}
+</code></pre>
+<ul>
+<li><code>id</code>: (<code>string</code>) 必填，目标块的 ID。</li>
+</ul>
+<h2>响应体 (JSON)</h2>
+<p>标准响应体，其中 `data` 字段为导出的 Markdown 字符串。</p>
+<pre><code class="language-json">{
+  "code": 0,
+  "msg": "",
+  "data": "导出的标准 Markdown 文本..."
+}
+</code></pre>
+<h2>示例</h2>
+<pre><code class="language-javascript">fetch('/api/lute/copyStdMarkdown', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Token YOUR_API_TOKEN' // 替换为你的 API Token
+  },
+  body: JSON.stringify({ id: "20230101120000-abcdefgh" })
+})
+.then(response => response.json())
+.then(data => {
+  if (data.code === 0) {
+    console.log('获取标准 Markdown 成功:');
+    console.log(data.data);
+    // 可以将 data.data 复制到剪贴板
+    // navigator.clipboard.writeText(data.data);
+  } else {
+    console.error('获取标准 Markdown 失败:', data.msg);
+  }
+})
+.catch(error => console.error('请求错误:', error));
+</code></pre>
+
+<!-- 在线测试区域 -->
+<div class="test-area">
+    <h3>在线测试</h3>
+    <form id="api-test-form">
+        <div class="form-group">
+            <label for="api-token">API Token:</label>
+            <input type="text" id="api-token" placeholder="在思源笔记中的"设置-关于"中查看API token">
+        </div>
+        <div class="form-group">
+            <label for="api-endpoint">接口地址:</label>
+            <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/lute/copyStdMarkdown">
+        </div>
+        <div class="form-group">
+            <label for="api-method">请求方法:</label>
+            <input type="text" id="api-method" value="POST" readonly>
+        </div>
+        <div class="form-group">
+            <label for="api-params">请求参数 (JSON):</label>
+            <textarea id="api-params">{
+  "id": "输入块ID"
+}</textarea>
+        </div>
+        <button type="submit" class="btn">发送请求</button>
+    </form>
+    <div id="api-result" class="result"></div>
+</div>
+
+<script src="../api-tester.js"></script>
+
+</body>
+</html> 

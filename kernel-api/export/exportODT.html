@@ -1,0 +1,92 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导出为 ODT - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../pages/export.html" class="back-link">← 返回 Export API 列表</a>
+    <h1>导出为 ODT</h1>
+    <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/export.go#L93" target="_blank" class="github-link">在 GitHub 上查看源码</a>
+
+    <p class="endpoint"><code>POST /api/export/exportODT</code></p>
+
+    <h2>描述</h2>
+    <p>将指定的文档块（ID）通过 Pandoc 转换为 OpenDocument Text (ODT) 格式，并打包为 ZIP 文件。需要系统安装 Pandoc。</p>
+
+    <h2>请求参数</h2>
+    <p>请求体需要是 JSON 格式。</p>
+    <table>
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+                <th>必需</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>id</code></td>
+                <td><code>string</code></td>
+                <td>要导出的文档块 ID。</td>
+                <td>是</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>响应结果</h2>
+    <p>响应体是 JSON 格式。<code>code</code> 为 0 表示成功。<code>data</code> 包含导出的 ZIP 文件信息。</p>
+    <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "name": "document_title.odt", // 导出的文件名 (基于文档标题)
+    "zip": "/temp/export/xxx.zip"  // 导出的 ZIP 文件相对路径
+  }
+}
+    </code></pre>
+
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<div class="test-area">
+        <h3>在线测试</h3>
+        <form id="api-test-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记中的" 设置-关于"中查看api="" token"="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/export/exportODT" readonly="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-params">请求参数 (JSON):</label>
+                <textarea id="api-params">{
+    "id": ""
+}</textarea>
+            </div>
+
+            <button type="submit" class="btn">发送请求</button>
+        </form>
+
+        <div id="api-result" class="result"></div>
+    </div>
+
+    <footer>
+        <p>思源笔记 API 文档</p>
+    </footer>
+    <script src="../api-tester.js"></script>
+
+ </body></html>

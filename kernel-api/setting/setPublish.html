@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API: /api/setting/setPublish</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>思源笔记 API 文档</h1>
+        </header>
+        <nav>
+            <a href="../index.html">返回首页</a>
+        </nav>
+        <main>
+            <article class="api-doc">
+                <h2>/api/setting/setPublish</h2>
+                <p><span class="http-method post">POST</span> /api/setting/setPublish</p>
+
+                <section class="api-auth">
+                    <h3>认证与权限</h3>
+                    <p>需要用户认证 (<code class="code-snippet">model.CheckAuth</code>)。</p>
+                    <p>需要管理员权限 (<code class="code-snippet">model.CheckAdminRole</code>)。</p>
+                    <p>接口会检查只读模式 (<code class="code-snippet">model.CheckReadonly</code>)，在只读模式下可能无法进行设置。</p>
+                </section>
+
+                <section class="api-description">
+                    <h3>接口描述</h3>
+                    <p>用于设置和更新思源笔记的全局发布服务配置。</p>
+                    <p>成功设置后，如果启用了发布服务 (<code>enable: true</code>)，系统会尝试启动或重启发布服务。此操作会修改 <code>conf.json</code> 文件中的 <code>publish</code> 部分。</p>
+                    <p>如果发布服务因端口冲突等原因启动失败，接口会返回相应的错误信息。</p>
+                </section>
+
+                <section class="api-request">
+                    <h3>请求体 (Request Body)</h3>
+                    <p>请求体为一个 JSON 对象，代表完整的发布配置 (<code>conf.Publish</code>)。</p>
+                    <table class="param-table">
+                        <thead>
+                            <tr>
+                                <th>参数</th>
+                                <th>类型</th>
+                                <th>必需</th>
+                                <th>描述</th>
+                                <th>默认值</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>enable</code></td>
+                                <td>boolean</td>
+                                <td>是</td>
+                                <td>是否启用发布服务。</td>
+                                <td><code>false</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>port</code></td>
+                                <td>number (uint16)</td>
+                                <td>是</td>
+                                <td>发布服务监听的端口号。</td>
+                                <td><code>6808</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>auth</code></td>
+                                <td>object</td>
+                                <td>是</td>
+                                <td>Basic 认证配置。</td>
+                                <td>见下表</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4><code>auth</code> 对象结构:</h4>
+                    <table class="param-table">
+                        <thead>
+                            <tr>
+                                <th>参数</th>
+                                <th>类型</th>
+                                <th>必需</th>
+                                <th>描述</th>
+                                <th>默认值</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>enable</code></td>
+                                <td>boolean</td>
+                                <td>是</td>
+                                <td>是否为发布服务启用 Basic 认证。</td>
+                                <td><code>true</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>accounts</code></td>
+                                <td>array</td>
+                                <td>是</td>
+                                <td>Basic 认证的账户列表。如果 <code>auth.enable</code> 为 <code>true</code>，此列表可以为空，表示没有预设账户。</td>
+                                <td><code>[]</code> (空数组)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4><code>accounts</code> 数组中对象的结构 (BasicAuthAccount):</h4>
+                     <table class="param-table">
+                        <thead>
+                            <tr>
+                                <th>参数</th>
+                                <th>类型</th>
+                                <th>必需</th>
+                                <th>描述</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>username</code></td>
+                                <td>string</td>
+                                <td>是</td>
+                                <td>认证用户名。</td>
+                            </tr>
+                            <tr>
+                                <td><code>password</code></td>
+                                <td>string</td>
+                                <td>是</td>
+                                <td>认证密码。</td>
+                            </tr>
+                            <tr>
+                                <td><code>memo</code></td>
+                                <td>string</td>
+                                <td>否</td>
+                                <td>账户备注信息。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="code-example-block">
+                        <p><strong>请求体示例 (JSON):</strong></p>
+                        <pre><code class="language-json">
+{
+    "enable": true,
+    "port": 6808,
+    "auth": {
+        "enable": true,
+        "accounts": [
+            {
+                "username": "siyuan_user",
+                "password": "publish_password123",
+                "memo": "My Publish Account"
+            }
+        ]
+    }
+}
+                        </code></pre>
+                    </div>
+                </section>
+
+                <section class="api-response">
+                    <h3>响应体 (Response Body)</h3>
+                    <p>响应体为标准的思源笔记 API 返回结构：</p>
+                    <pre><code class="language-json">
+{
+    "code": 0,
+    "msg": "",
+    "data": {
+        "port": 6808,
+        "publish": {
+            "enable": true,
+            "port": 6808,
+            "auth": {
+                "enable": true,
+                "accounts": [
+                    {
+                        "username": "siyuan_user",
+                        "password": "publish_password123",
+                        "memo": "My Publish Account"
+                    }
+                ]
+            }
+        }
+    }
+}
+                    </code></pre>
+                    <p>其中：</p>
+                    <ul>
+                        <li><code>code</code>: 错误码，<code class="code-snippet">0</code> 表示成功，其他值表示失败 (例如端口占用)。</li>
+                        <li><code>msg</code>: 错误信息，成功时为空字符串。</li>
+                        <li><code>data</code>: 成功时包含以下字段：
+                            <ul>
+                                <li><code>port</code> (number): 发布服务实际运行的端口号。</li>
+                                <li><code>publish</code> (object): 更新后的完整发布配置对象 (<code>conf.Publish</code>)。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </section>
+
+                <section class="api-example">
+                    <h3>接口调用示例 (JavaScript)</h3>
+                    <div class="code-example-block">
+                        <button class="copy-code-btn">复制代码</button>
+                        <pre><code class="language-javascript">
+async function updatePublishSettings() {
+    const settings = {
+        enable: true,
+        port: 6809, // 尝试使用新端口
+        auth: {
+            enable: true,
+            accounts: [
+                {
+                    username: "reader",
+                    password: "secretPass",
+                    memo: "Read-only access"
+                }
+            ]
+        }
+    };
+
+    try {
+        const response = await fetch('/api/setting/setPublish', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // 'Authorization': 'Token YOUR_API_TOKEN' // 如果API Token已设置
+            },
+            body: JSON.stringify(settings)
+        });
+        const result = await response.json();
+
+        if (result.code === 0) {
+            console.log('发布设置成功:', result.data);
+            alert(`发布服务已在端口 ${result.data.port} 上更新/启动。`);
+        } else {
+            console.error('发布设置失败:', result.msg);
+            alert('发布设置失败: ' + result.msg);
+        }
+    } catch (error) {
+        console.error('请求 /api/setting/setPublish 失败:', error);
+        alert('请求失败: ' + error);
+    }
+}
+
+// updatePublishSettings(); // 调用函数
+                        </code></pre>
+                    </div>
+                </section>
+
+                <section class="api-test-area">
+                    <h3>在线测试</h3>
+                    <p>你可以使用下面的表单来测试此 API。建议先通过 <a href="../system/getConf.html">/api/system/getConf</a> 获取当前配置作为参考，或者使用 <a href="./getPublish.html">/api/setting/getPublish</a> 获取当前发布配置。</p>
+                    <form id="setPublishForm">
+                        <div class="form-group">
+                            <label for="publishEnable">启用发布服务:</label>
+                            <input type="checkbox" id="publishEnable" checked>
+                        </div>
+                        <div class="form-group">
+                            <label for="publishPort">端口号:</label>
+                            <input type="number" id="publishPort" value="6808" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="authEnable">启用 Basic 认证:</label>
+                            <input type="checkbox" id="authEnable" checked>
+                        </div>
+                        <div class="form-group">
+                            <label for="authAccounts">认证账户 (JSON 数组):</label>
+                            <textarea id="authAccounts" rows="5" placeholder='[\n  {\n    "username": "user1",\n    "password": "pass1",\n    "memo": "Account 1"\n  }\n]'>[]</textarea>
+                        </div>
+                        <button type="button" onclick="loadCurrentPublishConf()">加载当前配置</button>
+                        <button type="submit">发送请求</button>
+                    </form>
+                    <div class="response-output" id="responseOutput"></div>
+                </section>
+            </article>
+        </main>
+        <footer>
+            <p>&copy; 2023-2025 思源笔记. All rights reserved.</p>
+        </footer>
+    </div>
+    <script src="../js/script.js"></script>
+    <script>
+        async function loadCurrentPublishConf() {
+            const outputDiv = document.getElementById('responseOutput');
+            outputDiv.innerHTML = '<p>正在加载当前发布配置...</p>';
+            try {
+                // 优先尝试 /api/setting/getPublish
+                let response = await fetch('/api/setting/getPublish', { method: 'POST' });
+                let result = await response.json();
+                
+                let publishConf;
+                if (result.code === 0 && result.data && result.data.publish) {
+                    publishConf = result.data.publish;
+                } else {
+                    // 如果 getPublish 失败或未实现，回退到 getConf
+                    response = await fetch('/api/system/getConf');
+                    result = await response.json();
+                    if (result.code === 0 && result.data && result.data.conf && result.data.conf.publish) {
+                         publishConf = result.data.conf.publish;
+                    } else {
+                        outputDiv.innerHTML = `<p class="error">无法获取当前发布配置: ${result.msg || '未知错误'}</p>`;
+                        return;
+                    }
+                }
+                
+                document.getElementById('publishEnable').checked = publishConf.enable;
+                document.getElementById('publishPort').value = publishConf.port;
+                if (publishConf.auth) {
+                    document.getElementById('authEnable').checked = publishConf.auth.enable;
+                    document.getElementById('authAccounts').value = JSON.stringify(publishConf.auth.accounts || [], null, 2);
+                } else {
+                    // 处理可能不存在 auth 的情况，基于NewPublish的默认值
+                    document.getElementById('authEnable').checked = true;
+                    document.getElementById('authAccounts').value = JSON.stringify([], null, 2);
+                }
+                outputDiv.innerHTML = '<p class="success">当前发布配置已加载到表单中。</p>';
+
+            } catch (error) {
+                outputDiv.innerHTML = `<p class="error">加载配置请求失败: ${error}</p>`;
+            }
+        }
+
+        document.getElementById('setPublishForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const outputDiv = document.getElementById('responseOutput');
+            let accountsArray;
+            try {
+                accountsArray = JSON.parse(document.getElementById('authAccounts').value);
+            } catch (e) {
+                outputDiv.innerHTML = `<p class="error">认证账户 JSON 格式错误: ${e.message}</p>`;
+                return;
+            }
+
+            const requestBody = {
+                enable: document.getElementById('publishEnable').checked,
+                port: parseInt(document.getElementById('publishPort').value, 10),
+                auth: {
+                    enable: document.getElementById('authEnable').checked,
+                    accounts: accountsArray
+                }
+            };
+
+            outputDiv.innerHTML = '<p>正在发送请求...</p>';
+
+            try {
+                const response = await fetch('/api/setting/setPublish', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                const result = await response.json();
+                displayResponse(outputDiv, result);
+            } catch (error) {
+                outputDiv.innerHTML = `<p class="error">请求失败: ${error}</p>`;
+            }
+        });
+    </script>
+</body>
+</html> 

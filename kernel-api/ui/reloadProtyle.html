@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/ui/reloadProtyle">
+    <title>重载 Protyle 编辑器 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../common/css/styles.css">
+</head>
+<body>
+    <header class="api-header">
+        <h1>重载 Protyle 编辑器 (reloadProtyle)</h1>
+        <nav>
+            <a href="../index.html">首页</a> |
+            <a href="index.html">UI API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/ui.go#L41" target="_blank">GitHub Source (api/ui.go L41)</a>
+        </nav>
+        <div class="endpoint-container">
+            <span class="endpoint">POST /api/ui/reloadProtyle</span>
+        </div>
+    </header>
+    <main>
+        <section id="description">
+            <h2>接口描述</h2>
+            <p>此 API 端点 <code>POST /api/ui/reloadProtyle</code> 用于通知前端重载指定文档 ID 或块 ID 对应的 Protyle 编辑器实例。</p>
+            <p>当一个文档的内容或其块结构通过非 Protyle 编辑器的方式发生变化（例如通过其他 API 操作），并且需要前端的 Protyle 编辑器（如果当前打开了该文档）更新其显示内容时，可以调用此接口。内核会通过 WebSocket 将 "reloadprotyle" 事件及相应的 ID 推送给前端。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体为一个 JSON 对象，包含以下字段：</p>
+            <ul>
+                <li><strong><code>id</code></strong> (string, 必需): 需要重载其 Protyle 编辑器视图的文档 ID 或块 ID。</li>
+            </ul>
+            <p><strong>请求示例:</strong></p>
+            <pre><code class="language-json">{
+    "id": "20230511230300-hijklmn"
+}</code></pre>
+        </section>
+
+        <section id="response-body">
+            <h2>响应体</h2>
+            <p><strong>成功响应 (HTTP 200 OK):</strong></p>
+            <p>成功处理请求后，API 返回：</p>
+            <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": null
+}</code></pre>
+            <p><strong>失败响应 (HTTP 200 OK, 但 code 非 0):</strong></p>
+            <ul>
+                <li>如果请求体不是有效的 JSON，或者缺少必需的 <code>id</code> 字段，将返回类似：
+                    <pre><code class="language-json">{
+    "code": -1, 
+    "msg": "Request body is not valid JSON", // 或 "id is missing"
+    "data": null
+}</code></pre>
+                </li>
+            </ul>
+            <p><em>注意: 认证失败 (如未提供 API Token、非管理员等) 会由中间件处理，并返回相应的 HTTP 错误状态码 (如 401, 403)。</em></p>
+        </section>
+
+        <section id="authentication">
+            <h2>认证与授权</h2>
+            <p>调用此 API 端点需要有效的用户认证 (通过 <code>Authorization</code> HTTP头部传递 API Token)。</p>
+            <p>此外，执行此操作需要：</p>
+            <ul>
+                <li><strong>管理员角色 (<code>model.CheckAdminRole</code>):</strong> 通常情况下，此类 UI 控制接口可能需要管理员权限。</li>
+                <li><strong>非只读模式 (<code>model.CheckReadonly</code>):</strong> 不能在只读模式下执行此操作。</li>
+            </ul>
+        </section>
+
+        <section id="notes">
+            <h2>备注</h2>
+            <ul>
+                <li>此接口主要用于触发前端 UI 更新，本身不直接修改数据。</li>
+                <li>内核通过调用 <code>model.ReloadProtyle(id)</code> 实现，后者会发送一个类型为 `reloadprotyle` 包含文档/块 ID 的 WebSocket 消息给客户端。</li>
+            </ul>
+        </section>
+
+        <div class="test-area">
+            <h2>在线测试</h2>
+            <p>您可以使用下面的表单来测试此 API。请输入 API Token 和要重载 Protyle 编辑器的文档/块 ID。</p>
+            <form id="reloadProtyleForm">
+                <div>
+                    <label for="apiTokenForRP">API Token (用于授权):</label>
+                    <input type="password" id="apiTokenForRP" name="apiTokenForRP" required>
+                </div>
+                <div>
+                    <label for="docIdForRP">文档/块 ID (id):</label>
+                    <input type="text" id="docIdForRP" name="docIdForRP" required placeholder="例如: 20230511230300-hijklmn">
+                </div>
+                <button type="button" onclick="sendReloadProtyleRequest()">重载 Protyle 编辑器</button>
+            </form>
+            <h3>响应:</h3>
+            <pre><code id="reloadProtyleResponse" class="language-json">点击按钮查看响应</code></pre>
+        </div>
+    </main>
+    <blockquote>
+        <p>感谢您对思源笔记的关注与支持！</p>
+        <p><a href="https://afdian.com/a/leolee9086?tab=feed" target="_blank">在爱发电上赞助我们</a></p>
+    </blockquote>
+    <footer>
+        <p>&copy; 2024-2025 <a href="https://b3log.org/siyuan">思源笔记 B3log.org</a>. All rights reserved.</p>
+    </footer>
+    <script>
+        async function sendReloadProtyleRequest() {
+            const apiTokenInput = document.getElementById('apiTokenForRP');
+            const docIdInput = document.getElementById('docIdForRP');
+            const responseCode = document.getElementById('reloadProtyleResponse');
+
+            const apiToken = apiTokenInput.value;
+            if (!apiToken) {
+                alert('请输入 API Token 以授权此操作！');
+                responseCode.textContent = '操作取消：未提供 API Token。';
+                return;
+            }
+
+            const docId = docIdInput.value;
+            if (!docId) {
+                alert('请输入文档/块 ID！');
+                responseCode.textContent = '操作取消：未提供文档/块 ID。';
+                return;
+            }
+
+            const payload = { id: docId };
+            responseCode.textContent = '正在请求重载 Protyle 编辑器...';
+
+            try {
+                const response = await fetch('/api/ui/reloadProtyle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Token ' + apiToken
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                responseCode.textContent = JSON.stringify(result, null, 2);
+                
+                if (result.code === 0) {
+                    alert('重载 Protyle 编辑器的请求已发送 (ID: ' + docId + ')。');
+                } else {
+                    alert('请求失败: ' + result.msg);
+                }
+            } catch (error) {
+                console.error('Error during reloadProtyle request:', error);
+                responseCode.textContent = JSON.stringify({ code: -1, msg: '请求失败: ' + error.message, data:null }, null, 2);
+                alert('请求失败: ' + error.message);
+            }
+        }
+    </script>
+    <script src="../common/js/theme-toggle.js"></script>
+    <script src="../common/js/api-tester.js"></script>
+</body>
+</html> 

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>API: /api/sync/importSyncProviderS3 - 导入 S3 同步配置</title>
+    <link rel="stylesheet" href="../common.css">
+    <script src="../common.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>导入 S3 同步配置</h1>
+        <p><strong>API Endpoint:</strong> <code>POST /api/sync/importSyncProviderS3</code></p>
+        <p><strong>认证:</strong> 需要登录 (<code>model.CheckAuth</code>)、管理员权限 (<code>model.CheckAdminRole</code>) 且非只读模式 (<code>model.CheckReadonly</code>)。</p>
+
+        <h2>功能描述</h2>
+        <p>此 API 用于导入并应用 S3 (Simple Storage Service) 同步服务的配置。用户需要上传一个配置文件，该文件通常是通过 <code>/api/sync/exportSyncProviderS3</code> 接口导出的，其中包含了经过 AES 加密的 S3 连接参数。</p>
+        <p>上传的文件可以是一个 <code>.json</code> 文件，也可以是包含单个 <code>.json</code> 文件的 <code>.zip</code> 压缩包。系统会自动处理解压（如果需要）、解密，并将解析出的 S3 配置设置为当前激活的同步方式之一（并更新全局配置中的 <code>sync.s3</code> 部分）。</p>
+
+        <h2>请求</h2>
+        <p>请求必须为 <code>multipart/form-data</code> 类型，包含以下表单字段：</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>字段名</th>
+                    <th>类型</th>
+                    <th>是否必需</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>file</code></td>
+                    <td>File</td>
+                    <td>是</td>
+                    <td>包含 AES 加密的 S3 配置的 <code>.json</code> 文件，或者是一个包含此 <code>.json</code> 文件的 <code>.zip</code> 压缩包。推荐使用由 <code>/api/sync/exportSyncProviderS3</code> 导出的文件。</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>响应</h2>
+        <p>成功导入并应用配置后，服务器返回 HTTP 状态码 <code>200</code> 和一个 JSON 对象，其 <code>data</code> 字段包含更新后的 S3 配置信息：</p>
+        <pre><code class="language-json">
+{
+    "code": 0,
+    "msg": "",
+    "data": {
+        "s3": {
+            "endpoint": "s3.example.com",
+            "accessKey": "YOUR_ACCESS_KEY", // 注意：实际响应中 accessKey 和 secretKey 通常不会完整返回，此处仅为结构示例
+            "secretKey": "YOUR_SECRET_KEY", // 通常为空或被屏蔽
+            "bucket": "my-siyuan-bucket",
+            "region": "us-east-1",
+            "pathStyle": false,
+            "skipTlsVerify": false,
+            "timeout": 30,
+            "concurrentReqs": 5
+        }
+    }
+}
+        </code></pre>
+        <ul>
+            <li><code>code</code> (number): <code>0</code> 表示成功，其他值表示失败。</li>
+            <li><code>msg</code> (string): 错误信息（如果 <code>code</code> 非 <code>0</code>）。</li>
+            <li><code>data</code> (object): 包含同步信息的对象。
+                <ul>
+                    <li><code>s3</code> (object): 更新后的 S3 配置对象 (<code>conf.S3</code>)。其结构如下：
+                        <ul>
+                            <li><code>endpoint</code> (string): S3 服务端点 URL。</li>
+                            <li><code>accessKey</code> (string): Access Key ID。</li>
+                            <li><code>secretKey</code> (string): Secret Access Key (通常在响应中为空或被屏蔽以保安全)。</li>
+                            <li><code>bucket</code> (string): S3 存储桶名称。</li>
+                            <li><code>region</code> (string): S3 存储区域。</li>
+                            <li><code>pathStyle</code> (boolean): 是否使用路径风格的 URL (例如 <code>endpoint/bucket/key</code>)。</li>
+                            <li><code>skipTlsVerify</code> (boolean): 是否跳过 TLS (SSL) 证书验证。</li>
+                            <li><code>timeout</code> (number): 请求超时时间（秒）。</li>
+                            <li><code>concurrentReqs</code> (number): 并发请求数。</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+        <h2>在线测试</h2>
+        <div class="test-area">
+            <form id="uploadForm">
+                <label for="configFile">选择S3配置文件 (.json 或 .zip):</label>
+                <input type="file" id="configFile" name="file" accept=".json,.zip" required>
+                <br><br>
+                <button type="button" onclick="importS3Config()">导入配置</button>
+            </form>
+            <h3>响应:</h3>
+            <pre id="responseOutput">点击按钮发送请求</pre>
+        </div>
+
+        <script>
+            async function importS3Config() {
+                const outputElement = document.getElementById('responseOutput');
+                const formElement = document.getElementById('uploadForm');
+                const configFile = document.getElementById('configFile').files[0];
+                outputElement.textContent = '正在请求...';
+
+                if (!configFile) {
+                    outputElement.textContent = '错误: 请先选择一个配置文件。';
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('file', configFile);
+
+                try {
+                    const response = await fetch('/api/sync/importSyncProviderS3', {
+                        method: 'POST',
+                        // 'Content-Type': 'multipart/form-data' // Fetch API 会自动设置，且包含 boundary
+                        // headers: { 'Authorization': 'Token YOUR_API_TOKEN' }, // 如果需要，请取消注释并替换
+                        body: formData
+                    });
+                    const result = await response.json();
+                    outputElement.textContent = JSON.stringify(result, null, 2);
+                } catch (error) {
+                    outputElement.textContent = '请求失败: ' + error.message;
+                    console.error('Fetch Error:', error);
+                }
+            }
+        </script>
+    </div>
+</body>
+</html> 

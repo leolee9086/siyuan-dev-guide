@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>API: /api/sync/getBootSync - 触发启动时同步</title>
+    <link rel="stylesheet" href="../common.css">
+    <script src="../common.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>触发启动时同步</h1>
+        <p><strong>API Endpoint:</strong> <code>POST /api/sync/getBootSync</code></p>
+        <p><strong>认证:</strong> 需要登录 (<code>model.CheckAuth</code>)。</p>
+
+        <h2>功能描述</h2>
+        <p>此 API 用于异步触发一次"启动时同步"（或称为"引导同步"）。该操作会尝试从当前配置的云端同步服务下载初始的数据仓库状态 (<code>.siyuan/repo</code>)。这通常在首次设置同步、更换云端同步目标，或者需要从云端完整恢复数据仓库时使用。</p>
+        <p><strong>重要提示:</strong></p>
+        <ul>
+            <li>这是一个异步操作。API 调用成功仅表示同步任务已在后台启动，并不代表同步已完成或成功。</li>
+            <li>实际的同步进度、结果或可能发生的错误，需要通过监听相关的 WebSocket 事件来追踪 (例如 <code>syncProgress</code>, <code>syncDone</code>, <code>syncFail</code> 等事件，具体事件名需参考实际实现)。</li>
+            <li>在调用此接口前，请确保已正确配置了同步服务 (通过 <code>/api/sync/setSyncProvider</code> 等接口)。</li>
+        </ul>
+
+        <h2>请求参数 (JSON Body)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>参数名</th>
+                    <th>类型</th>
+                    <th>是否必需</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>app</code></td>
+                    <td>string</td>
+                    <td>是</td>
+                    <td>发起同步请求的客户端或应用程序的唯一标识符。此标识符可能用于后续的 WebSocket 通知，以便将同步状态反馈给正确的客户端。</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>请求示例:</p>
+        <pre><code class="language-json">
+{
+    "app": "siyuan-desktop-v2.10.0"
+}
+        </code></pre>
+
+        <h2>响应</h2>
+        <p>成功启动同步任务后，服务器返回 HTTP 状态码 <code>200</code> 和一个 JSON 对象，结构如下：</p>
+        <pre><code class="language-json">
+{
+    "code": 0,
+    "msg": "",
+    "data": null
+}
+        </code></pre>
+        <ul>
+            <li><code>code</code> (number): <code>0</code> 表示同步任务已成功启动，其他值表示启动失败。</li>
+            <li><code>msg</code> (string): 错误信息（如果 <code>code</code> 非 <code>0</code>）。</li>
+            <li><code>data</code> (null): 此接口不返回具体数据，固定为 <code>null</code>。</li>
+        </ul>
+
+        <h2>在线测试</h2>
+        <div class="test-area">
+            <label for="appId">客户端ID (app):</label>
+            <input type="text" id="appId" value="my-test-client" placeholder="例如: siyuan-desktop-v2.10.0">
+            <button onclick="triggerGetBootSync()">触发启动时同步</button>
+            <h3>响应:</h3>
+            <pre id="responseOutput">点击按钮发送请求</pre>
+            <p>注意：此操作为异步，请在思源笔记客户端或通过开发者工具检查 WebSocket 消息来确认同步状态。</p>
+        </div>
+
+        <script>
+            async function triggerGetBootSync() {
+                const appId = document.getElementById('appId').value;
+                const outputElement = document.getElementById('responseOutput');
+                outputElement.textContent = '正在请求...';
+
+                if (!appId) {
+                    outputElement.textContent = '错误: 客户端ID (app) 不能为空。';
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/sync/getBootSync', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // 'Authorization': 'Token YOUR_API_TOKEN' // 如果需要，请取消注释并替换
+                        },
+                        body: JSON.stringify({ app: appId })
+                    });
+                    const result = await response.json();
+                    outputElement.textContent = JSON.stringify(result, null, 2);
+                } catch (error) {
+                    outputElement.textContent = '请求失败: ' + error.message;
+                    console.error('Fetch Error:', error);
+                }
+            }
+        </script>
+    </div>
+</body>
+</html> 

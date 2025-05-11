@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>installBazaarTheme API</title>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../github-markdown.css">
+<link rel="stylesheet" href="../styles.css">
+<style>
+    .markdown-body { box-sizing: border-box; min-width: 200px; max-width: 980px; margin: 0 auto; padding: 45px; }
+    @media (max-width: 767px) { .markdown-body { padding: 15px; } }
+    .package-list { list-style: none; padding-left: 0; }
+    .package-item { margin-bottom: 1em; border: 1px solid #eee; padding: 1em; }
+    .package-item h4 { margin-top: 0; }
+    .copy-button { position: absolute; top: 0.5em; right: 0.5em; padding: 0.3em 0.6em; font-size: 0.8em; background-color: #eee; border: 1px solid #ccc; border-radius: 3px; cursor: pointer; }
+    .copy-button:hover { background-color: #ddd; }
+    pre { position: relative; }
+    .usage-examples { margin-top: 2em; border-top: 1px solid #eee; padding-top: 1em; }
+    .usage-examples h3 { margin-bottom: 0.5em; }
+    .usage-examples ul { list-style: disc; margin-left: 2em; }
+    /* 风险提示样式 */
+    .risk-warning { background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 0.75rem 1.25rem; margin-bottom: 1rem; border-radius: 0.25rem; }
+    .risk-warning strong { font-weight: bold; }
+    /* 重要行为提示 */
+    .important-note { background-color: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; padding: 0.75rem 1.25rem; margin-bottom: 1rem; border-radius: 0.25rem; }
+</style>
+</head>
+<body class="markdown-body">
+<blockquote>
+<p>本文档非官方出品，主要由 AI 辅助编写，不保证绝对准确。如有疑问，请以 <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/bazaar.go">kernel/api/bazaar.go</a> 中的源码为准。</p>
+<p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<h1>installBazaarTheme</h1>
+<p>从集市下载并安装指定的主题。</p>
+<p><strong>新手提示：</strong> 这个 API 就是你在思源集市里点击主题"安装"按钮时背后执行的操作。</p>
+<div class="risk-warning">
+    <p><strong>⚠️ 风险警告！请仔细阅读！ ⚠️</strong></p>
+    <ul>
+        <li>安装主题风险相对较低，但主题（主要是 CSS 文件，也可能包括 <code>theme.json</code> 中的配置或少量脚本）仍可能影响界面显示或加载外部资源。</li>
+        <li><strong>请仅安装来自你信任的开发者的主题！</strong></li>
+        <li>恶意或编写拙劣的主题可能导致界面错乱、性能问题或引入不必要的外部连接。</li>
+        <li>此操作会从网络下载文件并在本地文件系统 (`conf/appearance/themes/` 或 `data/themes/`) 中进行安装。</li>
+        <li>需要**管理员权限**并且不能在**只读模式**下运行。</li>
+        <li>安装过程可能因网络、仓库或主题本身的问题而失败。</li>
+    </ul>
+    <p><strong>请确认来源可靠后再进行安装！</strong></p>
+</div>
+<div class="important-note">
+    <p><strong>‼️ 重要行为注意 ‼️</strong></p>
+    <p>成功安装集市主题后，此 API 会自动修改你的外观设置，将 <strong>"外观 -> 跟随操作系统" 选项关闭</strong> (`appearance.modeOS` 设置为 `false`)，并保存配置。这是为了确保新安装的主题能够被正确应用，而不是被系统模式覆盖。</p>
+</div>
+<p><strong>注意</strong>: 此 API 需要认证、管理员权限且非只读模式。</p>
+<h2>地址</h2>
+<p><code>POST /api/bazaar/installBazaarTheme</code></p>
+<h2>请求体 (JSON)</h2>
+<pre><code class="language-json">{
+  "repoURL": "主题的 Git 仓库地址",
+  "repoHash": "仓库特定提交的哈希值",
+  "packageName": "主题名称",
+  "mode": 0, // 0: 亮色, 1: 暗色
+  "update": false, // 可选, 是否为更新操作, 默认为 false
+  "keyword": "" // 可选的关键词
+}
+</code></pre>
+<ul>
+<li><code>repoURL</code>: (<code>string</code>) 必填。主题的来源 Git 仓库 URL。通常从 <code>getBazaarTheme</code> API 获取。</li>
+<li><code>repoHash</code>: (<code>string</code>) 必填。仓库的特定 commit 哈希值，代表要安装的版本。通常从 <code>getBazaarTheme</code> API 获取。</li>
+<li><code>packageName</code>: (<code>string</code>) 必填。要安装的主题的名称。</li>
+<li><code>mode</code>: (<code>number</code>) 必填。指定主题模式，<code>0</code> 表示亮色 (light)，<code>1</code> 表示暗色 (dark)。</li>
+<li><code>update</code>: (<code>boolean</code>) 可选。如果为 `true`，表示这是一个更新操作。默认为 `false`。</li>
+<li><code>keyword</code>: (<code>string</code>) 可选。用于安装成功后刷新集市主题列表时的过滤，对安装操作本身影响不大。可以留空。</li>
+</ul>
+<h2>响应体 (JSON)</h2>
+<p>安装请求成功后，返回标准响应体，`data` 字段包含刷新后的集市主题列表和更新后的外观设置。</p>
+<pre><code class="language-json">{
+  "code": 0, // 0 表示安装任务启动成功
+  "msg": "", // 成功时为空，失败时包含错误信息
+  "data": {
+    "packages": [
+      // 安装后刷新得到的 *所有* 集市可用主题列表 (针对指定 keyword)...
+      // (结构同 getBazaarTheme 返回的 packages)
+    ],
+    "appearance": { 
+      // 更新后的外观设置对象 (结构同 /api/system/getConf 返回的 appearance 部分)
+      // 注意：modeOS 会被设为 false
+    }
+  }
+}
+</code></pre>
+<p><strong>注意:</strong></p>
+<ul>
+    <li><code>code: 0</code> 仅表示后端接受了安装请求。实际下载和安装过程可能失败。</li>
+    <li>如果安装失败，<code>code</code> 会是非 0 值，<code>msg</code> 会包含错误信息。</li>
+    <li>成功安装后，通常需要刷新界面或重启思源才能看到完整的主题效果。</li>
+    <li>成功安装后，<strong>用户的"跟随操作系统"外观模式会被关闭</strong>。</li>
+</ul>
+<h2>示例</h2>
+<div style="position: relative;">
+<pre id="example-fetch-code"><code class="language-javascript">// 假设要安装名为 "cool-dark-theme" 的暗色主题
+const repo = "https://github.com/user/siyuan-cool-dark-theme";
+const hash = "fedcba98765"; // 要安装的版本哈希
+const pkgName = "cool-dark-theme";
+
+// **警告：执行此代码会实际安装主题并修改外观设置！**
+fetch('/api/bazaar/installBazaarTheme', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Token YOUR_API_TOKEN' // 替换为你的管理员 API Token
+  },
+  body: JSON.stringify({
+    repoURL: repo,
+    repoHash: hash,
+    packageName: pkgName,
+    mode: 1, // 1 表示安装暗色模式
+    update: false,
+    keyword: ""
+  })
+})
+.then(response => response.json())
+.then(data => {
+  if (data.code === 0) {
+    console.log('主题安装请求成功，后台正在处理...');
+    console.log('外观设置已更新:', data.data.appearance);
+    // 可以根据需要处理返回的 packages 数据，例如刷新界面
+  } else {
+    console.error('主题安装失败:', data.msg);
+    // 向用户显示错误信息 data.msg
+  }
+})
+.catch(error => console.error('请求错误:', error));
+</code></pre>
+<button class="copy-button" onclick="copyCode('example-fetch-code')">复制</button>
+</div>
+
+<!-- 在线测试区域 -->
+<div class="test-area">
+    <h3>在线测试</h3>
+    <p>你需要先通过 <code>getBazaarTheme</code> 获取到一个具体主题的 <code>repoURL</code>, <code>repoHash</code> 和 <code>packageName</code> 才能测试此接口。</p>
+    <div class="risk-warning"><strong>注意：</strong> 在此测试会实际下载并安装主题，并关闭"跟随操作系统"外观设置！请确保你信任要安装的主题来源！</div>
+    <form id="api-test-form">
+        <div class="form-group">
+            <label for="api-token">API Token (管理员):</label>
+            <input type="text" id="api-token" placeholder="需要管理员权限的Token">
+        </div>
+        <div class="form-group">
+            <label for="api-endpoint">接口地址:</label>
+            <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/bazaar/installBazaarTheme">
+        </div>
+        <div class="form-group">
+            <label for="api-method">请求方法:</label>
+            <input type="text" id="api-method" value="POST" readonly>
+        </div>
+        <div class="form-group">
+            <label for="api-params">请求参数 (JSON):</label>
+            <textarea id="api-params">{
+  "repoURL": "输入主题仓库 URL",
+  "repoHash": "输入仓库 commit hash",
+  "packageName": "输入主题名称",
+  "mode": 0, 
+  "update": false,
+  "keyword": ""
+}</textarea>
+        </div>
+         <div class="form-group">
+            <label for="theme-mode">主题模式 (mode):</label>
+            <select id="theme-mode" onchange="updateParamsMode(this.value)">
+                <option value="0">0: 亮色 (Light)</option>
+                <option value="1">1: 暗色 (Dark)</option>
+            </select>
+        </div>
+        <button type="submit" class="btn">发送请求</button>
+    </form>
+    <div id="api-result" class="result"></div>
+</div>
+
+<!-- 实际应用案例 -->
+<div class="usage-examples">
+    <h3>实际应用案例 / Who Uses This API?</h3>
+    <p>如果你的外部工具使用了这个 API 来管理主题安装，欢迎提交 Pull Request 将你的项目添加到下方列表！</p>
+    <ul>
+        <li>暂无 （期待你的贡献！）</li>
+    </ul>
+</div>
+
+<script src="../api-tester.js"></script>
+<script>
+// 复制按钮的 JavaScript 函数
+function copyCode(elementId) {
+    const codeElement = document.getElementById(elementId);
+    if (codeElement) {
+        const code = codeElement.textContent || codeElement.innerText;
+        navigator.clipboard.writeText(code).then(() => {
+            const button = codeElement.nextElementSibling;
+            if (button && button.classList.contains('copy-button')) {
+                const originalText = button.textContent;
+                button.textContent = '已复制!';
+                setTimeout(() => { button.textContent = originalText; }, 2000);
+            }
+        }).catch(err => {
+            console.error('复制失败:', err);
+        });
+    }
+}
+
+// 更新在线测试表单中 mode 参数的函数
+function updateParamsMode(value) {
+    const paramsTextarea = document.getElementById('api-params');
+    try {
+        const params = JSON.parse(paramsTextarea.value);
+        params.mode = parseInt(value, 10); // 将字符串转为数字
+        paramsTextarea.value = JSON.stringify(params, null, 2); // 格式化输出
+    } catch (e) {
+        console.error('解析参数 JSON 出错:', e);
+        // 如果解析失败，可以尝试用正则替换，但不如下次用户手动修改准确
+    }
+}
+</script>
+
+</body>
+</html> 

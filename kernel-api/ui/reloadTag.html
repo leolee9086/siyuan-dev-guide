@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/ui/reloadTag">
+    <title>重载标签树 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../common/css/styles.css">
+</head>
+<body>
+    <header class="api-header">
+        <h1>重载标签树 (reloadTag)</h1>
+        <nav>
+            <a href="../index.html">首页</a> |
+            <a href="index.html">UI API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/ui.go#L25" target="_blank">GitHub Source (api/ui.go L25)</a>
+        </nav>
+        <div class="endpoint-container">
+            <span class="endpoint">POST /api/ui/reloadTag</span>
+        </div>
+    </header>
+    <main>
+        <section id="description">
+            <h2>接口描述</h2>
+            <p>此 API 端点 <code>POST /api/ui/reloadTag</code> 用于通知前端重载标签树视图。</p>
+            <p>当标签信息发生变化（例如通过 API 创建新的标签、重命名或删除标签），并且需要前端的标签面板更新其内容时，可以调用此接口。内核会通过 WebSocket 将 "reloadtag" 事件推送给前端。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>此接口不需要请求参数。可以发送一个空的 JSON 对象 <code>{}</code> 作为请求体，或者不包含请求体。</p>
+            <p><strong>请求示例 (空JSON):</strong></p>
+            <pre><code class="language-json">{}</code></pre>
+        </section>
+
+        <section id="response-body">
+            <h2>响应体</h2>
+            <p><strong>成功响应 (HTTP 200 OK):</strong></p>
+            <p>成功处理请求后，API 返回：</p>
+            <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": null
+}</code></pre>
+            <p><strong>失败响应:</strong></p>
+            <p>由于此接口不处理复杂的请求参数，主要的失败场景是认证失败。认证失败 (如未提供 API Token、非管理员等) 会由中间件处理，并返回相应的 HTTP 错误状态码 (如 401, 403)。</p>
+        </section>
+
+        <section id="authentication">
+            <h2>认证与授权</h2>
+            <p>调用此 API 端点需要有效的用户认证 (通过 <code>Authorization</code> HTTP头部传递 API Token)。</p>
+            <p>此外，执行此操作需要：</p>
+            <ul>
+                <li><strong>管理员角色 (<code>model.CheckAdminRole</code>):</strong> 通常情况下，此类 UI 控制接口可能需要管理员权限。</li>
+                <li><strong>非只读模式 (<code>model.CheckReadonly</code>):</strong> 不能在只读模式下执行此操作。</li>
+            </ul>
+        </section>
+
+        <section id="notes">
+            <h2>备注</h2>
+            <ul>
+                <li>此接口主要用于触发前端 UI 更新，本身不直接修改数据。</li>
+                <li>内核通过调用 <code>model.ReloadTag()</code> 实现，后者会发送一个类型为 `reloadtag` 的 WebSocket 消息给客户端。</li>
+            </ul>
+        </section>
+
+        <div class="test-area">
+            <h2>在线测试</h2>
+            <p>您可以使用下面的表单来测试此 API。请输入 API Token。</p>
+            <form id="reloadTagForm">
+                <div>
+                    <label for="apiTokenForRT">API Token (用于授权):</label>
+                    <input type="password" id="apiTokenForRT" name="apiTokenForRT" required>
+                </div>
+                <button type="button" onclick="sendReloadTagRequest()">重载标签树</button>
+            </form>
+            <h3>响应:</h3>
+            <pre><code id="reloadTagResponse" class="language-json">点击按钮查看响应</code></pre>
+        </div>
+    </main>
+    <blockquote>
+        <p>感谢您对思源笔记的关注与支持！</p>
+        <p><a href="https://afdian.com/a/leolee9086?tab=feed" target="_blank">在爱发电上赞助我们</a></p>
+    </blockquote>
+    <footer>
+        <p>&copy; 2024-2025 <a href="https://b3log.org/siyuan">思源笔记 B3log.org</a>. All rights reserved.</p>
+    </footer>
+    <script>
+        async function sendReloadTagRequest() {
+            const apiTokenInput = document.getElementById('apiTokenForRT');
+            const responseCode = document.getElementById('reloadTagResponse');
+
+            const apiToken = apiTokenInput.value;
+            if (!apiToken) {
+                alert('请输入 API Token 以授权此操作！');
+                responseCode.textContent = '操作取消：未提供 API Token。';
+                return;
+            }
+
+            responseCode.textContent = '正在请求重载标签树...';
+
+            try {
+                const response = await fetch('/api/ui/reloadTag', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json', // 即使是空body，也通常发送此header
+                        'Authorization': 'Token ' + apiToken
+                    },
+                    body: JSON.stringify({}) // 发送空JSON对象
+                });
+                const result = await response.json();
+                responseCode.textContent = JSON.stringify(result, null, 2);
+                
+                if (result.code === 0) {
+                    alert('重载标签树的请求已发送。');
+                } else {
+                    alert('请求失败: ' + result.msg);
+                }
+            } catch (error) {
+                console.error('Error during reloadTag request:', error);
+                responseCode.textContent = JSON.stringify({ code: -1, msg: '请求失败: ' + error.message, data:null }, null, 2);
+                alert('请求失败: ' + error.message);
+            }
+        }
+    </script>
+    <script src="../common/js/theme-toggle.js"></script>
+    <script src="../common/js/api-tester.js"></script>
+</body>
+</html> 

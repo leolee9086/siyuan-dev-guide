@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/system/uiproc">
+    <title>注册 UI 进程 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../common/css/styles.css">
+</head>
+<body>
+    <header class="api-header">
+        <h1>注册 UI 进程 (addUIProcess)</h1>
+        <nav>
+            <a href="../index.html">首页</a> |
+            <a href="index.html">System API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/system.go#L738" target="_blank">GitHub Source (api/system.go L738)</a>
+        </nav>
+        <div class="endpoint-container">
+            <span class="endpoint">POST /api/system/uiproc</span>
+        </div>
+    </header>
+    <main>
+        <section id="description">
+            <h2>接口描述</h2>
+            <p>此 API 端点 <code>POST /api/system/uiproc</code> 用于向内核注册一个 UI 进程的 ID (PID)。</p>
+            <p>这通常由思源笔记的前端 UI 进程在启动或特定操作时调用，以便内核能够追踪活跃的 UI 实例。内核会将接收到的 PID 存储在一个全局的映射中 (<code>util.UIProcessIDs</code>)。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>此接口通过 URL query 参数接收数据，没有请求体。</p>
+            <ul>
+                <li><strong><code>pid</code></strong> (string, URL query, 必需): 要注册的 UI 进程的唯一标识符。</li>
+            </ul>
+            <p><strong>请求示例:</strong></p>
+            <pre><code class="language-text">POST /api/system/uiproc?pid=unique-ui-process-id-12345</code></pre>
+        </section>
+
+        <section id="response-body">
+            <h2>响应体</h2>
+            <p><strong>成功响应 (HTTP 200 OK):</strong></p>
+            <p>此接口在成功处理请求后，通常返回一个 HTTP 200 OK 状态码，但 **响应体为空**。</p>
+            <pre><code class="language-text">HTTP/1.1 200 OK
+(空响应体)</code></pre>
+            <p><strong>失败响应:</strong></p>
+            <p>由于此接口逻辑非常简单 (仅从 query 中读取参数并存储)，通常不会因为参数格式错误而返回特定的 JSON 错误。如果请求未能被正确路由或服务器内部发生意外错误，可能会返回标准的 HTTP 错误状态码 (如 404 Not Found, 500 Internal Server Error)。</p>
+        </section>
+
+        <section id="authentication">
+            <h2>认证与授权</h2>
+            <p>调用此 API 端点 **不需要认证**。</p>
+        </section>
+
+        <section id="notes">
+            <h2>备注</h2>
+            <ul>
+                <li>此接口主要用于思源笔记内部机制，用于追踪活跃的 UI 进程。</li>
+                <li>重复使用相同的 <code>pid</code> 调用此接口会覆盖之前的值 (因为底层存储是 <code>sync.Map</code>)。</li>
+                <li>此接口不返回任何业务数据。</li>
+            </ul>
+        </section>
+
+        <div class="test-area">
+            <h2>在线测试</h2>
+            <p>您可以使用下面的表单来测试此 API。请输入一个 UI 进程 ID。</p>
+            <form id="addUiProcForm">
+                <div>
+                    <label for="pidValue">UI 进程 ID (pid):</label>
+                    <input type="text" id="pidValue" name="pidValue" required value="test-pid-123">
+                </div>
+                <button type="button" onclick="sendAddUiProcRequest()">注册 UI 进程</button>
+            </form>
+            <h3>响应状态:</h3>
+            <pre><code id="addUiProcResponse" class="language-text">点击按钮查看响应状态</code></pre>
+        </div>
+    </main>
+    <blockquote>
+        <p>感谢您对思源笔记的关注与支持！</p>
+        <p><a href="https://afdian.com/a/leolee9086?tab=feed" target="_blank">在爱发电上赞助我们</a></p>
+    </blockquote>
+    <footer>
+        <p>&copy; 2024-2025 <a href="https://b3log.org/siyuan">思源笔记 B3log.org</a>. All rights reserved.</p>
+    </footer>
+    <script>
+        async function sendAddUiProcRequest() {
+            const pidInput = document.getElementById('pidValue');
+            const responseCode = document.getElementById('addUiProcResponse');
+
+            const pid = pidInput.value;
+            if (!pid) {
+                alert('请输入 UI 进程 ID！');
+                responseCode.textContent = '操作取消：未提供 PID。';
+                return;
+            }
+
+            responseCode.textContent = '正在注册 UI 进程...';
+
+            try {
+                const response = await fetch(`/api/system/uiproc?pid=${encodeURIComponent(pid)}`, {
+                    method: 'POST',
+                    headers: {
+                        // 不需要 'Content-Type' 因为没有请求体
+                        // 不需要 'Authorization' 因为此 API 无需认证
+                    }
+                    // 没有请求体 body
+                });
+                
+                responseCode.textContent = `HTTP 状态码: ${response.status} (${response.statusText})\n`;
+                responseCode.textContent += `响应头:\n`;
+                for(let pair of response.headers.entries()) {
+                   responseCode.textContent += `${pair[0]}: ${pair[1]}\n`;
+                }
+                // 尝试读取响应体文本，即使预期为空，也可能包含错误信息
+                const responseBodyText = await response.text();
+                if (responseBodyText) {
+                    responseCode.textContent += `\n响应体:\n${responseBodyText}`;
+                } else {
+                    responseCode.textContent += `\n响应体为空 (符合预期)。`;
+                }
+
+                if (response.ok) {
+                    alert('UI 进程 ID "' + pid + '" 已尝试注册。请检查响应状态确认。');
+                } else {
+                    alert('注册 UI 进程 ID "' + pid + '" 可能失败。请检查响应状态和可能的响应体内容。');
+                }
+            } catch (error) {
+                console.error('Error during addUiProc request:', error);
+                responseCode.textContent = '请求失败: ' + error.message;
+                alert('请求失败: ' + error.message);
+            }
+        }
+    </script>
+    <script src="../common/js/theme-toggle.js"></script>
+    <script src="../common/js/api-tester.js"></script>
+</body>
+</html> 

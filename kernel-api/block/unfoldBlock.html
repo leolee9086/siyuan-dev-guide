@@ -1,0 +1,94 @@
+<!DOCTYPE html><html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>unfoldBlock API</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="../static/css/prism.css">
+    <script src="../static/js/prism.js"></script>
+    <script src="../static/js/fetch.js"></script>
+    <script src="../static/js/script.js"></script>
+</head>
+<body>
+<header>
+    <span class="header-item">
+        <button class="header-btn" onclick="goBack()">←</button>
+    </span>
+    <span class="header-item">
+        <div class="header-title">unfoldBlock</div>
+    </span>
+    <span class="header-item">
+        <button class="header-btn" onclick="goHome()">⌂</button>
+    </span>
+</header>
+<main>
+    <h2>unfoldBlock</h2>
+    <p><code class="language-text">POST /api/block/unfoldBlock</code></p>
+    <p>展开指定的块（解除折叠状态）。</p>
+    <p>这通常用于显示之前被折叠的块的内容。</p>
+    <p>鉴权：需要认证 Token。</p>
+    <p><b>请求体参数</b></p>
+    <table>
+        <thead>
+        <tr>
+            <th>参数</th>
+            <th>类型</th>
+            <th>描述</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><code class="language-text">id</code></td>
+            <td><code class="language-text">string</code></td>
+            <td>必需。要展开的块的 ID。</td>
+        </tr>
+        </tbody>
+    </table>
+    <p><b>返回值</b></p>
+    <p>成功时返回空数据：</p>
+    <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": null
+}</code></pre>
+    <p>失败时（例如 ID 无效或块不存在）：</p>
+    <pre><code class="language-json">{
+    "code": -1, // 或其他错误码
+    "msg": "invalid block id [id=无效ID]", // 或 "get block [id=不存在ID] failed: block not found"
+    "data": null
+}</code></pre>
+    <p><b>请求示例</b></p>
+    <pre><code class="language-json">{
+    "id": "要展开的块的ID"
+}</code></pre>
+
+    <h2>在线测试</h2>
+    <div class="api-tester">
+        <p>服务器地址: <code id="serverAddress"></code></p>
+        <p>API Token: <input type="text" id="apiToken" placeholder="请输入 API Token"></p>
+        <p>API 路径: <input type="text" id="apiPath" value="/api/block/unfoldBlock" readonly=""></p>
+        <p>请求方法: <input type="text" id="apiMethod" value="POST" readonly=""></p>
+        <p>请求体:</p>
+        <textarea id="apiRequestBody" rows="3" placeholder="{
+    &quot;id&quot;: &quot;要展开的块的ID&quot;
+}"></textarea>
+        <button onclick="sendRequest()">发送请求</button>
+        <p>响应结果:</p>
+        <pre><code id="apiResponse" class="language-json"></code></pre>
+    </div>
+
+    <p class="link-container">
+        <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/block_op.go" target="_blank">查看源代码 (block_op.go)</a> |
+        <a href="../pages/block.html">返回 Block API 列表</a> |
+        <a href="../index.html">返回 API 首页</a>
+    </p>
+</main>
+<footer>
+    <p>© 2024 Siyuan Note API Documentation</p>
+</footer>
+
+ 
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+</body></html>

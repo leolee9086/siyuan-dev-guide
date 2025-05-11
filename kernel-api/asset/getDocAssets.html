@@ -1,0 +1,131 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/asset/getDocAssets"> <!-- API Endpoint Meta Tag -->
+    <title>获取文档资源文件列表 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <h1>获取文档资源文件列表 (getDocAssets)</h1>
+        <p class="api-path-display"><strong>方法：</strong><span class="method">POST</span> <strong>路径：</strong><span class="endpoint">/api/asset/getDocAssets</span></p>
+        <nav>
+            <a href="../index.html">首页</a> | 
+            <a href="index.html">Asset API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/asset.go#L58" target="_blank">GitHub Source</a> <!-- 假设行号，可能需要调整 -->
+        </nav>
+    </header>
+    <main>
+        <section id="description">
+            <h2>功能描述</h2>
+            <p>此 API 端点 <code>POST /api/asset/getDocAssets</code> 用于获取指定文档块（Doc Block）所引用的所有资源文件（Assets）信息列表。</p>
+            <p>资源文件通常包括图片、附件等。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体必须是 JSON 格式，包含以下参数：</p>
+            <ul>
+                <li><code>id</code> (string): <strong>必填</strong>。文档块的 ID。</li>
+            </ul>
+            <p><strong>请求示例:</strong></p>
+            <pre><code class="language-json">
+{
+  "id": "20230315180000-abcdefg"
+}
+            </code></pre>
+        </section>
+
+        <section id="response-format">
+            <h2>响应结果</h2>
+            <p>成功的请求将返回一个 JSON 对象，<code>code</code> 为 0，<code>data</code> 字段包含一个 <code>assets</code> 数组。</p>
+            <p><code>assets</code> 数组中的每个元素是一个对象，代表一个资源文件，通常包含以下字段（具体字段可能依版本或文件类型而不同）：</p>
+            <ul>
+                <li><code>path</code> (string): 资源文件的相对路径 (相对于 `data/assets/` 目录)。</li>
+                <li><code>name</code> (string): 资源文件的原始文件名。</li>
+                <li><code>type</code> (string): 资源文件的 MIME 类型 (可能不准确或缺失)。</li>
+                <li><code>size</code> (number): 文件大小 (字节)。</li>
+                <li><code>box</code> (string): 资源文件所属的笔记本 ID (通常为空，因为资源是全局的)。</li>
+                <li><code>docpath</code> (string): 首次引用该资源的文档路径 (可能不准确)。</li>
+                <li><code>hash</code> (string): 文件的哈希值 (可能)。</li>
+                <li>其他可能的元数据...</li>
+            </ul>
+            <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "assets": [
+      {
+        "path": "assets/image-20230315180500-hijklmn.png",
+        "name": "screenshot.png",
+        "type": "image/png",
+        "size": 12345,
+        "box": "",
+        "docpath": "/path/to/document.sy", 
+        "hash": "..."
+      },
+      {
+        "path": "assets/attachment-20230315181000-opqrstu.pdf",
+        "name": "mydocument.pdf",
+        "type": "application/pdf",
+        "size": 67890,
+        "box": "",
+        "docpath": "/path/to/document.sy",
+        "hash": "..."
+      }
+      // ... 更多资源文件
+    ]
+  }
+}
+            </code></pre>
+            <p>如果操作失败（例如文档 ID 无效），将返回非 0 的 <code>code</code> 和具体的错误信息 <code>msg</code>。</p>
+             <pre><code class="language-json">
+{
+  "code": -1,
+  "msg": "get doc assets failed: block [xxx] not found", // 示例错误信息
+  "data": null
+}
+            </code></pre>
+        </section>
+
+        <section id="online-testing">
+            <h2>在线测试</h2>
+            <p>您可以在下方输入文档块 ID 进行在线测试。</p>
+            <div class="api-tester">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="请输入您的 API Token (可选)" value=""><br>
+
+                <label for="endpoint">Endpoint:</label>
+                <input type="text" id="endpoint" value="/api/asset/getDocAssets" readonly=""><br>
+
+                <label for="method">Method:</label>
+                <input type="text" id="method" value="POST" readonly=""><br>
+
+                <label for="params">Parameters (JSON):</label><br>
+                <textarea id="params" rows="4" placeholder="{
+  &quot;id&quot;: &quot;your-doc-block-id&quot;
+}"></textarea><br>
+
+                <button onclick="sendRequest()">发送请求</button>
+
+                <h3>响应结果:</h3>
+                <pre id="response-output"></pre>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>思源笔记 API 文档 | 最后更新时间：<span id="last-updated"></span></p>
+    </footer>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        // 更新最后更新时间
+        document.getElementById('last-updated').textContent = new Date().toLocaleString();
+    </script>
+
+ </body></html>

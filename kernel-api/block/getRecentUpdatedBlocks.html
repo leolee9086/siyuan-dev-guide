@@ -1,0 +1,95 @@
+<!DOCTYPE html><html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>getRecentUpdatedBlocks API</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="../static/css/prism.css">
+    <script src="../static/js/prism.js"></script>
+    <script src="../static/js/fetch.js"></script>
+    <script src="../static/js/script.js"></script>
+</head>
+<body>
+<header>
+    <span class="header-item">
+        <button class="header-btn" onclick="goBack()">←</button>
+    </span>
+    <span class="header-item">
+        <div class="header-title">getRecentUpdatedBlocks</div>
+    </span>
+    <span class="header-item">
+        <button class="header-btn" onclick="goHome()">⌂</button>
+    </span>
+</header>
+<main>
+    <h2>getRecentUpdatedBlocks</h2>
+    <p><code class="language-text">POST /api/block/getRecentUpdatedBlocks</code></p>
+    <p>获取最近更新的块列表。</p>
+    <p>此接口不接受任何参数，直接返回系统记录的最近更新的块信息。</p>
+    <p>鉴权：需要认证 Token。</p>
+    <p><b>请求体参数</b></p>
+    <p>无</p>
+    <p><b>返回值</b></p>
+    <p>成功时返回包含最近更新块信息的对象数组：</p>
+    <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": [
+        {
+            "id": "块ID_1",
+            "updated": "更新时间戳_1",
+            "content": "块内容摘要_1", // 通常是块的纯文本内容
+            "type": "块类型_1", // 例如 'p' (段落), 'h' (标题), 'l' (列表) 等
+            "box": {
+                "id": "笔记本ID_1",
+                "name": "笔记本名称_1",
+                "icon": "笔记本图标_1"
+            },
+            "path": "块所在文档路径_1"
+            // 可能包含其他块信息
+        },
+        {
+            "id": "块ID_2",
+            // ... 其他块信息
+        }
+        // ...
+    ]
+}</code></pre>
+    <p>失败时：</p>
+    <pre><code class="language-json">{
+    "code": -1, // 或其他错误码
+    "msg": "错误信息",
+    "data": null
+}</code></pre>
+    <p><b>请求示例</b></p>
+    <pre><code class="language-json">{}</code></pre>
+
+    <h2>在线测试</h2>
+    <div class="api-tester">
+        <p>服务器地址: <code id="serverAddress"></code></p>
+        <p>API Token: <input type="text" id="apiToken" placeholder="请输入 API Token"></p>
+        <p>API 路径: <input type="text" id="apiPath" value="/api/block/getRecentUpdatedBlocks" readonly=""></p>
+        <p>请求方法: <input type="text" id="apiMethod" value="POST" readonly=""></p>
+        <p>请求体:</p>
+        <textarea id="apiRequestBody" rows="2" placeholder="无请求体"></textarea>
+        <button onclick="sendRequest()">发送请求</button>
+        <p>响应结果:</p>
+        <pre><code id="apiResponse" class="language-json"></code></pre>
+    </div>
+
+    <p class="link-container">
+        <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/block.go" target="_blank">查看源代码 (block.go)</a> |
+        <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/model/block.go" target="_blank">查看模型代码 (model/block.go)</a> |
+        <a href="../pages/block.html">返回 Block API 列表</a> |
+        <a href="../index.html">返回 API 首页</a>
+    </p>
+</main>
+<footer>
+    <p>© 2024 Siyuan Note API Documentation</p>
+</footer>
+
+ 
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+</body></html>

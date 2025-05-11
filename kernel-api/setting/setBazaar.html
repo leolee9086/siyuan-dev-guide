@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>/api/setting/setBazaar - Siyuan Kernel API</title>
+    <link rel="stylesheet" href="../style.min.css?20231218">
+    <link rel="icon" type="image/png" href="../favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="../favicon-16x16.png" sizes="16x16">
+</head>
+<body>
+<div class="markdown-body">
+    <h1>/api/setting/setBazaar</h1>
+    <p>设置集市相关配置。</p>
+    <p><span class="warning">该 API 需要进行身份验证，请在请求头中包含 <code>Authorization</code> 字段，并确保用户角色为管理员且非只读模式。</span></p>
+    <h2>请求</h2>
+    <p><code>POST</code></p>
+    <h3>参数</h3>
+    <p>使用 JSON 格式在请求体 (body) 中提供以下参数：</p>
+    <ul>
+        <li><code>trust</code>: <code>boolean</code>，是否信任集市内容。</li>
+        <li><code>petalDisabled</code>: <code>boolean</code>，是否禁用花瓣功能。</li>
+    </ul>
+    <div class="language-json HIDE">
+    <pre class="highlight"><code><span class="p">{</span>
+    <span class="nt">"trust"</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nt">"petalDisabled"</span><span class="p">:</span> <span class="kc">false</span>
+<span class="p">}</span>
+</code></pre>
+    </div>
+    <h3>示例</h3>
+    <div class="language-shell HIDE">
+    <pre class="highlight"><code>curl -X POST -H "Content-Type: application/json" -H "Authorization: Token YOUR_API_TOKEN" -d '{
+    "trust": true,
+    "petalDisabled": false
+}' http://127.0.0.1:6806/api/setting/setBazaar
+</code></pre>
+    </div>
+    <h2>响应</h2>
+    <p>如果操作成功，将返回包含更新后集市配置对象的 JSON 数据。</p>
+    <div class="language-json HIDE">
+    <pre class="highlight"><code><span class="p">{</span>
+    <span class="nt">"code"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">"msg"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+    <span class="nt">"data"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">"trust"</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="nt">"petalDisabled"</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+        <span class="nt">"proxyURL"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+        <span class="nt">"proxyAuth"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+        <span class="nt">"proxyEnabled"</span><span class="p">:</span> <span class="kc">false</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+    </div>
+    <p>如果操作失败，<code>code</code> 将是非零值，<code>msg</code> 中会包含错误信息。</p>
+    <h2>在线测试</h2>
+    <p>
+        <label>请求体 (JSON):<br>
+            <textarea id="requestBody" rows="5" style="width: 100%;">{
+    "trust": true,
+    "petalDisabled": false
+}</textarea>
+        </label>
+    </p>
+    <p><button onclick="testAPI()">发送请求</button></p>
+    <p><label>响应:<br><textarea id="responseArea" rows="10" style="width: 100%;" readonly></textarea></label></p>
+</div>
+<script>
+    function testAPI() {
+        const apiToken = localStorage.getItem('siyuanUserToken');
+        if (!apiToken) {
+            document.getElementById('responseArea').value = '错误：未找到 API Token。请先在"关于"页面登录。';
+            return;
+        }
+
+        const requestBody = document.getElementById('requestBody').value;
+        let parsedBody;
+        try {
+            parsedBody = JSON.parse(requestBody);
+        } catch (e) {
+            document.getElementById('responseArea').value = '错误：请求体不是有效的 JSON。\n' + e;
+            return;
+        }
+
+        fetch('/api/setting/setBazaar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + apiToken
+            },
+            body: JSON.stringify(parsedBody)
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('responseArea').value = JSON.stringify(data, null, 2);
+        })
+        .catch(error => {
+            document.getElementById('responseArea').value = '请求失败：\n' + error;
+        });
+    }
+</script>
+<script src="../style.js?20231218"></script>
+</body>
+</html> 

@@ -1,0 +1,21 @@
+{
+  "name": "siyuan-kernelapi-docs",
+  "version": "1.0.0",
+  "description": "思源笔记内核API文档",
+  "scripts": {
+    "validate": "node scripts/validate_docs.js --all",
+    "validate:api": "node scripts/validate_docs.js --categories=api-match",
+    "validate:style": "node scripts/validate_docs.js --categories=style-check",
+    "validate:html": "node scripts/validate_docs.js --categories=html-validity",
+    "validate:content": "node scripts/validate_docs.js --categories=content-format",
+    "validate:report": "node scripts/validate_docs.js --all --report=md",
+    "update-indices": "node scripts/generate_indices.js",
+    "build-search": "node scripts/build_search_index.js"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0"
+  },
+  "devDependencies": {
+    "pinyin-pro": "^3.26.0"
+  }
+}

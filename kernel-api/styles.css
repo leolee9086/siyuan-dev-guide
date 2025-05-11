@@ -1,0 +1,300 @@
+body {
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1, h2, h3, h4 {
+    color: #1e88e5;
+}
+
+h1 {
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+h2 {
+    margin-top: 30px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+pre {
+    background-color: #f5f5f5;
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+}
+
+code {
+    font-family: Consolas, Monaco, 'Andale Mono', monospace;
+}
+
+.api-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.api-header .method {
+    background-color: #1e88e5;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.api-header .endpoint {
+    font-family: Consolas, Monaco, 'Andale Mono', monospace;
+    font-size: 1.1em;
+}
+
+.param-table, .response-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.param-table th, .param-table td, 
+.response-table th, .response-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+.param-table th, .response-table th {
+    background-color: #f5f5f5;
+}
+
+.required {
+    color: #d32f2f;
+    font-weight: bold;
+}
+
+.optional {
+    color: #388e3c;
+}
+
+.nav-links {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+}
+
+.home-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    text-decoration: none;
+    color: #1e88e5;
+    font-size: 0.9em;
+}
+
+.home-link:hover {
+    text-decoration: underline;
+}
+
+.test-area {
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    padding: 20px;
+    margin-top: 30px;
+}
+
+.test-area h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group textarea, .form-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: Consolas, Monaco, 'Andale Mono', monospace;
+}
+
+.form-group textarea {
+    height: 120px;
+}
+
+.btn {
+    background-color: #1e88e5;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn:hover {
+    background-color: #1976d2;
+}
+
+.result {
+    margin-top: 20px;
+}
+
+.result pre {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.tab-container {
+    margin-top: 20px;
+}
+
+.tabs {
+    display: flex;
+    border-bottom: 1px solid #ddd;
+}
+
+.tab {
+    padding: 10px 15px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    margin-right: 5px;
+}
+
+.tab.active {
+    background-color: #fff;
+    border-color: #ddd;
+    margin-bottom: -1px;
+    border-bottom: 1px solid #fff;
+}
+
+.tab-content {
+    display: none;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-top: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.chip {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 16px;
+    font-size: 12px;
+    margin-right: 5px;
+}
+
+.auth-required {
+    background-color: #ffecb3;
+    color: #ff6f00;
+}
+
+.admin-required {
+    background-color: #ffcdd2;
+    color: #c62828;
+}
+
+.chip.admin-required {
+    background-color: #fce4ec;
+    color: #ad1457;
+}
+
+/* 分组链接样式 */
+.group-link {
+    text-decoration: none;
+    color: #1e88e5;
+    display: block;
+    padding: 5px 0;
+    transition: color 0.2s;
+}
+
+.group-link:hover {
+    color: #0d47a1;
+}
+
+.group-desc {
+    color: #666;
+    font-size: 0.9em;
+    margin: 5px 0 15px;
+}
+
+.api-list-container {
+    margin: 20px 0;
+}
+
+.detailed-list li {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.api-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.api-name {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #1e88e5;
+    text-decoration: none;
+    margin-bottom: 5px;
+}
+
+.api-endpoint {
+    font-family: monospace;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.api-desc {
+    color: #333;
+    margin: 0;
+}
+
+footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    color: #999;
+    font-size: 0.9em;
+}
+
+/* 新增 GitHub 源文件链接样式 */
+.github-source {
+    margin-bottom: 10px;
+    font-size: 0.9em;
+}
+
+.github-source a {
+    display: inline-block;
+    padding: 3px 8px;
+    border: 1px solid #eaecef;
+    border-radius: 4px;
+    background-color: #f6f8fa;
+    color: #0366d6;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.github-source a:hover {
+    background-color: #f0f2f4;
+    text-decoration: none;
+} 

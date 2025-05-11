@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>getUpdatedPackage API</title>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../github-markdown.css">
+<link rel="stylesheet" href="../styles.css">
+<style>
+    .markdown-body { box-sizing: border-box; min-width: 200px; max-width: 980px; margin: 0 auto; padding: 45px; }
+    @media (max-width: 767px) { .markdown-body { padding: 15px; } }
+    .package-list { list-style: none; padding-left: 0; }
+    .package-item { margin-bottom: 1em; border: 1px solid #eee; padding: 1em; }
+    .package-item h4 { margin-top: 0; }
+    .copy-button { position: absolute; top: 0.5em; right: 0.5em; padding: 0.3em 0.6em; font-size: 0.8em; background-color: #eee; border: 1px solid #ccc; border-radius: 3px; cursor: pointer; }
+    .copy-button:hover { background-color: #ddd; }
+    pre { position: relative; }
+    .usage-examples { margin-top: 2em; border-top: 1px solid #eee; padding-top: 1em; }
+    .usage-examples h3 { margin-bottom: 0.5em; }
+    .usage-examples ul { list-style: disc; margin-left: 2em; }
+</style>
+</head>
+<body class="markdown-body">
+<blockquote>
+<p>本文档非官方出品，主要由 AI 辅助编写，不保证绝对准确。如有疑问，请以 <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/bazaar.go">kernel/api/bazaar.go</a> 中的源码为准。</p>
+<p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<h1>getUpdatedPackage</h1>
+<p>获取所有已安装的集市包（插件、挂件、图标、主题、模板）中需要更新的列表。</p>
+<p><strong>新手提示：</strong> 这个 API 相当于点击了思源笔记设置里的"检查集市包更新"按钮。它会告诉你哪些你已经安装的东西有新版本了，方便你及时更新。</p>
+<p><strong>注意</strong>:</p>
+<ul>
+    <li>此 API 需要认证。</li>
+    <li>这个 API 返回的是<strong>需要更新</strong>的包列表，不是所有已安装的包。</li>
+    <li>结果的准确性依赖于之前是否成功调用了 <code>batchUpdatePackage</code> 来刷新本地的集市信息。建议在调用此 API 前先调用 <code>batchUpdatePackage</code>。</li>
+</ul>
+<h2>地址</h2>
+<p><code>POST /api/bazaar/getUpdatedPackage</code></p>
+<h2>请求体 (JSON)</h2>
+<pre><code class="language-json">{
+  "frontend": "前端类型"
+}
+</code></pre>
+<ul>
+<li><code>frontend</code>: (<code>string</code>) 必填。指定要检查哪个前端平台的更新，通常是 <code>"desktop"</code> 或 <code>"mobile"</code>。</li>
+</ul>
+<h2>响应体 (JSON)</h2>
+<p>标准响应体，`data` 字段是一个对象，包含了各类需要更新的包列表。</p>
+<pre><code class="language-json">{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "plugins": [
+        // 需要更新的插件包对象数组...
+        // 每个对象结构类似 getInstalledPlugin 返回的，但可能包含最新版本信息
+    ],
+    "widgets": [
+        // 需要更新的挂件包对象数组...
+    ],
+    "icons": [
+        // 需要更新的图标包对象数组...
+    ],
+    "themes": [
+        // 需要更新的主题包对象数组...
+    ],
+    "templates": [
+        // 需要更新的模板包对象数组...
+    ]
+  }
+}
+</code></pre>
+<p><strong>注意:</strong></p>
+<ul>
+    <li>每个数组（如 `plugins`, `themes` 等）中对象的具体字段取决于后端 `model.UpdatedPackages` 函数的实现，通常会包含包名、当前版本、可更新版本、仓库信息等。</li>
+    <li>如果某个类型的包都没有更新，对应的数组会是空的 `[]`。</li>
+</ul>
+<h2>示例</h2>
+<div style="position: relative;">
+<pre id="example-fetch-code"><code class="language-javascript">// 检查桌面端有哪些集市包需要更新
+fetch('/api/bazaar/getUpdatedPackage', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Token YOUR_API_TOKEN' // 替换为你的 API Token
+  },
+  body: JSON.stringify({ frontend: "desktop" })
+})
+.then(response => response.json())
+.then(data => {
+  if (data.code === 0) {
+    console.log('获取需要更新的包列表成功:', data.data);
+    const updates = data.data;
+    if (updates.plugins.length > 0) {
+      console.log(`有 ${updates.plugins.length} 个插件需要更新`);
+      // 处理插件更新提示
+    }
+    if (updates.themes.length > 0) {
+      console.log(`有 ${updates.themes.length} 个主题需要更新`);
+      // 处理主题更新提示
+    }
+    // ... 检查其他类型的包 ...
+    if (updates.plugins.length === 0 && updates.widgets.length === 0 && updates.icons.length === 0 && updates.themes.length === 0 && updates.templates.length === 0) {
+        console.log("所有已安装的集市包都已是最新版本！");
+    }
+  } else {
+    console.error('获取需要更新的包列表失败:', data.msg);
+  }
+})
+.catch(error => console.error('请求错误:', error));
+</code></pre>
+<button class="copy-button" onclick="copyCode('example-fetch-code')">复制</button>
+</div>
+
+<!-- 在线测试区域 -->
+<div class="test-area">
+    <h3>在线测试</h3>
+    <form id="api-test-form">
+        <div class="form-group">
+            <label for="api-token">API Token:</label>
+            <input type="text" id="api-token" placeholder="在思源笔记中的"设置-关于"中查看API token">
+        </div>
+        <div class="form-group">
+            <label for="api-endpoint">接口地址:</label>
+            <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/bazaar/getUpdatedPackage">
+        </div>
+        <div class="form-group">
+            <label for="api-method">请求方法:</label>
+            <input type="text" id="api-method" value="POST" readonly>
+        </div>
+        <div class="form-group">
+            <label for="api-params">请求参数 (JSON):</label>
+            <textarea id="api-params">{
+  "frontend": "desktop"
+}</textarea>
+        </div>
+        <button type="submit" class="btn">发送请求</button>
+    </form>
+    <div id="api-result" class="result"></div>
+</div>
+
+<!-- 实际应用案例 -->
+<div class="usage-examples">
+    <h3>实际应用案例 / Who Uses This API?</h3>
+    <p>如果你的插件、主题或外部工具使用了这个 API（例如，实现了一个自动检查更新的功能），欢迎提交 Pull Request 将你的项目添加到下方列表！</p>
+    <ul>
+        <li>暂无 （期待你的贡献！）</li>
+    </ul>
+</div>
+
+<script src="../api-tester.js"></script>
+<script>
+// 复制按钮的 JavaScript 函数
+function copyCode(elementId) {
+    const codeElement = document.getElementById(elementId);
+    if (codeElement) {
+        const code = codeElement.textContent || codeElement.innerText;
+        navigator.clipboard.writeText(code).then(() => {
+            const button = codeElement.nextElementSibling;
+            if (button && button.classList.contains('copy-button')) {
+                const originalText = button.textContent;
+                button.textContent = '已复制!';
+                setTimeout(() => { button.textContent = originalText; }, 2000);
+            }
+        }).catch(err => {
+            console.error('复制失败:', err);
+        });
+    }
+}
+</script>
+
+</body>
+</html> 

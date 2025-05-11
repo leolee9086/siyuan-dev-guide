@@ -1,0 +1,102 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/repo/checkoutRepo"> <!-- API Endpoint Meta Tag -->
+    <title>检出版本库快照 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <h1>检出版本库快照 (checkoutRepo)</h1>
+        <nav>
+            <a href="../index.html">首页</a> | 
+            <a href="index.html">Repo API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/repo.go#L137" target="_blank">GitHub Source</a>
+        </nav>
+    </header>
+    <main>
+        <section id="description">
+            <h2>功能描述</h2>
+            <p>此 API 端点 <code>POST /api/repo/checkoutRepo</code> 用于检出（恢复）到指定的版本库快照状态。</p>
+            <p>执行此操作会将当前工作区的内容恢复到选定快照创建时的状态。这是一个比较危险的操作，可能会覆盖当前未保存的更改。</p>
+            <p><strong>注意：</strong> 检出操作通常会导致思源笔记工作空间重新加载或重启才能完全生效。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体必须是 JSON 格式，包含以下参数：</p>
+            <ul>
+                <li><code>id</code> (string): <strong>必填</strong>。要检出的版本库快照的 ID。这个 ID 可以通过 <a href="getRepoSnapshots.html">/api/repo/getRepoSnapshots</a> 或 <a href="getCloudRepoSnapshots.html">/api/repo/getCloudRepoSnapshots</a> 等 API 获取。</li>
+            </ul>
+            <p><strong>请求示例:</strong></p>
+            <pre><code class="language-json">
+{
+  "id": "20231027100000-abcdefg" // 替换为实际的快照 ID
+}
+            </code></pre>
+        </section>
+
+        <section id="response-format">
+            <h2>响应结果</h2>
+            <p>无论检出操作是否在后端成功启动，此 API 都会返回一个标准的成功响应（除非发生非常基础的请求错误）。</p>
+            <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": null
+}
+            </code></pre>
+            <ul>
+                <li><code>code</code>: 0 表示请求已被接收并尝试处理。</li>
+                <li><code>msg</code>: 通常为空。</li>
+                <li><code>data</code>: 总是 `null`。</li>
+            </ul>
+            <p><strong>重要提示：</strong> 此 API 的成功响应不代表检出操作已完成或成功。检出是一个耗时且可能需要重启应用的操作，其最终结果需要通过观察应用状态或可能的 WebSocket 通知来判断。</p>
+        </section>
+
+        <section id="online-testing">
+            <h2>在线测试</h2>
+            <p><strong>警告：</strong> 在线测试此 API 会尝试将您的思源笔记工作区恢复到指定快照状态，这可能会丢失当前未保存的更改，并可能导致应用重启。请谨慎操作！</p>
+            <div class="api-tester">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="请输入您的 API Token (可选)" value=""><br>
+
+                <label for="endpoint">Endpoint:</label>
+                <input type="text" id="endpoint" value="/api/repo/checkoutRepo" readonly=""><br>
+
+                <label for="method">Method:</label>
+                <input type="text" id="method" value="POST" readonly=""><br>
+
+                <label for="params">Parameters (JSON):</label><br>
+                <textarea id="params" rows="5" placeholder="{
+  &quot;id&quot;: &quot;要检出的快照ID&quot;
+}"></textarea><br>
+
+                <button onclick="confirmCheckout()">发送请求 (请谨慎)</button>
+
+                <h3>响应结果:</h3>
+                <pre id="response-output"></pre>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>思源笔记 API 文档 | 最后更新时间：<span id="last-updated"></span></p>
+    </footer>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        // 更新最后更新时间
+        document.getElementById('last-updated').textContent = new Date().toLocaleString();
+        
+        function confirmCheckout() {
+            if (confirm("警告：检出快照会恢复工作区到指定状态，可能丢失未保存的更改并需要重启应用。确定要继续吗？")) {
+                sendRequest();
+            }
+        }
+    </script>
+
+ </body></html>

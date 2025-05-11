@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>getBazaarPackageREAME API</title>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../github-markdown.css">
+<link rel="stylesheet" href="../styles.css">
+<style>
+    .markdown-body {
+        box-sizing: border-box;
+        min-width: 200px;
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 45px;
+    }
+    @media (max-width: 767px) {
+        .markdown-body {
+            padding: 15px;
+        }
+    }
+    /* 预览 README 的样式 */
+    .readme-preview {
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin-top: 1em;
+        background-color: #f9f9f9;
+        max-height: 500px; /* 限制最大高度，防止内容过长 */
+        overflow-y: auto;  /* 超出高度显示滚动条 */
+    }
+</style>
+</head>
+<body class="markdown-body">
+<blockquote>
+<p>本文档非官方出品，主要由 AI 辅助编写，不保证绝对准确。如有疑问，请以 <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/bazaar.go">kernel/api/bazaar.go</a> 中的源码为准。</p>
+<p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<h1>getBazaarPackageREAME</h1>
+<p class="api-path-display"><strong>方法：</strong><span class="method">POST</span> <strong>路径：</strong><span class="endpoint">/api/bazaar/getBazaarPackageREAME</span></p>
+<p>获取指定集市包（如插件、主题、图标包等）的 README 文件内容。思源笔记会将其转换为 HTML 格式返回，方便在界面上直接展示包的详细说明。</p>
+<p><strong>新手提示：</strong> 当你在思源笔记的集市里点击一个插件或主题查看详情时，看到的那部分介绍文字，很可能就是通过调用这个 API 获取并显示出来的。</p>
+<p><strong>注意</strong>: 此 API 需要认证。</p>
+<h2>地址</h2>
+<p><code>POST /api/bazaar/getBazaarPackageREAME</code></p>
+<h2>请求体 (JSON)</h2>
+<pre><code class="language-json">{
+  "repoURL": "包的 Git 仓库地址",
+  "repoHash": "仓库特定提交的哈希值",
+  "packageType": "包的类型"
+}
+</code></pre>
+<ul>
+<li><code>repoURL</code>: (<code>string</code>) 必填。集市包的来源 Git 仓库 URL。通常可以从获取包列表的 API（如 <code>getBazaarPlugin</code>, <code>getBazaarTheme</code> 等）返回结果中找到。</li>
+<li><code>repoHash</code>: (<code>string</code>) 必填。对应仓库的一个特定 commit 哈希值，用于确定是哪个版本的 README。同样可以在包列表信息中找到。</li>
+<li><code>packageType</code>: (<code>string</code>) 必填。包的类型，必须是以下之一：<code>"plugin"</code>, <code>"theme"</code>, <code>"icon"</code>, <code>"template"</code>, <code>"widget"</code>。</li>
+</ul>
+<h2>响应体 (JSON)</h2>
+<p>标准响应体，其中 `data.html` 字段是包含 README 内容的 HTML 字符串。</p>
+<pre><code class="language-json">{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "html": "&lt;h1&gt;包名&lt;/h1&gt;&lt;p&gt;这是 README 的内容...&lt;/p&gt;"
+  }
+}
+</code></pre>
+<p><strong>注意:</strong></p>
+<ul>
+<li>返回的 `html` 字符串可以直接嵌入到网页中显示。</li>
+<li>如果提供的参数有误（例如 `repoURL` 或 `repoHash` 不存在），或者网络无法访问仓库，或者仓库中没有 README 文件，API 调用可能会失败，或者返回空的 `html` 内容。</li>
+<li>返回的 HTML 质量依赖于包作者编写的 README.md 文件质量。</li>
+</ul>
+<h2>示例</h2>
+<pre><code class="language-javascript">// 假设我们想获取某个插件的 README
+const pluginRepo = "https://github.com/user/siyuan-plugin-example";
+const pluginHash = "abcdef1234567890"; // 具体的 commit hash
+
+fetch('/api/bazaar/getBazaarPackageREAME', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Token YOUR_API_TOKEN' // 替换为你的 API Token
+  },
+  body: JSON.stringify({
+    repoURL: pluginRepo,
+    repoHash: pluginHash,
+    packageType: "plugin"
+  })
+})
+.then(response => response.json())
+.then(data => {
+  if (data.code === 0 && data.data && data.data.html) {
+    console.log('获取包 README 成功:');
+    // 将返回的 HTML 显示在页面某个元素中
+    const readmeContainer = document.getElementById('readme-display-area');
+    if (readmeContainer) {
+      readmeContainer.innerHTML = data.data.html;
+    } else {
+      console.log(data.data.html); // 如果没有显示区域，就打印出来
+    }
+  } else {
+    console.error('获取包 README 失败:', data.msg || '返回数据格式错误');
+  }
+})
+.catch(error => console.error('请求错误:', error));
+</code></pre>
+
+<!-- 在线测试区域 -->
+<div class="test-area">
+    <h3>在线测试</h3>
+    <p>你需要先通过其他 API（如 <code>getBazaarPlugin</code>）获取到一个具体包的 <code>repoURL</code> 和 <code>repoHash</code> 才能测试此接口。</p>
+    <form id="api-test-form">
+        <div class="form-group">
+            <label for="api-token">API Token:</label>
+            <input type="text" id="api-token" placeholder="在思源笔记中的"设置-关于"中查看API token">
+        </div>
+        <div class="form-group">
+            <label for="api-endpoint">接口地址:</label>
+            <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/bazaar/getBazaarPackageREAME">
+        </div>
+        <div class="form-group">
+            <label for="api-method">请求方法:</label>
+            <input type="text" id="api-method" value="POST" readonly>
+        </div>
+        <div class="form-group">
+            <label for="api-params">请求参数 (JSON):</label>
+            <textarea id="api-params">{
+  "repoURL": "输入包的仓库 URL",
+  "repoHash": "输入仓库的 commit hash",
+  "packageType": "输入包类型 (plugin/theme/icon/template/widget)"
+}</textarea>
+        </div>
+        <button type="submit" class="btn">发送请求</button>
+    </form>
+    <div class="result">
+        <h4>响应结果:</h4>
+        <pre id="api-result-raw"></pre>
+        <h4>README 预览:</h4>
+        <div id="api-result" class="readme-preview"></div>
+    </div>
+</div>
+
+<script>
+// 重写 api-tester.js 的部分行为以支持 HTML 预览
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('api-test-form');
+    const resultRawContainer = document.getElementById('api-result-raw');
+    const resultPreviewContainer = document.getElementById('api-result'); // 复用之前的 ID
+
+    if (form && resultRawContainer && resultPreviewContainer) {
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            resultRawContainer.textContent = '请求中...';
+            resultPreviewContainer.innerHTML = ''; // 清空预览区
+
+            const token = document.getElementById('api-token').value;
+            const endpoint = document.getElementById('api-endpoint').value;
+            const method = document.getElementById('api-method').value;
+            const params = document.getElementById('api-params').value;
+
+            const headers = {
+                'Content-Type': 'application/json',
+            };
+            if (token) {
+                headers['Authorization'] = `Token ${token}`;
+            }
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: method,
+                    headers: headers,
+                    body: params
+                });
+
+                const responseData = await response.json();
+                resultRawContainer.textContent = JSON.stringify(responseData, null, 2);
+
+                if (responseData.code === 0 && responseData.data && responseData.data.html) {
+                    // 渲染 HTML 预览
+                    resultPreviewContainer.innerHTML = responseData.data.html;
+                } else {
+                     resultPreviewContainer.textContent = '未能获取 README 内容或 API 返回错误。';
+                }
+            } catch (error) {
+                resultRawContainer.textContent = `请求失败: ${error}`;
+                resultPreviewContainer.textContent = '请求过程中发生错误。';
+            }
+        });
+    }
+});
+</script>
+<!-- 不再需要通用的 api-tester.js，因为我们在这里定制了逻辑 -->
+<!-- <script src="../api-tester.js"></script> -->
+
+</body>
+</html> 

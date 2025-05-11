@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>获取搜索/替换条件列表 (getCriteria)</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>获取搜索/替换条件列表 (getCriteria)</h1>
+        <p class="api-path">POST /api/storage/getCriteria</p>
+
+        <h2 id="认证与权限">认证与权限</h2>
+        <p>需要身份验证 (通过 API Token)。</p>
+
+        <h2 id="接口描述">接口描述</h2>
+        <p>此接口用于获取用户保存的所有搜索/替换条件列表。这些条件通常是在思源笔记的搜索或批量替换功能中创建和管理的。</p>
+
+        <h2 id="请求体参数">请求体参数</h2>
+        <p>该接口不需要请求体参数。</p>
+
+        <h2 id="请求体示例">请求体示例</h2>
+        <pre><code class="language-json">
+{}
+        </code></pre>
+
+        <h2 id="响应体说明">响应体说明</h2>
+        <p>成功时，接口返回一个 JSON 数组，数组中的每个元素代表一个搜索/替换条件对象。每个对象包含以下字段：</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>字段名</th>
+                    <th>类型</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>name</td>
+                    <td>string</td>
+                    <td>条件名称</td>
+                </tr>
+                <tr>
+                    <td>sort</td>
+                    <td>int</td>
+                    <td>排序方式。0：按块类型（默认），1：按创建时间升序，2：按创建时间降序，3：按更新时间升序，4：按更新时间降序，5：按内容顺序（仅在按文档分组时）</td>
+                </tr>
+                <tr>
+                    <td>group</td>
+                    <td>int</td>
+                    <td>分组方式。0：不分组，1：按文档分组</td>
+                </tr>
+                <tr>
+                    <td>hasReplace</td>
+                    <td>boolean</td>
+                    <td>是否有替换操作</td>
+                </tr>
+                <tr>
+                    <td>method</td>
+                    <td>int</td>
+                    <td>搜索方法。0：文本，1：查询语法，2：SQL，3：正则表达式</td>
+                </tr>
+                <tr>
+                    <td>hPath</td>
+                    <td>string</td>
+                    <td>人类可读的路径（如果适用）</td>
+                </tr>
+                <tr>
+                    <td>idPath</td>
+                    <td>string[]</td>
+                    <td>ID 路径数组（如果适用）</td>
+                </tr>
+                <tr>
+                    <td>k</td>
+                    <td>string</td>
+                    <td>搜索关键字</td>
+                </tr>
+                <tr>
+                    <td>r</td>
+                    <td>string</td>
+                    <td>替换关键字（如果 <code>hasReplace</code> 为 true）</td>
+                </tr>
+                <tr>
+                    <td>types</td>
+                    <td>object</td>
+                    <td>搜索时应用的块类型过滤条件。详情见下文。</td>
+                </tr>
+                <tr>
+                    <td>replaceTypes</td>
+                    <td>object</td>
+                    <td>替换时应用的文本/块类型过滤条件。详情见下文。</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3><code>types</code> 对象 (CriterionTypes)</h3>
+        <p>包含一系列布尔值，指示哪些块类型被包含在搜索范围内：</p>
+        <ul>
+            <li><code>mathBlock</code> (boolean)</li>
+            <li><code>table</code> (boolean)</li>
+            <li><code>blockquote</code> (boolean)</li>
+            <li><code>superBlock</code> (boolean)</li>
+            <li><code>paragraph</code> (boolean)</li>
+            <li><code>document</code> (boolean)</li>
+            <li><code>heading</code> (boolean)</li>
+            <li><code>list</code> (boolean)</li>
+            <li><code>listItem</code> (boolean)</li>
+            <li><code>codeBlock</code> (boolean)</li>
+            <li><code>htmlBlock</code> (boolean)</li>
+            <li><code>embedBlock</code> (boolean)</li>
+            <li><code>databaseBlock</code> (boolean)</li>
+            <li><code>audioBlock</code> (boolean)</li>
+            <li><code>videoBlock</code> (boolean)</li>
+            <li><code>iframeBlock</code> (boolean)</li>
+            <li><code>widgetBlock</code> (boolean)</li>
+        </ul>
+
+        <h3><code>replaceTypes</code> 对象 (CriterionReplaceTypes)</h3>
+        <p>包含一系列布尔值，指示替换操作应用于哪些类型的文本或块：</p>
+        <ul>
+            <li><code>text</code> (boolean): 普通文本</li>
+            <li><code>imgText</code> (boolean): 图片替代文本 (alt)</li>
+            <li><code>imgTitle</code> (boolean): 图片标题</li>
+            <li><code>imgSrc</code> (boolean): 图片链接</li>
+            <li><code>aText</code> (boolean): 链接文本</li>
+            <li><code>aTitle</code> (boolean): 链接标题</li>
+            <li><code>aHref</code> (boolean): 链接地址</li>
+            <li><code>code</code> (boolean): 行内代码</li>
+            <li><code>em</code> (boolean): 斜体</li>
+            <li><code>strong</code> (boolean): 粗体</li>
+            <li><code>inlineMath</code> (boolean): 行内数学公式</li>
+            <li><code>inlineMemo</code> (boolean): 行内备注</li>
+            <li><code>blockRef</code> (boolean): 块引用</li>
+            <li><code>fileAnnotationRef</code> (boolean): 文件注解引用</li>
+            <li><code>kbd</code> (boolean): 键盘按键</li>
+            <li><code>mark</code> (boolean): 标记 (高亮)</li>
+            <li><code>s</code> (boolean): 删除线</li>
+            <li><code>sub</code> (boolean): 下标</li>
+            <li><code>sup</code> (boolean): 上标</li>
+            <li><code>tag</code> (boolean): 标签</li>
+            <li><code>u</code> (boolean): 下划线</li>
+            <li><code>docTitle</code> (boolean): 文档标题</li>
+            <li><code>codeBlock</code> (boolean): 代码块内容</li>
+            <li><code>mathBlock</code> (boolean): 数学块内容</li>
+            <li><code>htmlBlock</code> (boolean): HTML 块内容</li>
+        </ul>
+
+        <h2 id="响应体示例">响应体示例</h2>
+        <pre><code class="language-json">
+[
+    {
+        "name": "我的常用搜索",
+        "sort": 0,
+        "group": 0,
+        "hasReplace": false,
+        "method": 1,
+        "hPath": "",
+        "idPath": [],
+        "k": "关键字A AND (tagB OR tagC)",
+        "r": "",
+        "types": {
+            "mathBlock": false,
+            "table": true,
+            "blockquote": false,
+            "superBlock": false,
+            "paragraph": true,
+            "document": true,
+            "heading": true,
+            "list": true,
+            "listItem": true,
+            "codeBlock": false,
+            "htmlBlock": false,
+            "embedBlock": false,
+            "databaseBlock": false,
+            "audioBlock": false,
+            "videoBlock": false,
+            "iframeBlock": false,
+            "widgetBlock": false
+        },
+        "replaceTypes": null
+    },
+    {
+        "name": "批量替换错别字",
+        "sort": 0,
+        "group": 1,
+        "hasReplace": true,
+        "method": 0,
+        "hPath": "笔记本A/文档B",
+        "idPath": ["20230101000000-xxxxxxxx", "20230102000000-yyyyyyyy"],
+        "k": "错字",
+        "r": "正字",
+        "types": {
+            "mathBlock": false,
+            // ... 其他类型 ...
+            "paragraph": true,
+            "document": true,
+            "heading": true,
+            "listItem": true,
+            "codeBlock": false
+        },
+        "replaceTypes": {
+            "text": true,
+            "imgText": false,
+            // ... 其他替换类型 ...
+            "aText": true,
+            "code": false
+        }
+    }
+]
+        </code></pre>
+
+        <h2 id="cURL调用示例">cURL 调用示例</h2>
+        <pre><code class="language-bash">
+curl -X POST \
+  http://127.0.0.1:6806/api/storage/getCriteria \
+  -H 'Authorization: Token YOUR_API_TOKEN' \
+  -H 'Content-Type: application/json'
+        </code></pre>
+
+        <h2 id="JavaScript调用示例">JavaScript 调用示例</h2>
+        <pre><code class="language-javascript">
+async function getSiyuanCriteria() {
+    try {
+        const response = await fetch('/api/storage/getCriteria', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token YOUR_API_TOKEN' // 如果配置了API Token
+            }
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('获取搜索条件列表失败:', response.status, errorData);
+            document.getElementById('apiResponse').textContent = `错误 ${response.status}: ${JSON.stringify(errorData, null, 2)}`;
+            return null;
+        }
+        const data = await response.json();
+        console.log('搜索条件列表:', data);
+        document.getElementById('apiResponse').textContent = JSON.stringify(data, null, 2);
+        return data;
+    } catch (error) {
+        console.error('请求过程中发生错误:', error);
+        document.getElementById('apiResponse').textContent = `请求错误: ${error.message}`;
+        return null;
+    }
+}
+        </code></pre>
+
+        <h2 id="在线测试">在线测试</h2>
+        <div class="controls">
+            <button onclick="getSiyuanCriteria()">获取搜索/替换条件列表</button>
+        </div>
+        <h3>响应:</h3>
+        <pre id="apiResponse">点击按钮后，此处将显示API的响应结果。</pre>
+    </div>
+    <script src="../js/scripts.js"></script>
+    <script>
+        // 为了方便测试，如果localStorage中有token，则自动填充
+        const storedToken = localStorage.getItem('siyuanApiToken');
+        if (storedToken) {
+            // 将示例代码中的 YOUR_API_TOKEN 替换掉
+            const jsExampleElement = document.querySelector('code.language-javascript');
+            if (jsExampleElement) {
+                jsExampleElement.textContent = jsExampleElement.textContent.replace('YOUR_API_TOKEN', storedToken);
+            }
+            const curlExampleElement = document.querySelector('code.language-bash');
+            if (curlExampleElement) {
+                curlExampleElement.textContent = curlExampleElement.textContent.replace('YOUR_API_TOKEN', storedToken);
+            }
+        }
+    </script>
+</body>
+</html> 

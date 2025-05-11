@@ -1,0 +1,124 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上传资源 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+    
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/asset/upload</span>
+    </div>
+    
+    <h1>上传资源</h1>
+
+    <div class="github-source">
+        <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/model/asset.go" target="_blank" title="查看源文件">源文件 (GitHub)</a>
+    </div>
+    
+    <div class="auth-tags">
+        <span class="chip auth-required">需要认证</span>
+        <span class="chip admin-required">需要管理员权限</span>
+    </div>
+    
+    <h2>接口描述</h2>
+    <p>上传一个或多个文件到指定的文档块关联的 assets 目录。通常用于通过 HTTP 表单上传文件。</p>
+    
+    <h2>请求参数</h2>
+    <p>这是一个 multipart/form-data 请求。</p>
+    <table class="param-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>必选</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>assetsDirPath</td>
+                <td>string</td>
+                <td><span class="required">是</span></td>
+                <td>资源文件保存的相对路径（通常是 `assets/` 加上文档块ID或日期等）</td>
+            </tr>
+             <tr>
+                <td>file[]</td>
+                <td>file</td>
+                <td><span class="required">是</span></td>
+                <td>要上传的文件。字段名必须是 `file[]`，可以包含多个文件。</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <h2>返回值</h2>
+     <p>返回上传成功后的资源信息。</p>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>code</td><td>number</td><td>返回码，0表示成功</td></tr>
+            <tr><td>msg</td><td>string</td><td>返回信息</td></tr>
+            <tr><td>data</td><td>object</td><td>包含 `errFiles` (上传失败的文件名列表) 和 `succMap` (成功上传的文件名和相对路径映射)</td></tr>
+        </tbody>
+    </table>
+    
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="example-tab">请求示例 (cURL)</div>
+            <div class="tab" data-target="response-tab">返回示例</div>
+        </div>
+        
+        <div id="example-tab" class="tab-content active">
+            <h3>请求示例 (cURL)</h3>
+            <pre><code>curl -X POST \
+  http://127.0.0.1:6806/api/asset/upload \
+  -H 'Authorization: Token YOUR_API_TOKEN' \
+  -F 'assetsDirPath=assets/20231027132500-abcdef' \
+  -F 'file[]=@/path/to/your/image.png' \
+  -F 'file[]=@/path/to/your/document.pdf'</code></pre>
+        </div>
+        
+        <div id="response-tab" class="tab-content">
+            <h3>返回示例</h3>
+            <pre><code>{
+    "code": 0,
+    "msg": "",
+    "data": {
+        "errFiles": [],
+        "succMap": {
+            "image.png": "assets/20231027132500-abcdef/image.png",
+            "document.pdf": "assets/20231027132500-abcdef/document.pdf"
+        }
+    }
+}</code></pre>
+        </div>
+    </div>
+    
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<div class="test-area">
+        <h3>在线测试</h3>
+       <p>此接口使用 multipart/form-data 格式，暂不支持在此处直接测试。请使用 cURL 或其他支持文件上传的工具进行测试。</p>
+    </div>
+    
+    <div class="nav-links">
+        <a href="../index.html">返回首页</a>
+        <a href="../pages/asset.html">返回 Asset API</a>
+        <a href="statAsset.html">上一个接口: 获取资源统计信息</a>
+        <a href="uploadCloud.html">下一个接口: 上传到云端</a>
+    </div>
+    
+    <script src="../api-tester.js"></script>
+
+ </body></html>

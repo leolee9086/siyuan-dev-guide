@@ -1,0 +1,206 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>配置 AI 设置 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+    
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/setting/setAI</span>
+    </div>
+    
+    <h1>配置 AI 设置</h1>
+
+    <div class="github-source">
+        <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/setting.go#L161" target="_blank" title="查看源文件">源文件 (GitHub)</a>
+    </div>
+    
+    <div class="auth-tags">
+        <span class="chip auth-required">需要认证</span>
+        <span class="chip auth-admin">需要管理员</span>
+        <span class="chip auth-readonly">只读模式下不可用</span>
+    </div>
+    
+    <h2>接口描述</h2>
+    <p>配置思源笔记的 AI 相关设置。你需要传入一个包含 AI 配置的对象。</p>
+    
+    <h2>请求参数</h2>
+    <p>请求体是一个 JSON 对象，代表 `conf.AI` 结构。主要包含以下字段：</p>
+    <table class="param-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>必选</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+             <tr>
+                <td>Provider</td>
+                <td>string</td>
+                <td><span class="required">是</span></td>
+                <td>AI 服务提供商。常见值：`OpenAI`, `Custom` (自定义兼容 OpenAI 接口的服务)。</td>
+            </tr>
+             <tr>
+                <td>OpenAI</td>
+                <td>object</td>
+                <td><span class="required">是</span></td>
+                <td>OpenAI 或兼容接口的详细配置。</td>
+            </tr>
+             <tr>
+                <td>OpenAI.APIKey</td>
+                <td>string</td>
+                <td><span class="required">是</span></td>
+                <td>你的 OpenAI API Key 或自定义服务的访问凭证。</td>
+            </tr>
+            <tr>
+                <td>OpenAI.APIModel</td>
+                <td>string</td>
+                <td><span class="required">是</span></td>
+                <td>要使用的 AI 模型，例如 `gpt-3.5-turbo`, `gpt-4` 等。</td>
+            </tr>
+            <tr>
+                <td>OpenAI.APIBaseURL</td>
+                <td>string</td>
+                <td><span class="optional">否</span></td>
+                <td>API 的基础 URL。对于 OpenAI 官方服务，通常留空或使用默认值。对于自定义或代理服务，需要指定。</td>
+            </tr>
+            <tr>
+                <td>OpenAI.APITimeout</td>
+                <td>number</td>
+                <td><span class="optional">否</span></td>
+                <td>API 请求超时时间（秒）。有效范围 5-600，默认为系统设定值（通常较长）。</td>
+            </tr>
+            <tr>
+                <td>OpenAI.APIMaxTokens</td>
+                <td>number</td>
+                <td><span class="optional">否</span></td>
+                <td>限制 AI 回复生成的最大 token 数。0 表示不限制（使用模型默认值）。</td>
+            </tr>
+             <tr>
+                <td>OpenAI.APITemperature</td>
+                <td>number</td>
+                <td><span class="optional">否</span></td>
+                <td>控制生成文本的创造性/随机性。值在 0 到 2 之间，默认为 1.0。</td>
+            </tr>
+             <tr>
+                <td>OpenAI.APIMaxContexts</td>
+                <td>number</td>
+                <td><span class="optional">否</span></td>
+                <td>控制对话时传递给 AI 的历史上下文轮数。有效范围 1-64，默认为 7。</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <h2>返回值</h2>
+     <p>返回更新后的 AI 配置对象。</p>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>code</td><td>number</td><td>返回码，0表示成功</td></tr>
+            <tr><td>msg</td><td>string</td><td>返回信息</td></tr>
+            <tr><td>data</td><td>object</td><td>更新后的 `conf.AI` 对象，结构同请求参数。</td></tr>
+        </tbody>
+    </table>
+    
+    <!-- 示例和测试区域 -->
+    <div class="tab-container">
+        <div class="tabs">
+            <button class="tab-button active" data-tab="request-example">请求示例</button>
+            <button class="tab-button" data-tab="response-example">返回示例</button>
+            <button class="tab-button" data-tab="test-area">在线测试</button>
+        </div>
+        <div id="request-example" class="tab-content active">
+            <pre><code class="language-json">{
+  "Provider": "OpenAI",
+  "OpenAI": {
+    "APIKey": "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "APIModel": "gpt-3.5-turbo",
+    "APIBaseURL": "",
+    "APITimeout": 60,
+    "APIMaxTokens": 0,
+    "APITemperature": 0.8,
+    "APIMaxContexts": 10
+  }
+}</code></pre>
+        </div>
+        <div id="response-example" class="tab-content">
+            <pre><code class="language-json">{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "Provider": "OpenAI",
+    "OpenAI": {
+      "APIKey": "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "APIModel": "gpt-3.5-turbo",
+      "APIBaseURL": "",
+      "APITimeout": 60,
+      "APIMaxTokens": 0,
+      "APITemperature": 0.8,
+      "APIMaxContexts": 10
+    }
+  }
+}</code></pre>
+        </div>
+        <div id="test-area" class="tab-content">
+            <div class="test-area-inner">
+                <form id="api-test-form">
+                    <div class="form-group">
+                        <label for="api-token">API Token:</label>
+                        <input type="text" id="api-token" placeholder="在思源笔记中的'设置-关于'中查看API token" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="api-endpoint">接口地址:</label>
+                        <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/setting/setAI" readonly="">
+                    </div>
+                    <div class="form-group">
+                        <label for="api-method">请求方法:</label>
+                        <input type="text" id="api-method" value="POST" readonly="">
+                    </div>
+                    <div class="form-group">
+                        <label for="api-params">请求参数 (JSON):</label>
+                        <textarea id="api-params">{
+  "Provider": "OpenAI",
+  "OpenAI": {
+    "APIKey": "YOUR_API_KEY",
+    "APIModel": "gpt-3.5-turbo",
+    "APIBaseURL": "",
+    "APITimeout": 60,
+    "APIMaxTokens": 0,
+    "APITemperature": 1.0,
+    "APIMaxContexts": 7
+  }
+}</textarea>
+                    </div>
+                    <button type="submit" class="btn">发送请求</button>
+                </form>
+                <div id="api-result" class="result"></div>
+            </div>
+        </div>
+    </div>
+
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<div class="nav-links">
+        <a href="../index.html">返回首页</a>
+        <a href="../pages/setting.html">返回 Setting API</a>
+        <a href="setFlashcard.html">上一个接口: 配置闪卡设置</a> <!-- 假设上一个接口是 setFlashcard -->
+        <a href="setBazaar.html">下一个接口: 配置集市设置</a> <!-- 假设下一个接口是 setBazaar -->
+    </div>
+    
+    <script src="../api-tester.js"></script>
+
+ </body></html>

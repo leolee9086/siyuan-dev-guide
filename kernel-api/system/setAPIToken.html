@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/system/setAPIToken">
+    <title>设置API Token - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../common/css/styles.css">
+</head>
+<body>
+    <header class="api-header">
+        <h1>设置API Token (setAPIToken)</h1>
+        <nav>
+            <a href="../index.html">首页</a> |
+            <a href="index.html">System API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/system.go#L544" target="_blank">GitHub Source (api/system.go L544)</a>
+        </nav>
+        <div class="endpoint-container">
+            <span class="endpoint">POST /api/system/setAPIToken</span>
+        </div>
+    </header>
+    <main>
+        <section id="description">
+            <h2>接口描述</h2>
+            <p>此 API 端点 <code>POST /api/system/setAPIToken</code> 用于设置或更新思源笔记的 API Token。</p>
+            <p>API Token 用于通过 HTTP Authorization 头部对其他需要认证的 API 请求进行身份验证。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体为一个 JSON 对象，包含以下字段：</p>
+            <ul>
+                <li><strong><code>token</code></strong> (string, 必需): 新的 API Token 字符串。如果提供一个空字符串 (<code>""</code>)，则会清除当前的 API Token，禁用基于 Token 的 API 访问。</li>
+            </ul>
+            <p><strong>请求示例 (设置新 Token):</strong></p>
+            <pre><code class="language-json">{
+    "token": "your_secure_api_token_string"
+}</code></pre>
+            <p><strong>请求示例 (清除 Token):</strong></p>
+            <pre><code class="language-json">{
+    "token": ""
+}</code></pre>
+        </section>
+
+        <section id="response-body">
+            <h2>响应体</h2>
+            <p><strong>成功响应 (HTTP 200 OK):</strong></p>
+            <p>API Token 成功设置或清除后，API 返回：</p>
+            <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": null
+}</code></pre>
+
+            <p><strong>失败响应 (HTTP 200 OK, 但 code 非 0):</strong></p>
+            <ul>
+                <li>如果请求体不是有效的 JSON，或者缺少必需的 <code>token</code> 字段，将返回类似：
+                    <pre><code class="language-json">{
+    "code": -1,
+    "msg": "Request body is not valid JSON", // 或 "token is missing"
+    "data": null
+}</code></pre>
+                </li>
+            </ul>
+            <p><em>注意: 认证失败 (如未提供当前有效的 Token 进行此操作、非管理员等) 会由中间件处理，并返回相应的 HTTP 错误状态码 (如 401, 403)。</em></p>
+        </section>
+
+        <section id="authentication">
+            <h2>认证与授权</h2>
+            <p>调用此 API 端点本身需要有效的用户认证 (通过 <code>Authorization</code> HTTP头部传递<strong>当前</strong>有效的 API Token，除非是首次设置或之前Token已失效/不存在)。</p>
+            <p>此外，执行此操作需要：</p>
+            <ul>
+                <li><strong>管理员角色 (<code>model.CheckAdminRole</code>):</strong> 只有管理员用户才能设置 API Token。</li>
+                <li><strong>非只读模式 (<code>model.CheckReadonly</code>):</strong> 不能在只读模式下执行此操作。</li>
+            </ul>
+        </section>
+
+        <section id="notes">
+            <h2>备注</h2>
+            <ul>
+                <li>设置一个新的 API Token 后，旧的 Token (如果存在) 将立即失效。</li>
+                <li>API Token 应被视为敏感信息，妥善保管。</li>
+                <li>如果清空 API Token，所有依赖于此 Token 的 API 调用将无法通过认证。</li>
+                <li>建议使用足够长且随机的字符串作为 API Token。</li>
+            </ul>
+        </section>
+
+        <div class="test-area">
+            <h2>在线测试</h2>
+            <p>您可以使用下面的表单来测试此 API。请输入新的 API Token。如果需要清除当前 Token，请将输入框留空或输入空字符串并提交。</p>
+            <p><strong>警告:</strong> 此操作会更改您当前的 API Token，请谨慎操作。您需要使用当前有效的 API Token 来授权此更改操作。</p>
+            <form id="setApiTokenForm">
+                <div>
+                    <label for="currentToken">当前 API Token (用于授权):</label>
+                    <input type="password" id="currentTokenSetApi" name="currentToken" required>
+                </div>
+                <div>
+                    <label for="newToken">新的 API Token (留空以清除):</label>
+                    <input type="text" id="newTokenSetApi" name="newToken">
+                </div>
+                <button type="button" onclick="sendSetApiTokenRequest()">设置/更新 API Token</button>
+            </form>
+            <h3>响应:</h3>
+            <pre><code id="setApiTokenResponse" class="language-json">点击按钮查看响应</code></pre>
+        </div>
+    </main>
+    <blockquote>
+        <p>感谢您对思源笔记的关注与支持！</p>
+        <p><a href="https://afdian.com/a/leolee9086?tab=feed" target="_blank">在爱发电上赞助我们</a></p>
+    </blockquote>
+    <footer>
+        <p>&copy; 2024-2025 <a href="https://b3log.org/siyuan">思源笔记 B3log.org</a>. All rights reserved.</p>
+    </footer>
+    <script>
+        async function sendSetApiTokenRequest() {
+            const currentTokenInput = document.getElementById('currentTokenSetApi');
+            const newTokenInput = document.getElementById('newTokenSetApi');
+            const responseCode = document.getElementById('setApiTokenResponse');
+
+            const currentToken = currentTokenInput.value;
+            if (!currentToken) {
+                alert('请输入当前的 API Token 以授权此操作！');
+                responseCode.textContent = '操作取消：未提供当前 API Token。';
+                return;
+            }
+
+            const payload = {
+                token: newTokenInput.value // 新 token 可以是空字符串
+            };
+
+            responseCode.textContent = '正在设置 API Token...';
+
+            try {
+                const response = await fetch('/api/system/setAPIToken', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Token ' + currentToken // 使用当前token进行认证
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                responseCode.textContent = JSON.stringify(result, null, 2);
+                
+                if (result.code === 0) {
+                    if (payload.token === "") {
+                        alert('API Token 已成功清除！');
+                    } else {
+                        alert('API Token 已成功设置为: ' + payload.token);
+                    }
+                } else {
+                    alert('设置 API Token 失败: ' + result.msg);
+                }
+            } catch (error) {
+                console.error('Error during setAPIToken request:', error);
+                responseCode.textContent = JSON.stringify({ code: -1, msg: '设置 API Token 请求失败: ' + error.message, data:null }, null, 2);
+                alert('设置 API Token 请求失败: ' + error.message);
+            }
+        }
+    </script>
+    <script src="../common/js/theme-toggle.js"></script>
+</body>
+</html> 

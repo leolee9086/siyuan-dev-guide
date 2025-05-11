@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>API: /api/sync/importSyncProviderWebDAV - 导入 WebDAV 同步配置</title>
+    <link rel="stylesheet" href="../common.css">
+    <script src="../common.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>导入 WebDAV 同步配置</h1>
+        <p><strong>API Endpoint:</strong> <code>POST /api/sync/importSyncProviderWebDAV</code></p>
+        <p><strong>认证:</strong> 需要登录 (<code>model.CheckAuth</code>)、管理员权限 (<code>model.CheckAdminRole</code>) 且非只读模式 (<code>model.CheckReadonly</code>)。</p>
+
+        <h2>功能描述</h2>
+        <p>此 API 用于导入并应用 WebDAV (Web Distributed Authoring and Versioning) 同步服务的配置。用户需要上传一个配置文件，该文件通常是通过 <code>/api/sync/exportSyncProviderWebDAV</code> 接口导出的，其中包含了经过 AES 加密的 WebDAV 连接参数。</p>
+        <p>上传的文件可以是一个 <code>.json</code> 文件，也可以是包含单个 <code>.json</code> 文件的 <code>.zip</code> 压缩包。系统会自动处理解压（如果需要）、解密、Hex解码，并将解析出的 WebDAV 配置设置为当前激活的同步方式之一（并更新全局配置中的 <code>sync.webdav</code> 部分）。</p>
+        <p><strong>重要提示:</strong> 根据代码实现，导入的配置文件内容在 AES 解密后，还会进行一次 Hex 解码。这与 <code>/api/sync/exportSyncProviderWebDAV</code> 导出的文件格式（仅 AES 加密）在处理上可能存在不完全对称的情况，请注意上传文件的准备。</p>
+
+        <h2>请求</h2>
+        <p>请求必须为 <code>multipart/form-data</code> 类型，包含以下表单字段：</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>字段名</th>
+                    <th>类型</th>
+                    <th>是否必需</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>file</code></td>
+                    <td>File</td>
+                    <td>是</td>
+                    <td>包含 AES 加密的 WebDAV 配置的 <code>.json</code> 文件，或者是一个包含此 <code>.json</code> 文件的 <code>.zip</code> 压缩包。推荐使用由 <code>/api/sync/exportSyncProviderWebDAV</code> 导出的文件，但请注意上述关于 Hex 解码的提示。</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>响应</h2>
+        <p>成功导入并应用配置后，服务器返回 HTTP 状态码 <code>200</code> 和一个 JSON 对象，其 <code>data</code> 字段包含更新后的 WebDAV 配置信息：</p>
+        <pre><code class="language-json">
+{
+    "code": 0,
+    "msg": "",
+    "data": {
+        "webdav": {
+            "endpoint": "https://dav.example.com/dav/",
+            "username": "user",
+            "password": "", // 密码在响应中通常为空或被屏蔽
+            "pathPrefix": "siyuan_data",
+            "skipTlsVerify": false,
+            "timeout": 30,
+            "concurrentReqs": 5
+        }
+    }
+}
+        </code></pre>
+        <ul>
+            <li><code>code</code> (number): <code>0</code> 表示成功，其他值表示失败。</li>
+            <li><code>msg</code> (string): 错误信息（如果 <code>code</code> 非 <code>0</code>）。</li>
+            <li><code>data</code> (object): 包含同步信息的对象。
+                <ul>
+                    <li><code>webdav</code> (object): 更新后的 WebDAV 配置对象 (<code>conf.WebDAV</code>)。其结构如下：
+                        <ul>
+                            <li><code>endpoint</code> (string): WebDAV 服务器 URL。</li>
+                            <li><code>username</code> (string): 用户名。</li>
+                            <li><code>password</code> (string): 密码 (在响应中通常为空或被屏蔽以保安全)。</li>
+                            <li><code>pathPrefix</code> (string): 服务器上的路径前缀。</li>
+                            <li><code>skipTlsVerify</code> (boolean): 是否跳过 TLS (SSL) 证书验证。</li>
+                            <li><code>timeout</code> (number): 请求超时时间（秒）。</li>
+                            <li><code>concurrentReqs</code> (number): 并发请求数。</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+        <h2>在线测试</h2>
+        <div class="test-area">
+            <form id="uploadFormWebDAV">
+                <label for="configFileWebDAV">选择WebDAV配置文件 (.json 或 .zip):</label>
+                <input type="file" id="configFileWebDAV" name="file" accept=".json,.zip" required>
+                <br><br>
+                <button type="button" onclick="importWebDAVConfig()">导入配置</button>
+            </form>
+            <h3>响应:</h3>
+            <pre id="responseOutputWebDAV">点击按钮发送请求</pre>
+        </div>
+
+        <script>
+            async function importWebDAVConfig() {
+                const outputElement = document.getElementById('responseOutputWebDAV');
+                const configFile = document.getElementById('configFileWebDAV').files[0];
+                outputElement.textContent = '正在请求...';
+
+                if (!configFile) {
+                    outputElement.textContent = '错误: 请先选择一个配置文件。';
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('file', configFile);
+
+                try {
+                    const response = await fetch('/api/sync/importSyncProviderWebDAV', {
+                        method: 'POST',
+                        // headers: { 'Authorization': 'Token YOUR_API_TOKEN' }, // 如果需要，请取消注释并替换
+                        body: formData
+                    });
+                    const result = await response.json();
+                    outputElement.textContent = JSON.stringify(result, null, 2);
+                } catch (error) {
+                    outputElement.textContent = '请求失败: ' + error.message;
+                    console.error('Fetch Error:', error);
+                }
+            }
+        </script>
+    </div>
+</body>
+</html> 

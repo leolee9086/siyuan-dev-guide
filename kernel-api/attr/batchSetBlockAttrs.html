@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>batchSetBlockAttrs API</title>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../github-markdown.css">
+<link rel="stylesheet" href="../styles.css">
+<style>
+    .markdown-body {
+        box-sizing: border-box;
+        min-width: 200px;
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 45px;
+    }
+
+    @media (max-width: 767px) {
+        .markdown-body {
+            padding: 15px;
+        }
+    }
+</style>
+</head>
+<body class="markdown-body">
+<blockquote>
+<p>本文档非官方出品，主要由 AI 辅助编写，不保证绝对准确。如有疑问，请以 <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/attr.go">kernel/api/attr.go</a> 中的源码为准。</p>
+<p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<h1>batchSetBlockAttrs</h1>
+<p class="api-path-display"><strong>方法：</strong><span class="method">POST</span> <strong>路径：</strong><span class="endpoint">/api/attr/batchSetBlockAttrs</span></p>
+<p>批量设置块属性。</p>
+<p><strong>注意</strong>: 此 API 需要管理员权限且非只读模式。</p>
+<h2>地址</h2>
+<p><code>POST /api/attr/batchSetBlockAttrs</code></p>
+<h2>请求体 (JSON)</h2>
+<pre><code class="language-json">{
+  "blockAttrs": [
+    {
+      "id": "块 ID 1",
+      "attrs": {
+        "属性名1": "属性值1",
+        "属性名2": "属性值2"
+      }
+    },
+    {
+      "id": "块 ID 2",
+      "attrs": {
+        "属性名3": "属性值3",
+        "custom-attr": null // 设置为 null 会移除该属性
+      }
+    }
+    // ... 更多块属性
+  ]
+}
+</code></pre>
+<ul>
+<li><code>blockAttrs</code>: 数组，包含要设置属性的块信息。<ul>
+<li><code>id</code>: (<code>string</code>) 必填，块 ID。</li>
+<li><code>attrs</code>: (<code>object</code>) 必填，要设置的属性键值对。</li>
+</ul>
+</li>
+</ul>
+<h2>响应体 (JSON)</h2>
+<p>标准响应体：</p>
+<pre><code class="language-json">{
+  "code": 0,
+  "msg": "",
+  "data": null
+}
+</code></pre>
+<h2>示例</h2>
+<pre><code class="language-javascript">fetch('/api/attr/batchSetBlockAttrs', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    // 'Authorization': 'Token xxx' // 如果需要认证
+  },
+  body: JSON.stringify({
+    blockAttrs: [
+      {
+        id: "20230101120000-abcdefgh",
+        attrs: { "custom-status": "processing", "updated": "20240101" }
+      },
+      {
+        id: "20230102130000-ijklmnop",
+        attrs: { "memo": "这是一个备注", "custom-oldattr": null } // 移除 custom-oldattr
+      }
+    ]
+  })
+})
+.then(response => response.json())
+.then(data => {
+  if (data.code === 0) {
+    console.log('批量设置块属性成功');
+  } else {
+    console.error('批量设置块属性失败:', data.msg);
+  }
+})
+.catch(error => console.error('请求错误:', error));
+</code></pre>
+
+<div class="test-area">
+    <h3>在线测试</h3>
+    <form id="api-test-form">
+        <div class="form-group">
+            <label for="api-token">API Token:</label>
+            <input type="text" id="api-token" placeholder="在思源笔记中的"设置-关于"中查看API token">
+        </div>
+        
+        <div class="form-group">
+            <label for="api-endpoint">接口地址:</label>
+            <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/attr/batchSetBlockAttrs">
+        </div>
+        
+        <div class="form-group">
+            <label for="api-method">请求方法:</label>
+            <input type="text" id="api-method" value="POST" readonly>
+        </div>
+        
+        <div class="form-group">
+            <label for="api-params">请求参数 (JSON):</label>
+            <textarea id="api-params">{
+  "blockAttrs": [
+    {
+      "id": "20230101120000-abcdefgh",
+      "attrs": { "custom-status": "processing", "updated": "20240101" }
+    },
+    {
+      "id": "20230102130000-ijklmnop",
+      "attrs": { "memo": "这是一个备注", "custom-oldattr": null }
+    }
+  ]
+}</textarea>
+        </div>
+        
+        <button type="submit" class="btn">发送请求</button>
+    </form>
+    
+    <div id="api-result" class="result"></div>
+</div>
+
+<script src="../api-tester.js"></script>
+
+</body>
+</html> 

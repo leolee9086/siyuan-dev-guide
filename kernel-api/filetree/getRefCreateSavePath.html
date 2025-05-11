@@ -1,0 +1,95 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>获取引用创建时文档的默认保存路径 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../pages/filetree.html" class="back-link">← 返回 FileTree API 列表</a>
+    <h1>获取引用创建时文档的默认保存路径</h1>
+    <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/filetree.go#L756" target="_blank" class="github-link">在 GitHub 上查看源码</a>
+
+    <p class="endpoint"><code>POST /api/filetree/getRefCreateSavePath</code></p>
+
+    <h2>描述</h2>
+    <p>获取当通过"提及"（例如输入 <code>((块引用))</code>）或"嵌入块"（例如输入 <code>/嵌入块</code>）引用一个不存在的文档时，这个新文档将被默认创建在哪个笔记本的哪个路径下。</p>
+    <p>这个路径由系统设置（设置 -&gt; 文件树 -&gt; 引用创建时自动创建文档路径）和当前笔记本的设置共同决定，且路径模板支持 Go 模板语法（例如日期变量）。</p>
+
+    <h2>请求参数</h2>
+    <p>请求体需要是 JSON 格式。</p>
+    <table>
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+                <th>必需</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>notebook</code></td>
+                <td><code>string</code></td>
+                <td>当前操作所在的笔记本 ID。用于确定默认路径配置的上下文。</td>
+                <td>是</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>响应结果</h2>
+    <p>响应体是 JSON 格式。<code>code</code> 为 0 表示成功。<code>data</code> 字段是一个对象，包含最终计算出的目标笔记本 ID 和保存路径。</p>
+    <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "box": "20200812220555-lj3enxa", // 目标笔记本 ID
+    "path": "/refs/{{.Year}}-{{.Month}}-{{.Day}}/新引用文档.sy" // 渲染后的目标路径 (相对于 box)
+  }
+}
+    </code></pre>
+    <p>路径中的 <code>{{.Year}}</code>, <code>{{.Month}}</code>, <code>{{.Day}}</code> 等是 Go 模板变量，在实际创建时会被替换为当前日期。</p>
+    <p>如果计算过程中发生错误（例如模板渲染失败），<code>code</code> 可能为非 0，并包含错误信息。</p>
+
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<div class="test-area">
+        <h3>在线测试</h3>
+        <form id="api-test-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记中的" 设置-关于"中查看api="" token"="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/filetree/getRefCreateSavePath" readonly="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-params">请求参数 (JSON):</label>
+                <textarea id="api-params">{
+    "notebook": "当前笔记本ID"
+}</textarea>
+            </div>
+
+            <button type="submit" class="btn">发送请求</button>
+        </form>
+
+        <div id="api-result" class="result"></div>
+    </div>
+
+    <footer>
+        <p>思源笔记 API 文档</p>
+    </footer>
+    <script src="../api-tester.js"></script>
+
+ </body></html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>API: /api/sync/setSyncEnable</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../script.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>API: /api/sync/setSyncEnable</h1>
+        <p><strong>HTTP Method:</strong> POST</p>
+        <p><strong>认证:</strong> 需要登录 (<code>model.CheckAuth</code>), 管理员权限 (<code>model.CheckAdminRole</code>), 非只读模式 (<code>model.CheckReadonly</code>)</p>
+
+        <h2>功能描述</h2>
+        <p>全局启用或禁用数据同步功能。</p>
+        <p>当禁用后，所有自动和手动同步操作都将停止，直到再次启用。</p>
+
+        <h2>请求参数 (JSON Body)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>参数名</th>
+                    <th>类型</th>
+                    <th>是否必需</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>enabled</code></td>
+                    <td>boolean</td>
+                    <td>是</td>
+                    <td>设置为 <code>true</code> 以启用同步功能，设置为 <code>false</code> 以禁用同步功能。</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>请求示例 (启用同步)</h3>
+        <pre><code class="language-json">{
+    "enabled": true
+}</code></pre>
+
+        <h3>请求示例 (禁用同步)</h3>
+        <pre><code class="language-json">{
+    "enabled": false
+}</code></pre>
+
+        <h2>响应</h2>
+        <p>成功时，HTTP 状态码为 200，响应体中的 <code>code</code> 为 0，<code>msg</code> 为空，<code>data</code> 为 <code>null</code>。</p>
+
+        <h3>响应示例 (成功)</h3>
+        <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": null
+}</code></pre>
+
+        <h2>在线测试</h2>
+        <div class="api-test">
+            <label for="param-enabled">是否启用同步 (<code>enabled</code>):</label>
+            <select id="param-enabled">
+                <option value="true" selected>是 (true)</option>
+                <option value="false">否 (false)</option>
+            </select>
+            <button onclick="testSetSyncEnable()">发送请求</button>
+            <h3>响应:</h3>
+            <pre id="response-output">等待请求...</pre>
+        </div>
+    </div>
+
+    <script>
+        function testSetSyncEnable() {
+            const enabledValue = document.getElementById('param-enabled').value;
+            const enabled = enabledValue === 'true'; // 将字符串转换为布尔值
+            const outputDiv = document.getElementById('response-output');
+            outputDiv.textContent = '正在发送请求...';
+
+            fetch('/api/sync/setSyncEnable', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // 'Authorization': 'Token YOUR_API_TOKEN_HERE' // 如果需要认证
+                },
+                body: JSON.stringify({ enabled: enabled })
+            })
+            .then(response => response.json())
+            .then(data => {
+                outputDiv.textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                outputDiv.textContent = '请求失败: ' + error;
+                console.error('Error:', error);
+            });
+        }
+        // 确保代码高亮
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+        });
+    </script>
+</body>
+</html> 

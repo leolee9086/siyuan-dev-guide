@@ -1,0 +1,129 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/riff/getTreeRiffDueCards"> <!-- API Endpoint Meta Tag -->
+    <title>获取文档树内到期闪卡列表 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <h1>获取文档树内到期闪卡列表 (getTreeRiffDueCards)</h1>
+        <nav>
+            <a href="../index.html">首页</a> | 
+            <a href="index.html">Riff API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/riff.go#L233" target="_blank">GitHub Source</a>
+        </nav>
+    </header>
+    <main>
+        <section id="description">
+            <h2>功能描述</h2>
+            <p>此 API 端点 <code>POST /api/riff/getTreeRiffDueCards</code> 用于获取指定文档树（以某个块为根节点）下所有<strong>到期需要复习</strong>的闪卡列表及相关统计信息。</p>
+            <p>可以传入当前复习会话中已复习的卡片列表，以便在获取下一批卡片时排除它们。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体必须是 JSON 格式，包含以下参数：</p>
+            <ul>
+                <li><code>rootID</code> (string): <strong>必填</strong>。文档树的根块 ID（通常是文档块的 ID）。</li>
+                <li><code>reviewedCards</code> (array of objects): <em>可选</em>。当前复习会话中已经复习过的卡片列表。数组中的每个对象应至少包含 <code>cardID</code> (string) 字段。如果省略或为空数组，则获取所有到期卡片。</li>
+            </ul>
+            <p><strong>请求示例 (获取文档树所有到期卡):</strong></p>
+            <pre><code class="language-json">
+{
+  "rootID": "20200812220100-7ck4bsp"
+}
+            </code></pre>
+            <p><strong>请求示例 (获取文档树到期卡，并排除已复习的卡):</strong></p>
+            <pre><code class="language-json">
+{
+  "rootID": "20200812220100-7ck4bsp",
+  "reviewedCards": [
+    { "cardID": "20240101100000-hijklmn" },
+    { "cardID": "20240102110000-opqrstu" }
+  ]
+}
+            </code></pre>
+        </section>
+
+        <section id="response-format">
+            <h2>响应结果</h2>
+            <p>成功的请求将返回一个 JSON 对象，<code>code</code> 为 0，<code>data</code> 字段包含到期闪卡列表和统计信息。</p>
+            <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "cards": [
+      {
+        "ID": "20240103120000-uvwxyz0", // 卡片 ID (等于 BlockID)
+        "BlockID": "20240103120000-uvwxyz0", // 块 ID
+        "DeckID": "20231027111111-abcdefg", // 卡包 ID
+        "Created": "2024-01-03 12:00:00", // 创建时间
+        "Updated": "2024-08-10 09:30:00", // 最后更新时间
+        "Due": "2024-08-15 10:00:00", // 到期时间
+        "State": 1, // 卡片状态 (例如: 0=新, 1=学习中, 2=复习)
+        "Reviews": 5, // 复习次数
+        "Lapses": 0, // 遗忘次数
+        "Interval": 3.5 // 当前间隔天数
+        // ... 其他卡片属性 ...
+      }
+      // ... 更多到期卡片信息 ...
+    ],
+    "unreviewedCount": 5, // 本次查询到的未复习卡片总数
+    "unreviewedNewCardCount": 1, // 其中新卡数量
+    "unreviewedOldCardCount": 4 // 其中旧卡数量
+  }
+}
+            </code></pre>
+            <ul>
+                <li><code>code</code>: 0 表示成功，非 0 表示失败（例如根块 ID 无效）。</li>
+                <li><code>msg</code>: 错误信息（如果 code 非 0）。</li>
+                <li><code>data.cards</code>: 一个数组，包含所有当前到期（且未被 reviewedCards 排除）的闪卡详细信息对象。</li>
+                <li><code>data.unreviewedCount</code>: 本次返回的未复习的到期卡片总数。</li>
+                <li><code>data.unreviewedNewCardCount</code>: 本次返回的未复习的到期新卡数量。</li>
+                <li><code>data.unreviewedOldCardCount</code>: 本次返回的未复习的到期旧卡数量。</li>
+            </ul>
+        </section>
+
+        <section id="online-testing">
+            <h2>在线测试</h2>
+            <p>您可以在下方输入文档树根块 ID 和可选的已复习卡片列表进行在线测试。</p>
+            <div class="api-tester">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="请输入您的 API Token (可选)" value=""><br>
+
+                <label for="endpoint">Endpoint:</label>
+                <input type="text" id="endpoint" value="/api/riff/getTreeRiffDueCards" readonly=""><br>
+
+                <label for="method">Method:</label>
+                <input type="text" id="method" value="POST" readonly=""><br>
+
+                <label for="params">Parameters (JSON):</label><br>
+                <textarea id="params" rows="8" placeholder="{
+  &quot;rootID&quot;: &quot;&quot;,
+  &quot;reviewedCards&quot;: []
+}"></textarea><br>
+
+                <button onclick="sendRequest()">发送请求</button>
+
+                <h3>响应结果:</h3>
+                <pre id="response-output"></pre>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>思源笔记 API 文档 | 最后更新时间：<span id="last-updated"></span></p>
+    </footer>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        // 更新最后更新时间
+        document.getElementById('last-updated').textContent = new Date().toLocaleString();
+    </script>
+
+ </body></html>

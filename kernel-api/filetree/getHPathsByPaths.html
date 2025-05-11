@@ -1,0 +1,96 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>批量获取人类可读路径 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../pages/filetree.html" class="back-link">← 返回 FileTree API 列表</a>
+    <h1>批量获取人类可读路径</h1>
+    <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/filetree.go#L321" target="_blank" class="github-link">在 GitHub 上查看源码</a>
+
+    <p class="endpoint"><code>POST /api/filetree/getHPathsByPaths</code></p>
+
+    <h2>描述</h2>
+    <p>根据提供的文档或文件夹路径列表（相对于笔记本根目录），批量获取它们对应的人类可读路径（HPath）。</p>
+
+    <h2>请求参数</h2>
+    <p>请求体需要是 JSON 格式。</p>
+    <table>
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+                <th>必需</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>paths</code></td>
+                <td><code>array</code> of <code>string</code></td>
+                <td>要查询的文档或文件夹路径列表，路径相对于笔记本根目录。例如：<code>["/folder-a/doc-a.sy", "/doc-b.sy"]</code></td>
+                <td>是</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>响应结果</h2>
+    <p>响应体是 JSON 格式。<code>code</code> 为 0 表示成功。<code>data</code> 字段是一个字符串数组，包含与输入路径列表顺序对应的 HPath。</p>
+    <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": [
+    "笔记本名称/folder-a/doc-a",
+    "笔记本名称/doc-b"
+  ]
+}
+    </code></pre>
+    <p>如果列表中的某个路径无效或找不到，对应的 HPath 可能会是空字符串或包含错误信息，具体取决于实现细节，但请求通常仍然会返回 <code>code: 0</code>。</p>
+
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<div class="test-area">
+        <h3>在线测试</h3>
+        <form id="api-test-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记中的" 设置-关于"中查看api="" token"="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/filetree/getHPathsByPaths" readonly="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-params">请求参数 (JSON):</label>
+                <textarea id="api-params">{
+    "paths": [
+        "/folder/doc-a.sy",
+        "/another-doc.sy"
+    ]
+}</textarea>
+            </div>
+
+            <button type="submit" class="btn">发送请求</button>
+        </form>
+
+        <div id="api-result" class="result"></div>
+    </div>
+
+    <footer>
+        <p>思源笔记 API 文档</p>
+    </footer>
+    <script src="../api-tester.js"></script>
+
+ </body></html>

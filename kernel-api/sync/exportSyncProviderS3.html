@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导出S3同步配置 (exportSyncProviderS3)</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>导出S3同步配置 (exportSyncProviderS3)</h1>
+        <p class="api-path">POST /api/sync/exportSyncProviderS3</p>
+
+        <h2 id="认证与权限">认证与权限</h2>
+        <p>需要身份验证 (通过 API Token)。</p>
+        <p>需要管理员权限。</p>
+        <!-- <p>此操作在只读模式下仍然可用。</p> -->
+
+        <h2 id="接口描述">接口描述</h2>
+        <p>此接口用于导出现有的 Amazon S3 云同步服务配置。</p>
+        <p>导出的配置是一个经过 AES 加密的 JSON 文件，该 JSON 文件被打包在一个 ZIP 压缩包内供用户下载。文件名格式为 <code>siyuan-s3-YYYYMMDDHHMMSS.json.zip</code>。</p>
+        <p>如果当前没有配置 S3 服务，导出的将是一个包含空 S3 配置对象的加密文件。</p>
+        <p><strong>注意：</strong>这是一个文件下载接口。成功调用后，浏览器将开始下载一个 ZIP 文件，而不是返回一个 JSON 响应体。</p>
+
+        <h2 id="请求体参数">请求体参数</h2>
+        <p>该接口不需要请求体参数。</p>
+
+        <h2 id="请求体示例">请求体示例</h2>
+        <pre><code class="language-json">
+{}
+        </code></pre>
+
+        <h2 id="响应体说明">响应体说明</h2>
+        <ul>
+            <li><strong>成功时:</strong>
+                <ul>
+                    <li>HTTP 状态码: <code>200 OK</code></li>
+                    <li><code>Content-Type</code>: <code>application/octet-stream</code></li>
+                    <li><code>Content-Disposition</code>: <code>attachment; filename="siyuan-s3-YYYYMMDDHHMMSS.json.zip"</code></li>
+                    <li>响应体: ZIP 文件的二进制内容。</li>
+                </ul>
+            </li>
+            <li><strong>失败时 (例如，无法创建临时文件、加密失败等):</strong>
+                <ul>
+                    <li>HTTP 状态码: 通常是 <code>200 OK</code> (因为 <code>defer c.JSON</code> 在 Gin 中可能在 <code>c.File</code> 调用前设置了状态码) 或特定错误码。</li>
+                    <li>响应体: 标准的思源笔记 API JSON 错误响应结构：
+                        <pre><code class="language-json">
+{
+    "code": -1, // 非 0 的错误码
+    "msg": "具体的错误信息",
+    "data": null
+}
+                        </code></pre>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        
+        <h2 id="cURL调用示例">cURL 调用示例</h2>
+        <pre><code class="language-bash">
+# 执行此命令会将下载的 zip 文件保存为 output.zip
+curl -X POST \
+  http://127.0.0.1:6806/api/sync/exportSyncProviderS3 \
+  -H 'Authorization: Token YOUR_API_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{}' \
+  -o output-s3-config.zip
+        </code></pre>
+
+        <h2 id="JavaScript调用示例">JavaScript 调用示例</h2>
+        <pre><code class="language-javascript">
+async function exportS3Config() {
+    try {
+        const response = await fetch('/api/sync/exportSyncProviderS3', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token YOUR_API_TOKEN' // 如果配置了API Token
+            },
+            body: JSON.stringify({})
+        });
+
+        if (response.ok && response.headers.get("Content-Type") === "application/octet-stream") {
+            const contentDisposition = response.headers.get('Content-Disposition');
+            let filename = 'siyuan-s3-config.zip'; // 默认文件名
+            if (contentDisposition) {
+                const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/i);
+                if (filenameMatch && filenameMatch[1]) {
+                    filename = filenameMatch[1].replace(/['"]/g, '');
+                }
+            }
+            
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove();
+            console.log('S3 配置导出成功，下载已开始。');
+            document.getElementById('apiResponse').textContent = 'S3 配置导出成功，下载应该已经开始: ' + filename;
+        } else {
+            // 尝试解析可能的JSON错误响应
+            const errorData = await response.json().catch(() => null);
+            if (errorData && errorData.msg) {
+                console.error('导出S3配置失败:', errorData.msg);
+                document.getElementById('apiResponse').textContent = `错误 ${errorData.code}: ${errorData.msg}`;
+            } else {
+                console.error('导出S3配置失败，响应状态:', response.status);
+                document.getElementById('apiResponse').textContent = `导出失败，状态码: ${response.status}`;
+            }
+        }
+    } catch (error) {
+        console.error('请求过程中发生错误:', error);
+        document.getElementById('apiResponse').textContent = `请求错误: ${error.message}`;
+    }
+}
+        </code></pre>
+        
+        <h2 id="在线测试">在线测试</h2>
+        <div class="controls">
+            <button onclick="exportS3Config()">导出 S3 同步配置</button>
+        </div>
+        <h3>状态:</h3>
+        <pre id="apiResponse">点击按钮后，此处将显示操作状态。</pre>
+
+    </div>
+    <script src="../js/scripts.js"></script>
+    <script>
+        // 填充 Token
+        const storedToken = localStorage.getItem('siyuanApiToken');
+        if (storedToken) {
+            const jsExampleElement = document.querySelector('code.language-javascript');
+            if (jsExampleElement) {
+                jsExampleElement.textContent = jsExampleElement.textContent.replace('YOUR_API_TOKEN', storedToken);
+            }
+            const curlExampleElement = document.querySelector('code.language-bash');
+            if (curlExampleElement) {
+                curlExampleElement.textContent = curlExampleElement.textContent.replace('YOUR_API_TOKEN', storedToken);
+            }
+        }
+    </script>
+</body>
+</html> 

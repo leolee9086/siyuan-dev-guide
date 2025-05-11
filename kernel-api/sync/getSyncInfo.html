@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>API: /api/sync/getSyncInfo - 获取同步状态信息</title>
+    <link rel="stylesheet" href="../common.css">
+    <script src="../common.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>获取同步状态信息</h1>
+        <p><strong>API Endpoint:</strong> <code>POST /api/sync/getSyncInfo</code></p>
+        <p><strong>认证:</strong> 需要登录 (<code>model.CheckAuth</code>) 和管理员权限 (<code>model.CheckAdminRole</code>)。</p>
+
+        <h2>功能描述</h2>
+        <p>此 API 用于获取当前思源笔记的同步状态和相关的基本配置信息。它会返回当前的同步服务提供商、云端目录名、同步是否启用、是否正在同步以及当前的同步进度详情。</p>
+
+        <h2>请求参数</h2>
+        <p>此接口不需要请求参数。发送一个空的 JSON 对象 <code>{}</code> 即可。</p>
+
+        <h2>响应</h2>
+        <p>成功时，服务器返回 HTTP 状态码 <code>200</code> 和一个 JSON 对象，其 <code>data</code> 字段包含以下信息：</p>
+        <pre><code class="language-json">
+{
+    "code": 0,
+    "msg": "",
+    "data": {
+        "providerName": "WebDAV",
+        "cloudName": "mySiyuanSync",
+        "enabled": true,
+        "syncing": false,
+        "progress": {
+            "current": 0, // 当前已处理的项目数
+            "total": 0,   // 总共需要处理的项目数
+            "info": "空闲", // 当前操作的文本描述 (具体内容和字段名可能依同步状态而变)
+            "percent": 0  // 完成百分比 (可能由前端计算或后端直接提供)
+            // 可能还包含其他与具体进度阶段相关的字段
+        }
+    }
+}
+        </code></pre>
+        <ul>
+            <li><code>code</code> (number): <code>0</code> 表示成功，其他值表示失败。</li>
+            <li><code>msg</code> (string): 错误信息（如果 <code>code</code> 非 <code>0</code>）。</li>
+            <li><code>data</code> (object): 包含同步信息的对象。
+                <ul>
+                    <li><code>providerName</code> (string): 当前配置的同步服务提供商名称 (例如: "S3", "WebDAV", "SiYuan")。</li>
+                    <li><code>cloudName</code> (string): 云端同步目录或仓库的名称。</li>
+                    <li><code>enabled</code> (boolean): 同步功能当前是否已启用。</li>
+                    <li><code>syncing</code> (boolean): 当前是否正在进行同步操作。</li>
+                    <li><code>progress</code> (object): 当前同步进度详情。
+                        <ul>
+                            <li><code>current</code> (number): 当前已完成的步骤或文件数量。</li>
+                            <li><code>total</code> (number): 总共需要处理的步骤或文件数量。</li>
+                            <li><code>info</code> (string, 可选): 对当前同步阶段或正在处理内容的文本描述 (例如 "正在上传: file.md", "检查更改中...", "空闲")。注意：此字段的具体名称和内容可能根据实际同步状态和实现有所不同，也可能为 `details` 或 `msg`。</li>
+                            <li><code>percent</code> (number, 可选): 同步完成的百分比。如果后端未直接提供，前端可能需要根据 <code>current</code> 和 <code>total</code> 计算。</li>
+                            <li><em>(可能还包含其他特定于进度阶段的字段)</em></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <p><strong>注意:</strong> <code>progress</code> 对象的具体字段和内容可能会根据实际的同步状态和同步引擎的实现有所不同。上述示例仅为一种典型结构。</p>
+
+        <h2>在线测试</h2>
+        <div class="test-area">
+            <button onclick="fetchSyncInfo()">获取同步信息</button>
+            <h3>响应:</h3>
+            <pre id="responseOutput">点击按钮发送请求</pre>
+        </div>
+
+        <script>
+            async function fetchSyncInfo() {
+                const outputElement = document.getElementById('responseOutput');
+                outputElement.textContent = '正在请求...';
+
+                try {
+                    const response = await fetch('/api/sync/getSyncInfo', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // 'Authorization': 'Token YOUR_API_TOKEN' // 如果需要，请取消注释并替换
+                        },
+                        body: JSON.stringify({})
+                    });
+                    const result = await response.json();
+                    outputElement.textContent = JSON.stringify(result, null, 2);
+                } catch (error) {
+                    outputElement.textContent = '请求失败: ' + error.message;
+                    console.error('Fetch Error:', error);
+                }
+            }
+        </script>
+    </div>
+</body>
+</html> 

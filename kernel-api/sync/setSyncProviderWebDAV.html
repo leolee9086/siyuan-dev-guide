@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>API: /api/sync/setSyncProviderWebDAV</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../script.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>思源笔记 API 文档</h1>
+    </header>
+    <nav>
+        <a href="../index.html">返回首页</a>
+        <a href="index.html">返回 sync 分类</a>
+    </nav>
+    <main>
+        <h2>/api/sync/setSyncProviderWebDAV</h2>
+        <p><strong>方法:</strong> POST</p>
+        <p><strong>认证:</strong> `model.CheckAuth`, `model.CheckAdminRole`, `model.CheckReadonly` (需要登录，管理员权限，非只读模式)</p>
+        <p><strong>功能:</strong> 设置使用 WebDAV 作为云同步服务提供商时的具体配置。</p>
+        <p><strong>重要提示:</strong> 在调用此 API 前，应先通过 <code>/api/sync/setSyncProvider</code> 将 <code>provider</code> 设置为 <code>3</code> (WebDAV)。</p>
+
+        <h3>请求参数 (JSON Body)</h3>
+        <p>请求体包含一个名为 <code>webdav</code> 的对象，其结构如下 (对应 <code>conf.WebDAV</code>)：</p>
+        <table>
+            <thead>
+                <tr>
+                    <th><code>webdav</code> 对象字段</th>
+                    <th>类型</th>
+                    <th>是否必需</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>endpoint</code></td>
+                    <td>string</td>
+                    <td>是</td>
+                    <td>WebDAV 服务的完整 URL。例如：<code>https://dav.example.com/siyuan-data/</code>。</td>
+                </tr>
+                <tr>
+                    <td><code>username</code></td>
+                    <td>string</td>
+                    <td>是</td>
+                    <td>WebDAV 服务的认证用户名。</td>
+                </tr>
+                <tr>
+                    <td><code>password</code></td>
+                    <td>string</td>
+                    <td>是 (但可为空)</td>
+                    <td>WebDAV 服务的认证密码。某些 WebDAV 服务可能允许匿名或不需要密码。</td>
+                </tr>
+                <tr>
+                    <td><code>skipTlsVerify</code></td>
+                    <td>boolean</td>
+                    <td>否</td>
+                    <td>是否跳过 TLS (HTTPS) 证书验证。如果 WebDAV 服务使用自签名证书或部署在无法验证证书的内网环境，可设为 <code>true</code>。默认为 <code>false</code>。<strong>警告：设置为 <code>true</code> 会降低连接安全性。</strong></td>
+                </tr>
+                <tr>
+                    <td><code>timeout</code></td>
+                    <td>number</td>
+                    <td>否</td>
+                    <td>操作超时时间，单位为秒。如果未提供或为0，则可能使用思源笔记内部的默认值。</td>
+                </tr>
+                <tr>
+                    <td><code>concurrentReqs</code></td>
+                    <td>number</td>
+                    <td>否</td>
+                    <td>并发请求数量。如果未提供或为0，则可能使用思源笔记内部的默认值。</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>请求示例</h3>
+        <pre><code class="language-json">
+{
+    "webdav": {
+        "endpoint": "https://dav.box.com/dav",
+        "username": "your_username",
+        "password": "your_password",
+        "skipTlsVerify": false,
+        "timeout": 60,
+        "concurrentReqs": 5
+    }
+}
+        </code></pre>
+
+        <h3>响应结果</h3>
+        <p>成功时，返回的 JSON 对象中 <code>code</code> 为 0，<code>msg</code> 为空字符串，<code>data</code> 中包含已成功设置的 <code>webdav</code> 配置对象。</p>
+        <pre><code class="language-json">
+{
+    "code": 0,
+    "msg": "",
+    "data": {
+        "webdav": {
+            "endpoint": "https://dav.box.com/dav",
+            "username": "your_username",
+            "password": "your_password", // 通常会返回密码字段，前端应注意处理
+            "skipTlsVerify": false,
+            "timeout": 60,
+            "concurrentReqs": 5
+        }
+    }
+}
+        </code></pre>
+        <p>失败时 (例如，参数缺失、认证失败、无法连接到 WebDAV 服务器等)，<code>code</code> 非 0，<code>msg</code> 包含错误信息，<code>data</code> 可能包含 <code>{"closeTimeout": 5000}</code>。</p>
+        <pre><code class="language-json">
+{
+    "code": -1,
+    "msg": "Missing required WebDAV configuration parameters: endpoint and username are required",
+    "data": {
+        "closeTimeout": 5000
+    }
+}
+        </code></pre>
+
+        <h3>在线测试</h3>
+        <div class="test-area">
+            <label for="param-webdav-endpoint">webdav.endpoint (string, 必需):</label>
+            <input type="text" id="param-webdav-endpoint" value="https://dav.example.com/remote.php/dav/files/username/" style="width: 400px;"><br>
+            <label for="param-webdav-username">webdav.username (string, 必需):</label>
+            <input type="text" id="param-webdav-username" value="user" style="width: 300px;"><br>
+            <label for="param-webdav-password">webdav.password (string, 是):</label>
+            <input type="password" id="param-webdav-password" value="password" style="width: 300px;"><br>
+            <label for="param-webdav-skipTlsVerify">webdav.skipTlsVerify (boolean, 可选):</label>
+            <select id="param-webdav-skipTlsVerify">
+                <option value="false" selected>false (不跳过TLS验证)</option>
+                <option value="true">true (跳过TLS验证 - 危险)</option>
+            </select><br>
+            <label for="param-webdav-timeout">webdav.timeout (number, 可选):</label>
+            <input type="number" id="param-webdav-timeout" value="60"><br>
+            <label for="param-webdav-concurrentReqs">webdav.concurrentReqs (number, 可选):</label>
+            <input type="number" id="param-webdav-concurrentReqs" value="5"><br><br>
+            <button onclick="testAPI()">发送请求</button>
+            <h4>请求体:</h4>
+            <pre id="request-body-display"></pre>
+            <h4>响应:</h4>
+            <pre id="response-output"></pre>
+        </div>
+
+        <script>
+            function buildRequestBody() {
+                const webdavConfig = {};
+                const fields = ['endpoint', 'username', 'password'];
+                fields.forEach(field => {
+                    const value = document.getElementById(`param-webdav-${field}`).value;
+                    // 对于 password，即使为空字符串也应该包含，因为它是必需的（虽然可为空）
+                    if (value || field === 'password') {
+                         webdavConfig[field] = value;
+                    }
+                });
+                webdavConfig.skipTlsVerify = document.getElementById('param-webdav-skipTlsVerify').value === 'true';
+                
+                const timeout = parseInt(document.getElementById('param-webdav-timeout').value, 10);
+                if (!isNaN(timeout) && timeout > 0) webdavConfig.timeout = timeout;
+                
+                const concurrentReqs = parseInt(document.getElementById('param-webdav-concurrentReqs').value, 10);
+                if (!isNaN(concurrentReqs) && concurrentReqs > 0) webdavConfig.concurrentReqs = concurrentReqs;
+
+                const body = { webdav: webdavConfig };
+                document.getElementById('request-body-display').textContent = JSON.stringify(body, null, 2);
+                return body;
+            }
+
+            async function testAPI() {
+                const requestBody = buildRequestBody();
+                const responseOutput = document.getElementById('response-output');
+                responseOutput.textContent = '正在请求...';
+
+                if (!requestBody.webdav || !requestBody.webdav.endpoint || !requestBody.webdav.username) {
+                    responseOutput.textContent = '错误: webdav 对象的 endpoint 和 username 字段是必需的。';
+                    return;
+                }
+                // Password 是必需的，但可以为空字符串，所以在 buildRequestBody 中处理
+
+                try {
+                    const response = await fetch('/api/sync/setSyncProviderWebDAV', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // 'Authorization': 'Token YOUR_API_TOKEN_HERE' // 如果需要认证
+                        },
+                        body: JSON.stringify(requestBody)
+                    });
+                    const result = await response.json();
+                    responseOutput.textContent = JSON.stringify(result, null, 2);
+                } catch (error) {
+                    console.error('API 测试失败:', error);
+                    responseOutput.textContent = '发生错误，请查看控制台。\n' + error.message;
+                }
+            }
+
+            // 初始化请求体显示
+            buildRequestBody();
+            // 监听输入变化实时更新请求体
+            ['endpoint', 'username', 'password', 'skipTlsVerify', 'timeout', 'concurrentReqs'].forEach(field => {
+                 const element = document.getElementById(`param-webdav-${field}`);
+                 element.addEventListener('input', buildRequestBody);
+                 if (element.tagName === 'SELECT') {
+                    element.addEventListener('change', buildRequestBody);
+                 }
+            });
+        </script>
+    </main>
+    <footer>
+        <p>本文档由 AI 自动生成，可能存在不准确之处，请以实际 API 行为为准。</p>
+    </footer>
+</body>
+</html> 

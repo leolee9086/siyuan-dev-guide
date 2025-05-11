@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{GROUP_NAME}} API - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+    
+    <h1>{{GROUP_NAME}} API</h1>
+    
+    <p class="description">{{GROUP_DESCRIPTION}}</p>
+    
+    <div class="api-list-container">
+        <ul class="api-list detailed-list">
+            {{#APIS}}
+            <li>
+                <div class="api-item">
+                    <a href="{{URL}}" class="api-name">{{NAME}}</a>
+                    <span class="api-endpoint">{{ENDPOINT}}</span>
+                    <p class="api-desc">{{DESCRIPTION}}</p>
+                </div>
+            </li>
+            {{/APIS}}
+        </ul>
+    </div>
+    
+    <div class="nav-links">
+        <a href="../index.html">返回首页</a>
+    </div>
+    
+    <footer>
+        <p>思源笔记 API 文档</p>
+    </footer>
+</body>
+</html> 

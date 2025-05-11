@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>获取引用块信息 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>获取引用块信息 (`/api/block/getRefIDs`)</h1>
+            <nav>
+                <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/block.go#L445" target="_blank">在 GitHub 上查看源码</a>
+                <a href="../pages/block.html">返回块 API 列表</a>
+                <a href="../index.html">返回 API 主页</a>
+            </nav>
+        </header>
+        <main>
+            <div class="api-header" style="display:none;">
+                <span class="method">POST</span>
+                <span class="endpoint">/api/block/getRefIDs</span>
+            </div>
+
+            <h2>接口描述</h2>
+            <p>获取指定定义块 (defID) 的所有反向链接（引用块 refID）的信息。</p>
+
+            <h2>请求参数</h2>
+            <table class="param-table">
+                <thead>
+                    <tr>
+                        <th>参数名</th>
+                        <th>类型</th>
+                        <th>必选</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>id</td>
+                        <td>string</td>
+                        <td><span class="required">是</span></td>
+                        <td>要查询其引用的定义块 ID。</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>返回值</h2>
+            <p>返回一个标准的 API 响应 JSON 对象。</p>
+             <table class="response-table">
+                <thead>
+                    <tr>
+                        <th>字段名</th>
+                        <th>类型</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>code</td>
+                        <td>number</td>
+                        <td><code>0</code> 表示成功，非 <code>0</code> 表示失败。</td>
+                    </tr>
+                    <tr>
+                        <td>msg</td>
+                        <td>string</td>
+                        <td>如果失败，则包含错误信息。</td>
+                    </tr>
+                    <tr>
+                        <td>data</td>
+                        <td>object | null</td>
+                        <td>包含反向链接信息的对象。如果查询失败或没有反链，可能为 <code>null</code> 或包含空数组/映射。
+                         <br>对象结构如下:
+                            <table class="nested-table">
+                                <thead><tr><th>字段名</th><th>类型</th><th>描述</th></tr></thead>
+                                <tbody>
+                                    <tr>
+                                        <td>refDefs</td>
+                                        <td>RefDefs[]</td>
+                                        <td>引用信息数组。
+                                            <br><code>RefDefs</code> 结构:
+                                            <ul>
+                                                <li><code>refID</code> (string): 引用块的 ID。<strong>注意:</strong> 见下方备注。</li>
+                                                <li><code>defIDs</code> (string[]): 此引用块指向的定义块 ID 数组。</li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>originalRefBlockIDs</td>
+                                        <td>map[string]string</td>
+                                        <td>一个映射表，用于处理特殊情况。键是被替换的父块 ID，值是原始段落引用块的 ID。见下方备注。</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="tab-container">
+                <div class="tabs">
+                    <div class="tab active" data-target="example-tab">请求示例</div>
+                    <div class="tab" data-target="response-tab-success">成功响应</div>
+                    <div class="tab" data-target="response-tab-fail">失败响应</div>
+                </div>
+
+                <div id="example-tab" class="tab-content active">
+                    <h3>请求示例</h3>
+                    <pre><code class="language-json">POST /api/block/getRefIDs HTTP/1.1
+Host: 127.0.0.1:6806
+Content-Type: application/json
+Authorization: Token your-api-token
+
+{
+  "id": "20200812220454-5w92b1s" 
+}</code></pre>
+                </div>
+
+                <div id="response-tab-success" class="tab-content">
+                     <h3>成功响应示例</h3>
+                     <pre><code class="language-json">{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "refDefs": [
+      {
+        "refID": "20210915150909-8c1x7b2", 
+        "defIDs": ["20200812220454-5w92b1s"]
+      },
+      {
+        "refID": "20220101100000-abcdefg", 
+        "defIDs": ["20200812220454-5w92b1s"]
+      },
+      {
+        "refID": "20230210183000-hijklmn", 
+        "defIDs": ["20200812220454-5w92b1s"]
+      }
+    ],
+    "originalRefBlockIDs": {
+       "20230210183000-hijklmn": "20230210183015-opqrstu" 
+    }
+  }
+}</code></pre>
+                    <p>在上面的示例中，<code>refID</code> 为 `20230210183000-hijklmn` 的项实际上代表的是其内部的段落块 `20230210183015-opqrstu` 包含了对 `20200812220454-5w92b1s` 的引用。</p>
+                </div>
+
+                 <div id="response-tab-fail" class="tab-content">
+                    <h3>失败响应示例 (参数错误)</h3>
+                     <pre><code class="language-json">{
+  "code": -1,
+  "msg": "json: cannot unmarshal string into Go struct field .id of type string",
+  "data": null
+}</code></pre>
+                 </div>
+            </div>
+
+            <h2>备注</h2>
+            <ul>
+                <li>此接口用于查找一个块被哪些其他块引用了（反向链接）。</li>
+                <li><strong>重要:</strong> 当一个引用块（例如 `((...))`）本身位于一个段落块中，且该段落是某个列表项、引述块或超级块的<strong>唯一内容</strong>时，返回的 `refDefs` 中的 `refID` 将会是这个父块（列表项/引述块/超级块）的 ID，而不是段落块的 ID。</li>
+                <li>为了区分这种情况，可以检查 <code>originalRefBlockIDs</code> 这个映射。如果 `refDefs` 中的某个 `refID` 在 `originalRefBlockIDs` 中作为键存在，那么它对应的值才是真正包含引用的那个段落块的 ID。</li>
+            </ul>
+
+            <blockquote class="important-note">
+                <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+                <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+            </blockquote>
+
+            <div class="test-area">
+                <h3>在线测试</h3>
+                <form id="api-test-form">
+                     <div class="form-group">
+                        <label for="api-token">API Token:</label>
+                        <input type="text" id="api-token" placeholder="在思源笔记的 设置->关于 中查看 API Token">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="api-endpoint">接口地址:</label>
+                        <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/block/getRefIDs" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="api-method">请求方法:</label>
+                        <input type="text" id="api-method" value="POST" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="api-params">请求参数 (JSON):</label>
+                        <textarea id="api-params">{
+  "id": ""
+}</textarea>
+                        <small>请填入必需的定义块 <code>id</code>。</small>
+                    </div>
+
+                    <button type="submit" class="btn">发送请求</button>
+                </form>
+
+                <div id="api-result" class="result"></div>
+            </div>
+
+            <div class="nav-links">
+                <a href="getBlockDOM.html">上一个接口: 获取块 DOM</a>
+                <a href="getUnfoldedParentID.html">下一个接口: 获取展开的父块 ID</a> <!-- 假设下一个是 getUnfoldedParentID -->
+            </div>
+        </main>
+        <footer>
+            <p>© 2024 思源笔记 API 文档 (社区维护)</p>
+        </footer>
+    </div>
+
+    <script src="../api-tester.js"></script>
+</body>
+</html> 

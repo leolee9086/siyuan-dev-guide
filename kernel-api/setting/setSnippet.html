@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API: /api/setting/setSnippet</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>思源笔记 API 文档</h1>
+        </header>
+        <nav>
+            <a href="../index.html">返回首页</a>
+        </nav>
+        <main>
+            <article class="api-doc">
+                <h2>/api/setting/setSnippet</h2>
+                <p><span class="http-method post">POST</span> /api/setting/setSnippet</p>
+
+                <section class="api-auth">
+                    <h3>认证与权限</h3>
+                    <p>需要用户认证 (<code class="code-snippet">model.CheckAuth</code>)。</p>
+                    <p>需要管理员权限 (<code class="code-snippet">model.CheckAdminRole</code>)。</p>
+                    <p>接口会检查只读模式 (<code class="code-snippet">model.CheckReadonly</code>)，在只读模式下无法进行设置更改。</p>
+                </section>
+
+                <section class="api-description">
+                    <h3>接口描述</h3>
+                    <p>用于设置思源笔记中代码片段的全局启用状态。通过此接口可以统一控制所有自定义 CSS 和 JavaScript 代码片段是否生效。</p>
+                    <p>此操作会修改 <code>conf.json</code> 文件中的 <code>snippet</code> 部分的 <code>enabledCSS</code> 和 <code>enabledJS</code> 字段。</p>
+                    <p><strong>注意:</strong> 此接口仅控制全局的启用/禁用开关。单个代码片段的添加、修改、删除和启用状态管理是通过 <a href="../snippet/setSnippet.html">/api/snippet/setSnippet</a> (管理列表) 和 <a href="../snippet/getSnippet.html">/api/snippet/getSnippet</a> (获取列表) 等接口完成的。</p>
+                </section>
+
+                <section class="api-request">
+                    <h3>请求体 (Request Body)</h3>
+                    <p>请求体为一个 JSON 对象，代表全局的代码片段启用配置 (<code>conf.Snpt</code>)。</p>
+                    <table class="param-table">
+                        <thead>
+                            <tr>
+                                <th>参数</th>
+                                <th>类型</th>
+                                <th>必需</th>
+                                <th>描述</th>
+                                <th>默认值 (来自 <code>NewSnpt()</code>)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>enabledCSS</code></td>
+                                <td>boolean</td>
+                                <td>是</td>
+                                <td>是否全局启用所有自定义 CSS 代码片段。</td>
+                                <td><code>true</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>enabledJS</code></td>
+                                <td>boolean</td>
+                                <td>是</td>
+                                <td>是否全局启用所有自定义 JavaScript 代码片段。</td>
+                                <td><code>true</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="code-example-block">
+                        <p><strong>请求体示例 (JSON):</strong></p>
+                        <pre><code class="language-json">
+{
+    "enabledCSS": true,
+    "enabledJS": false // 例如，保持 CSS 启用，但禁用 JS
+}
+                        </code></pre>
+                    </div>
+                </section>
+
+                <section class="api-response">
+                    <h3>响应体 (Response Body)</h3>
+                    <p>响应体为标准的思源笔记 API 返回结构：</p>
+                    <pre><code class="language-json">
+{
+    "code": 0,
+    "msg": "",
+    "data": {
+        "enabledCSS": true,
+        "enabledJS": false
+    }
+}
+                    </code></pre>
+                    <p>其中：</p>
+                    <ul>
+                        <li><code>code</code>: 错误码，<code class="code-snippet">0</code> 表示成功。</li>
+                        <li><code>msg</code>: 错误信息，成功时为空字符串。</li>
+                        <li><code>data</code>: 成功时，返回更新后的 <code>conf.Snpt</code> 对象，包含当前的全局启用状态。</li>
+                    </ul>
+                </section>
+
+                <section class="api-example">
+                    <h3>接口调用示例 (JavaScript)</h3>
+                    <div class="code-example-block">
+                        <button class="copy-code-btn">复制代码</button>
+                        <pre><code class="language-javascript">
+async function updateGlobalSnippetSettings(enableCSS, enableJS) {
+    const settings = {
+        enabledCSS: enableCSS,
+        enabledJS: enableJS
+    };
+
+    try {
+        const response = await fetch('/api/setting/setSnippet', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // 'Authorization': 'Token YOUR_API_TOKEN' // 如果API Token已设置
+            },
+            body: JSON.stringify(settings)
+        });
+        const result = await response.json();
+
+        if (result.code === 0) {
+            console.log('全局代码片段启用状态更新成功:', result.data);
+            alert(`CSS 片段: ${result.data.enabledCSS}, JS 片段: ${result.data.enabledJS}`);
+        } else {
+            console.error('更新失败:', result.msg);
+            alert('更新失败: ' + result.msg);
+        }
+    } catch (error) {
+        console.error('请求 /api/setting/setSnippet 失败:', error);
+        alert('请求失败: ' + error);
+    }
+}
+
+// 示例调用：启用 CSS，禁用 JS
+// updateGlobalSnippetSettings(true, false);
+
+// 示例调用：全部启用
+// updateGlobalSnippetSettings(true, true);
+                        </code></pre>
+                    </div>
+                </section>
+
+                <section class="api-test-area">
+                    <h3>在线测试</h3>
+                    <p>你可以使用下面的表单来测试此 API。建议先通过 <a href="../system/getConf.html">/api/system/getConf</a> 获取当前配置，查看 <code>snippet</code> 部分的当前值。</p>
+                    <form id="setSnippetConfForm">
+                        <div class="form-group">
+                            <label for="snippetEnableCSS">全局启用 CSS 片段:</label>
+                            <input type="checkbox" id="snippetEnableCSS" checked>
+                        </div>
+                        <div class="form-group">
+                            <label for="snippetEnableJS">全局启用 JS 片段:</label>
+                            <input type="checkbox" id="snippetEnableJS" checked>
+                        </div>
+                        <button type="button" onclick="loadCurrentSnippetConf()">加载当前配置</button>
+                        <button type="submit">发送请求</button>
+                    </form>
+                    <div class="response-output" id="responseOutput"></div>
+                </section>
+            </article>
+        </main>
+        <footer>
+            <p>&copy; 2023-2025 思源笔记. All rights reserved.</p>
+        </footer>
+    </div>
+    <script src="../js/script.js"></script>
+    <script>
+        async function loadCurrentSnippetConf() {
+            const outputDiv = document.getElementById('responseOutput');
+            outputDiv.innerHTML = '<p>正在加载当前 Snippet 配置...</p>';
+            try {
+                const response = await fetch('/api/system/getConf');
+                const result = await response.json();
+                if (result.code === 0 && result.data && result.data.conf && result.data.conf.snippet) {
+                    document.getElementById('snippetEnableCSS').checked = result.data.conf.snippet.enabledCSS;
+                    document.getElementById('snippetEnableJS').checked = result.data.conf.snippet.enabledJS;
+                    outputDiv.innerHTML = '<p class="success">当前 Snippet 配置已加载到表单中。</p>';
+                } else {
+                    outputDiv.innerHTML = `<p class="error">无法获取当前 Snippet 配置: ${result.msg || '未知错误'}</p>`;
+                }
+            } catch (error) {
+                outputDiv.innerHTML = `<p class="error">加载配置请求失败: ${error}</p>`;
+            }
+        }
+
+        document.getElementById('setSnippetConfForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const outputDiv = document.getElementById('responseOutput');
+            const requestBody = {
+                enabledCSS: document.getElementById('snippetEnableCSS').checked,
+                enabledJS: document.getElementById('snippetEnableJS').checked
+            };
+
+            outputDiv.innerHTML = '<p>正在发送请求...</p>';
+
+            try {
+                const response = await fetch('/api/setting/setSnippet', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                const result = await response.json();
+                displayResponse(outputDiv, result);
+            } catch (error) {
+                outputDiv.innerHTML = `<p class="error">请求失败: ${error}</p>`;
+            }
+        });
+    </script>
+</body>
+</html> 

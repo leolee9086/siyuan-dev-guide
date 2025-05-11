@@ -1,0 +1,112 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/import/importStdMd">
+    <title>导入标准 Markdown - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../pages/import.html" class="back-link">← 返回 Import API 列表</a>
+    <h1>导入标准 Markdown</h1>
+    <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/import.go#L170" target="_blank" class="github-link">在 GitHub 上查看源码</a>
+
+    <p class="endpoint">POST /api/import/importStdMd</p>
+
+    <h2>描述</h2>
+    <p>从本地文件系统导入标准的 Markdown 文件（<code>.md</code>）或包含 Markdown 文件的文件夹到指定的笔记本和路径下。导入时会自动将 <code>.md</code> 文件转换为思源笔记的 <code>.sy</code> 格式。</p>
+
+    <h2>请求参数</h2>
+    <p>请求体需要是 JSON 格式。</p>
+    <table>
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+                <th>必需</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>notebook</code></td>
+                <td><code>string</code></td>
+                <td>目标笔记本的 ID。</td>
+                <td>是</td>
+            </tr>
+            <tr>
+                <td><code>localPath</code></td>
+                <td><code>string</code></td>
+                <td>要导入的本地 Markdown 文件或文件夹的绝对路径。</td>
+                <td>是</td>
+            </tr>
+            <tr>
+                <td><code>toPath</code></td>
+                <td><code>string</code></td>
+                <td>导入到目标笔记本内的路径（相对于笔记本根目录）。例如 <code>/imported-markdown/</code>。</td>
+                <td>是</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>响应结果</h2>
+    <p>响应体是 JSON 格式。<code>code</code> 为 0 表示成功。导入过程可能是异步的，API 成功返回仅代表开始处理。</p>
+    <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": null
+}
+    </code></pre>
+    <p>如果请求处理或导入过程中出错（例如路径不存在、文件无读取权限、转换失败等），<code>code</code> 会是 -1，并包含错误信息。</p>
+
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<div class="test-area">
+        <h3>在线测试</h3>
+        <p>由于此 API 需要访问本地文件系统路径，存在权限和安全风险，不建议在此处直接测试。请通过思源笔记的导入功能或使用具有相应权限的脚本/工具进行操作。</p>
+        <form id="api-test-form" class="disabled-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记中的" 设置-关于"中查看api="" token"="" disabled="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/import/importStdMd" readonly="" disabled="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly="" disabled="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-params">请求参数 (JSON):</label>
+                <textarea id="api-params" disabled="">{
+    "notebook": "目标笔记本ID",
+    "localPath": "/path/to/your/markdown/file_or_folder",
+    "toPath": "/导入目标路径/"
+}</textarea>
+            </div>
+
+            <button type="submit" class="btn" disabled="">发送请求 (已禁用)</button>
+        </form>
+
+        <div id="api-result" class="result"></div>
+        <script>
+            document.getElementById('api-test-form').addEventListener('submit', function(event) {
+                event.preventDefault();
+                alert('此 API 涉及本地文件路径访问，已禁用在线测试功能。');
+            });
+        </script>
+    </div>
+
+    <footer>
+        <p>思源笔记 API 文档</p>
+    </footer>
+    <script src="../api-tester.js"></script>
+
+ </body></html>

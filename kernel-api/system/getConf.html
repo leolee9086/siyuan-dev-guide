@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/system/getConf">
+    <title>获取应用配置 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../common/css/styles.css">
+</head>
+<body>
+    <header class="api-header">
+        <h1>获取应用配置 (getConf)</h1>
+        <nav>
+            <a href="../index.html">首页</a> |
+            <a href="index.html">System API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/system.go" target="_blank">GitHub Source (api/system.go)</a>
+        </nav>
+        <div class="endpoint-container">
+            <span class="endpoint">POST /api/system/getConf</span>
+        </div>
+    </header>
+    <main>
+        <section id="description">
+            <h2>接口描述</h2>
+            <p>此 API 端点 <code>POST /api/system/getConf</code> 用于获取当前思源笔记应用的全局配置信息。</p>
+            <p>返回的配置信息是经过脱敏处理的（通过 <code>model.GetMaskedConf()</code>），并且会根据调用者的角色（是否为管理员）进一步隐藏敏感字段（通过 <code>model.HideConfSecret()</code>）。</p>
+            <p>此接口通常在应用启动时由前端调用，以初始化客户端的配置状态。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>此 API 不需要任何功能性的请求参数。发送一个空的 JSON 对象 <code>{}</code> 即可。</p>
+            <p><strong>请求示例 (空JSON对象):</strong></p>
+            <pre><code class="language-json">{}</code></pre>
+        </section>
+
+        <section id="response-body">
+            <h2>响应体</h2>
+            <p>响应体是一个 JSON 对象，包含以下字段：</p>
+            <ul>
+                <li><code>code</code> (number): 状态码，0 表示成功。</li>
+                <li><code>msg</code> (string): 状态信息。</li>
+                <li><code>data</code> (object): 包含实际数据的对象，结构如下：
+                    <ul>
+                        <li><code>conf</code> (object): 脱敏后的全局配置对象 (对应 `model.AppConf` 结构，但部分字段可能被隐藏或置空)。其具体内容庞大，涵盖编辑器、外观、同步、系统设置等多个方面。</li>
+                        <li><code>start</code> (boolean): 一个布尔值，通常表示应用是否处于刚启动、UI尚未完全加载的状态 (其值为 <code>!util.IsUILoaded</code>)。</li>
+                        <li><code>isPublish</code> (boolean): 一个布尔值，指示当前环境是否为只读的发布模式。</li>
+                    </ul>
+                </li>
+            </ul>
+            <p><strong>成功响应示例 (部分字段):</strong></p>
+            <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": {
+        "conf": {
+            "appearance": {
+                "lang": "zh_CN",
+                "theme": "daylight",
+                // ... 其他外观配置 (部分敏感信息可能已脱敏)
+            },
+            "editor": {
+                "fontSize": 16,
+                // ... 其他编辑器配置
+            },
+            "sync": {
+                "enabled": false,
+                "provider": 0,
+                "stat": "未开启云端同步服务"
+                // ... 其他同步配置 (敏感信息如 token, key 等会被隐藏)
+            },
+            // ... 更多其他配置项
+            "readOnly": false // 根据实际情况，如果是发布模式或非管理员，部分字段会被设为只读或隐藏
+        },
+        "start": false, // 通常在UI加载后为 false
+        "isPublish": false // 是否为发布模式
+    }
+}</code></pre>
+            <p><strong>注意:</strong> 响应中 <code>conf</code> 对象的具体字段和值会根据服务器配置和调用者权限动态变化，尤其是敏感信息（如认证密钥、API Token等）会被隐藏或屏蔽。</p>
+        </section>
+
+        <section id="authentication">
+            <h2>认证与授权</h2>
+            <p>此 API 端点不需要显式的用户认证即可访问。但是，返回的配置详细程度取决于调用者的角色：</p>
+            <ul>
+                <li><strong>管理员角色:</strong> 可以获取到相对更完整的配置信息（但仍然是经过初步脱敏的）。</li>
+                <li><strong>非管理员角色 (包括匿名访问):</strong> 获取到的配置信息会经过更严格的脱敏处理，许多敏感字段将被隐藏或置空。</li>
+            </ul>
+        </section>
+
+        <section id="notes">
+            <h2>备注</h2>
+            <ul>
+                <li>返回的 <code>conf</code> 对象是思源笔记运行的核心配置，了解其结构有助于理解应用的各项功能设置。</li>
+                <li>由于配置对象的复杂性和动态性，建议开发者在调试时直接观察实际返回的 JSON 数据。</li>
+            </ul>
+        </section>
+
+        <div class="test-area">
+            <h2>在线测试</h2>
+            <p>您可以使用下面的按钮来测试此 API。观察返回的 <code>conf</code> 对象，并注意其内容可能因您的登录状态和权限而有所不同。</p>
+            <form id="getConfForm">
+                <button type="button" onclick="sendRequest('getConfForm', '/api/system/getConf', 'POST', '{}')">发送请求</button>
+            </form>
+            <h3>响应:</h3>
+            <pre><code id="getConfResponse" class="language-json">点击发送请求查看响应</code></pre>
+        </div>
+    </main>
+    <blockquote>
+        <p>感谢您对思源笔记的关注与支持！</p>
+        <p><a href="https://afdian.com/a/leolee9086?tab=feed" target="_blank">在爱发电上赞助我们</a></p>
+    </blockquote>
+    <footer>
+        <p>&copy; 2024 <a href="https://b3log.org/siyuan">思源笔记 B3log.org</a>. All rights reserved.</p>
+    </footer>
+    <script src="../common/js/api-tester.js"></script>
+    <script src="../common/js/theme-toggle.js"></script>
+</body>
+</html> 

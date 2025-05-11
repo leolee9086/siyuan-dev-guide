@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创建笔记本 (createNotebook)</title>
+    <link rel="stylesheet" href="../common/css/styles.css">
+    <link rel="stylesheet" href="../common/css/prism.css">
+</head>
+<body>
+    <header class="api-header">
+        <h1>创建笔记本 (createNotebook)</h1>
+        <p class="endpoint-container">
+            <span class="method post">POST</span>
+            <span class="endpoint">/api/notebook/createNotebook</span>
+        </p>
+        <nav class="nav-links">
+            <a href="#description">接口描述</a>
+            <a href="#request-parameters">请求参数</a>
+            <a href="#response-body">响应体</a>
+            <a href="#example-request">请求示例</a>
+            <a href="#example-response">响应示例</a>
+            <a href="#error-codes">错误码</a>
+            <a href="#source-code">源码定位</a>
+            <a href="../index.html" class="back-to-index">返回分类索引</a>
+            <a href="../../index.html" class="back-to-main-index">返回总索引</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="description">
+            <h2>接口描述</h2>
+            <p>本接口用于创建一个新的笔记本。</p>
+            <p>创建笔记本后，该笔记本会自动挂载并立即可用。系统会在数据目录下创建一个以唯一ID命名的文件夹作为笔记本的存储位置。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体为一个 JSON 对象，包含以下字段：</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>参数名</th>
+                        <th>类型</th>
+                        <th>必需</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>name</code></td>
+                        <td>string</td>
+                        <td>是</td>
+                        <td>新笔记本的名称。如果为空，则使用默认名称"未命名笔记本"。名称长度不能超过512个字符。</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="response-body">
+            <h2>响应体</h2>
+            <p>成功时，响应体为一个 JSON 对象，包含以下字段：</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>参数名</th>
+                        <th>类型</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>code</code></td>
+                        <td>number</td>
+                        <td>状态码，0 表示成功。</td>
+                    </tr>
+                    <tr>
+                        <td><code>msg</code></td>
+                        <td>string</td>
+                        <td>错误信息，成功时为空字符串。</td>
+                    </tr>
+                    <tr>
+                        <td><code>data</code></td>
+                        <td>object</td>
+                        <td>返回数据，包含已创建的笔记本对象。</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>其中，<code>data.notebook</code> 包含以下字段：</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>字段名</th>
+                        <th>类型</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>id</code></td>
+                        <td>string</td>
+                        <td>笔记本 ID，格式为以数字和字母组成的唯一标识符</td>
+                    </tr>
+                    <tr>
+                        <td><code>name</code></td>
+                        <td>string</td>
+                        <td>笔记本名称</td>
+                    </tr>
+                    <tr>
+                        <td><code>icon</code></td>
+                        <td>string</td>
+                        <td>笔记本图标（Emoji）</td>
+                    </tr>
+                    <tr>
+                        <td><code>sort</code></td>
+                        <td>number</td>
+                        <td>笔记本排序序号</td>
+                    </tr>
+                    <tr>
+                        <td><code>closed</code></td>
+                        <td>boolean</td>
+                        <td>笔记本是否关闭，新创建的笔记本为 false</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="example-request">
+            <h2>请求示例</h2>
+            <pre><code class="language-json">
+{
+  "name": "我的新笔记本"
+}
+            </code></pre>
+        </section>
+
+        <section id="example-response">
+            <h2>响应示例</h2>
+            <p>成功响应：</p>
+            <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "notebook": {
+      "id": "20250509113347-abcdefg",
+      "name": "我的新笔记本",
+      "icon": "📒",
+      "sort": 6,
+      "closed": false
+    }
+  }
+}
+            </code></pre>
+            <p>失败响应（名称过长）：</p>
+            <pre><code class="language-json">
+{
+  "code": -1,
+  "msg": "名称过长",
+  "data": null
+}
+            </code></pre>
+        </section>
+
+        <section id="error-codes">
+            <h2>错误码</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>错误码</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>0</code></td>
+                        <td>成功</td>
+                    </tr>
+                    <tr>
+                        <td><code>-1</code></td>
+                        <td>失败，可能原因包括：名称过长（超过512个字符）、文件系统错误等</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="source-code">
+            <h2>源码定位</h2>
+            <p>后端实现相关的核心逻辑可以在以下文件中找到：</p>
+            <ul>
+                <li>路由定义：<code>siyuan/kernel/api/router.go</code>（路由 <code>/api/notebook/createNotebook</code>）</li>
+                <li>API 处理函数：<code>siyuan/kernel/api/notebook.go</code>（函数 <code>createNotebook</code>）</li>
+                <li>模型层实现：<code>siyuan/kernel/model/mount.go</code>（函数 <code>CreateBox</code>）</li>
+            </ul>
+            <p>创建笔记本时，系统会执行以下主要操作：</p>
+            <ol>
+                <li>清理名称中的无效字符</li>
+                <li>检查名称长度（≤ 512个字符）</li>
+                <li>生成唯一ID</li>
+                <li>在数据目录下创建对应的文件夹</li>
+                <li>创建并保存笔记本配置文件</li>
+                <li>将笔记本加载到内存中</li>
+                <li>发送广播事件通知前端</li>
+            </ol>
+        </section>
+
+        <section class="test-area">
+            <h2>在线测试</h2>
+            <p><strong>警告</strong>：此操作会实际创建一个新的笔记本，请谨慎使用。</p>
+            <p>请在下方输入请求 JSON，然后点击"发送请求"按钮。</p>
+            <textarea id="request-payload" rows="7" placeholder='{
+  "name": "我的新笔记本"
+}'></textarea>
+            <button id="send-request-btn">发送请求</button>
+            <h3>响应:</h3>
+            <pre><code id="response-output" class="language-json"></code></pre>
+        </section>
+    </main>
+
+    <blockquote class="important-note">
+        <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+        <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+    </blockquote>
+
+    <footer>
+        <p>&copy; 2024 社区贡献者们. <a href="https://github.com/siyuan-note/siyuan-kernelApi-docs">本文档源码</a></p>
+    </footer>
+    <script src="../common/js/prism.js"></script>
+    <script src="../common/js/api-tester.js"></script>
+</body>
+</html> 

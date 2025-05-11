@@ -1,0 +1,197 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>setAttributeViewBlockAttr - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+    
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/av/setAttributeViewBlockAttr</span>
+    </div>
+    
+    <h1>setAttributeViewBlockAttr</h1>
+
+    <div class="github-source">
+        <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/av.go" target="_blank" title="查看源文件">源文件 (GitHub)</a>
+    </div>
+
+    <div class="auth-tags">
+        <span class="chip auth-required">需要认证</span>
+        <span class="chip admin-required">需要管理员权限</span>
+        <span class="chip readonly-required">需要写权限</span>
+    </div>
+    
+    <h2>接口描述</h2>
+    <p>更新属性视图 (Attribute View) 中指定块（行）的某个属性（单元格）的值。</p>
+    
+    <h2>请求参数</h2>
+    <table class="param-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>必选</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>avID</td>
+                <td>string</td>
+                <td><span class="required">是</span></td>
+                <td>属性视图的 ID。</td>
+            </tr>
+            <tr>
+                <td>keyID</td>
+                <td>string</td>
+                <td><span class="required">是</span></td>
+                <td>要修改值的列 (Key) 的 ID。</td>
+            </tr>
+            <tr>
+                <td>rowID</td>
+                <td>string</td>
+                <td><span class="required">是</span></td>
+                <td>要修改值的行 (Row) 的 ID，通常是关联块的 ID。</td>
+            </tr>
+             <tr>
+                <td>cellID</td>
+                <td>string</td>
+                <td><span class="required">是</span></td>
+                <td>要修改值的单元格 (Cell) 的 ID。尽管可以通过 rowID 和 keyID 推断，但 API 仍要求显式传入。</td>
+            </tr>
+             <tr>
+                <td>value</td>
+                <td>any</td>
+                <td><span class="required">是</span></td>
+                <td>要设置的新值。值的类型应与列定义的类型兼容。例如，对于数字列应传入 number，对于日期列应传入符合格式的 string 或 timestamp 等。</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <h2>返回值</h2>
+    <p>成功时返回更新后该行关联块的属性视图键信息，并通知前端刷新对应的属性视图。</p>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>code</td><td>number</td><td>返回码，0 表示成功</td></tr>
+            <tr><td>msg</td><td>string</td><td>返回信息</td></tr>
+            <tr>
+                <td>data</td>
+                <td>object</td>
+                <td>返回更新后该行关联块的属性视图键信息（具体结构待确认，可能是一个包含键值对的对象）。</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="example-tab">请求示例</div>
+            <div class="tab" data-target="response-tab">返回示例 (可能结构)</div>
+        </div>
+        
+        <div id="example-tab" class="tab-content active">
+            <h3>请求示例 (更新文本列)</h3>
+            <pre><code>POST /api/av/setAttributeViewBlockAttr
+Content-Type: application/json
+Authorization: Token your-api-token
+
+{
+  "avID": "20231027150000-abcdefgh",
+  "keyID": "key-text-1",
+  "rowID": "20231029110000-blockid1",
+  "cellID": "20231029110000-blockid1___key-text-1", 
+  "value": "新的文本值"
+}</code></pre>
+            <h3>请求示例 (更新数字列)</h3>
+            <pre><code>POST /api/av/setAttributeViewBlockAttr
+Content-Type: application/json
+Authorization: Token your-api-token
+
+{
+  "avID": "20231027150000-abcdefgh",
+  "keyID": "key-number-1",
+  "rowID": "20231029110000-blockid2",
+  "cellID": "20231029110000-blockid2___key-number-1", 
+  "value": 123.45
+}</code></pre>
+        </div>
+        
+        <div id="response-tab" class="tab-content">
+            <h3>返回示例 (可能结构)</h3>
+            <pre><code>{
+  "code": 0,
+  "msg": "",
+  "data": {
+    // 返回的数据结构与 model.UpdateAttributeViewCell 的返回值相关
+    // 可能包含更新后的块属性信息，例如：
+    "key-text-1": {
+        "type": "text",
+        "text": {
+            "content": "新的文本值"
+        }
+    }
+    // ... 其他属性键
+  }
+}</code></pre>
+        </div>
+    </div>
+    
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<div class="test-area">
+        <h3>在线测试</h3>
+        <form id="api-test-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记中的" 设置-关于"中查看api="" token"="">
+            </div>
+            
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/av/setAttributeViewBlockAttr">
+            </div>
+            
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly="">
+            </div>
+            
+            <div class="form-group">
+                <label for="api-params">请求参数 (JSON):</label>
+                <textarea id="api-params">{
+  "avID": "",
+  "keyID": "",
+  "rowID": "",
+  "cellID": "",
+  "value": null
+}</textarea>
+            </div>
+            
+            <button type="submit" class="btn">发送请求</button>
+        </form>
+        
+        <div id="api-result" class="result"></div>
+    </div>
+    
+    <div class="nav-links">
+        <a href="../index.html">返回首页</a>
+        <a href="../pages/av.html">返回 AttributeView API</a>
+        <a href="searchAttributeViewRelationKey.html">上一个接口: 搜索属性视图关系列</a>
+        <a href="setDatabaseBlockView.html">下一个接口: 设置数据库块视图</a> <!-- 基于 check_docs.js 输出 -->
+    </div>
+    
+    <script src="../api-tester.js"></script>
+
+ </body></html>

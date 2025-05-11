@@ -1,0 +1,92 @@
+<!DOCTYPE html><html><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export SY - SiYuan API Documentation</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../index.html">返回首页</a>
+    <h1>Export SY</h1>
+    <p><strong>POST</strong> <code>/api/export/exportSY</code></p>
+    <p>导出指定的 .sy 文件。</p>
+
+    <h2>请求参数</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>是否必需</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>id</td>
+                <td>string</td>
+                <td>是</td>
+                <td>要导出的 .sy 文件 ID。</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>返回数据</h2>
+    <p>成功导出的 .sy 文件路径。</p>
+    <pre><code class="language-json">
+{
+    "code": 0,
+    "msg": "",
+    "data": {
+        "path": "string" // 导出的 .sy 文件路径
+    }
+}
+    </code></pre>
+
+    <h2>请求示例</h2>
+    <pre><code class="language-bash">
+curl -X POST \
+  http://127.0.0.1:6806/api/export/exportSY \
+  -H 'Authorization: Token YOUR_API_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "id": "20230101..." // .sy 文件 ID
+  }'
+    </code></pre>
+
+    <h2>响应示例</h2>
+    <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "path": "/path/to/exported/file.sy"
+  }
+}
+    </code></pre>
+
+    <h2>在线测试</h2>
+    <div class="api-tester">
+        <input type="text" id="apiToken" placeholder="API Token"><br>
+        <input type="text" id="endpoint" value="/api/export/exportSY" disabled=""><br>
+        <input type="text" id="method" value="POST" disabled=""><br>
+        <textarea id="params" placeholder="{&quot;id&quot;: &quot;YOUR_SY_FILE_ID&quot;}"></textarea><br>
+        <button onclick="sendRequest()">发送请求</button>
+        <pre id="response"></pre>
+    </div>
+
+    <h2>导航</h2>
+    <ul>
+        <li><a href="../index.html">返回首页</a></li>
+        <li><a href="exportNotebook.html">上一个接口：/api/export/exportNotebook</a></li>
+        <li><a href="exportTemplate.html">下一个接口：/api/export/exportTemplate</a></li>
+        <li><a href="../pages/export.html">返回 Export API</a></li>
+    </ul>
+
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+
+ </body></html>

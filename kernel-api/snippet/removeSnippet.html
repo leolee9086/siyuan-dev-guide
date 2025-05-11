@@ -1,0 +1,110 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/snippet/removeSnippet"> <!-- API Endpoint Meta Tag -->
+    <title>删除代码片段 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <h1>删除代码片段 (removeSnippet)</h1>
+        <nav>
+            <a href="../index.html">首页</a> | 
+            <a href="index.html">Snippet API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/snippet.go#L118" target="_blank">GitHub Source</a>
+        </nav>
+    </header>
+    <main>
+        <section id="description">
+            <h2>功能描述</h2>
+            <p>此 API 端点 <code>POST /api/snippet/removeSnippet</code> 用于删除一个指定的代码片段 (Snippet)。</p>
+            <p>删除操作是永久性的，请谨慎使用。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体必须是 JSON 格式，包含以下参数：</p>
+            <ul>
+                <li><code>id</code> (string): <strong>必填</strong>。要删除的代码片段的唯一 ID。</li>
+            </ul>
+            <p><strong>请求示例:</strong></p>
+            <pre><code class="language-json">
+{
+  "id": "20230115100000-abcdefg"
+}
+            </code></pre>
+        </section>
+
+        <section id="response-format">
+            <h2>响应结果</h2>
+            <p>成功的请求将返回一个 JSON 对象，<code>code</code> 为 0。与许多删除操作不同，此 API 的 <code>data</code> 字段会包含<strong>被成功删除的代码片段对象</strong>。</p>
+            <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "id": "20230115100000-abcdefg", // 被删除片段的 ID
+    "name": "My Custom CSS",       // 被删除片段的名称
+    "type": "css",                // 被删除片段的类型
+    "content": "body { font-family: sans-serif; }", // 被删除片段的内容
+    "enabled": true               // 被删除片段的启用状态
+  }
+}
+            </code></pre>
+            <p>如果操作失败（例如 ID 不存在、无权限等），将返回非 0 的 <code>code</code> 和具体的错误信息 <code>msg</code>，此时 <code>data</code> 为 <code>null</code>。</p>
+            <pre><code class="language-json">
+{
+  "code": -1,
+  "msg": "remove snippet failed: snippet not found", // 示例错误信息
+  "data": null
+}
+            </code></pre>
+        </section>
+
+        <section id="online-testing">
+            <h2>在线测试</h2>
+            <p>您可以在下方输入要删除的代码片段 ID 进行在线测试。<strong>请注意：此操作将永久删除指定的代码片段，请谨慎操作！</strong></p>
+            <div class="api-tester">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="请输入您的 API Token (可选)" value=""><br>
+
+                <label for="endpoint">Endpoint:</label>
+                <input type="text" id="endpoint" value="/api/snippet/removeSnippet" readonly=""><br>
+
+                <label for="method">Method:</label>
+                <input type="text" id="method" value="POST" readonly=""><br>
+
+                <label for="params">Parameters (JSON):</label><br>
+                <textarea id="params" rows="4" placeholder="{
+  &quot;id&quot;: &quot;&quot;
+}"></textarea><br>
+
+                <button onclick="confirmSendRequest('确定要删除这个代码片段吗？此操作不可恢复！')">发送请求</button>
+
+                <h3>响应结果:</h3>
+                <pre id="response-output"></pre>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>思源笔记 API 文档 | 最后更新时间：<span id="last-updated"></span></p>
+    </footer>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        // 更新最后更新时间
+        document.getElementById('last-updated').textContent = new Date().toLocaleString();
+
+        // 添加确认弹窗逻辑
+        function confirmSendRequest(message) {
+            if (confirm(message)) {
+                sendRequest();
+            }
+        }
+    </script>
+
+ </body></html>

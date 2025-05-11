@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>思源笔记 API 文档</title>
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3, h4 {
+            color: #1e88e5;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .sidebar {
+            width: 300px;
+            padding-right: 20px;
+        }
+        .content {
+            flex: 1;
+            min-width: 300px;
+        }
+        .api-group {
+            margin-bottom: 20px;
+        }
+        .api-group h3 {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        .api-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        .api-list li {
+            margin-bottom: 8px;
+        }
+        .api-list a {
+            text-decoration: none;
+            color: #1e88e5;
+            padding: 5px;
+            display: block;
+            border-radius: 3px;
+        }
+        .api-list a:hover {
+            background-color: #f5f5f5;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+        }
+        .description {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>思源笔记 API 文档</h1>
+    
+    <div class="description">
+        <p>本文档提供思源笔记的API接口说明，可用于开发第三方应用或插件。</p>
+        <p>API基础URL: <code>http://127.0.0.1:6806</code></p>
+        <p>请求方法：除非特别说明，均使用 POST 方法</p>
+        <p>认证方式：在 <code>设置 - 关于</code> 中查看 API token，在请求标头中添加 <code>Authorization: Token xxx</code></p>
+    </div>
+    
+    <div class="container">
+        <div class="sidebar">
+            <h2>API 分类</h2>
+            
+            <div class="api-group">
+                <h3><a href="system/index.html" class="group-link">系统 System</a></h3>
+                <p class="group-desc">系统级API，包括版本信息、时间、配置等</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="notebook/index.html" class="group-link">笔记本 Notebook</a></h3>
+                <p class="group-desc">笔记本管理API，包括创建、重命名、配置等</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="block/index.html" class="group-link">块 Block</a></h3>
+                <p class="group-desc">内容块操作API，包括创建、修改、删除等</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="filetree/index.html" class="group-link">文档 Document</a></h3>
+                <p class="group-desc">文档操作API，包括创建、重命名、移动等</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="attr/index.html" class="group-link">属性 Attribute</a></h3>
+                <p class="group-desc">属性API，包括设置、获取块属性等</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="query/index.html" class="group-link">SQL 查询</a></h3>
+                <p class="group-desc">SQL查询API，用于执行数据库查询</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="template/index.html" class="group-link">模板 Template</a></h3>
+                <p class="group-desc">模板API，用于渲染模板</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="file/index.html" class="group-link">文件 File</a></h3>
+                <p class="group-desc">文件操作API，包括获取、写入、删除等</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="export/index.html" class="group-link">导出 Export</a></h3>
+                <p class="group-desc">导出API，用于导出内容为不同格式</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="asset/index.html" class="group-link">资源 Asset</a></h3>
+                <p class="group-desc">资源API，用于管理上传的资源文件</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="convert/index.html" class="group-link">转换 Convert</a></h3>
+                <p class="group-desc">转换API，用于内容格式转换</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="notification/index.html" class="group-link">通知 Notification</a></h3>
+                <p class="group-desc">通知API，用于显示消息提示</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="network/index.html" class="group-link">网络 Network</a></h3>
+                <p class="group-desc">网络API，包括代理、回显等</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="storage/index.html" class="group-link">存储 Storage</a></h3>
+                <p class="group-desc">存储API，用于本地存储管理</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="account/index.html" class="group-link">账户 Account</a></h3>
+                <p class="group-desc">账户API，用于登录、注销等</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="search/index.html" class="group-link">搜索 Search</a></h3>
+                <p class="group-desc">搜索API，用于内容检索</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="format/index.html" class="group-link">格式化 Format</a></h3>
+                <p class="group-desc">格式化API，包括自动空格、资源处理等</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="history/index.html" class="group-link">历史 History</a></h3>
+                <p class="group-desc">历史API，用于管理历史记录</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="outline/index.html" class="group-link">大纲 Outline</a></h3>
+                <p class="group-desc">大纲API，用于文档大纲处理</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="bookmark/index.html" class="group-link">书签 Bookmark</a></h3>
+                <p class="group-desc">书签API，用于书签管理</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="tag/index.html" class="group-link">标签 Tag</a></h3>
+                <p class="group-desc">标签API，用于标签管理</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="lute/index.html" class="group-link">富文本 Lute</a></h3>
+                <p class="group-desc">富文本处理API，用于内容渲染</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="ref/index.html" class="group-link">引用 Ref</a></h3>
+                <p class="group-desc">引用和反链API，用于引用管理</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="sync/index.html" class="group-link">同步 Sync</a></h3>
+                <p class="group-desc">数据同步API，用于数据云同步</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="av/index.html" class="group-link">属性视图 AttributeView</a></h3>
+                <p class="group-desc">属性视图API，用于管理属性视图</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="ai/index.html" class="group-link">人工智能 AI</a></h3>
+                <p class="group-desc">AI相关API，用于AI功能</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="bazaar/index.html" class="group-link">集市 Bazaar</a></h3>
+                <p class="group-desc">集市API，用于插件和主题市场</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="graph/index.html" class="group-link">图谱 Graph</a></h3>
+                <p class="group-desc">图谱API，用于关系图谱管理</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="import/index.html" class="group-link">导入 Import</a></h3>
+                <p class="group-desc">导入API，用于导入外部数据</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="broadcast/index.html" class="group-link">广播 Broadcast</a></h3>
+                <p class="group-desc">广播API，用于管理 WebSocket 广播频道</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="cloud/index.html" class="group-link">云端 Cloud</a></h3>
+                <p class="group-desc">云端API，用于云端同步和存储相关</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="clipboard/index.html" class="group-link">剪贴板 Clipboard</a></h3>
+                <p class="group-desc">剪贴板API，用于与系统剪贴板交互</p>
+            </div>
+
+            <div class="api-group">
+                <h3><a href="extension/index.html" class="group-link">扩展 Extension</a></h3>
+                <p class="group-desc">与思源笔记扩展交互相关的 API</p>
+            </div>
+
+            <div class="api-group">
+                <h3><a href="petal/index.html" class="group-link">挂件 Petal</a></h3>
+                <p class="group-desc">与思源笔记挂件（Petals）相关的 API</p>
+            </div>
+
+            <div class="api-group">
+                <h3><a href="snippet/index.html" class="group-link">代码片段 Snippet</a></h3>
+                <p class="group-desc">代码片段（Snippets）管理API</p>
+            </div>
+
+            <div class="api-group">
+                <h3><a href="sqlite/index.html" class="group-link">数据库 SQLite</a></h3>
+                <p class="group-desc">直接操作数据库（SQLite）的 API</p>
+            </div>
+            
+            <div class="api-group">
+                <h3><a href="transactions/index.html" class="group-link">事务 Transactions</a></h3>
+                <p class="group-desc">事务操作相关 API</p>
+            </div>
+
+            <div class="api-group">
+                <h3><a href="ui/index.html" class="group-link">界面 UI</a></h3>
+                <p class="group-desc">用户界面（UI）控制相关 API</p>
+            </div>
+
+             <div class="api-group">
+                 <h3><a href="riff/index.html" class="group-link">闪卡 Riff</a></h3>
+                 <p class="group-desc">闪卡（Riff Card）相关 API</p>
+             </div>
+
+             <div class="api-group">
+                 <h3><a href="archive/index.html" class="group-link">归档 Archive</a></h3>
+                 <p class="group-desc">归档相关 API</p>
+             </div>
+             
+             <div class="api-group">
+                 <h3><a href="icon/index.html" class="group-link">图标 Icon</a></h3>
+                 <p class="group-desc">图标相关 API</p>
+             </div>
+
+             <div class="api-group">
+                 <h3><a href="inbox/index.html" class="group-link">收集箱 Inbox</a></h3>
+                 <p class="group-desc">收集箱相关 API</p>
+             </div>
+             
+             <div class="api-group">
+                 <h3><a href="repo/index.html" class="group-link">仓库 Repo</a></h3>
+                 <p class="group-desc">仓库（版本控制）相关 API</p>
+             </div>
+
+        </div>
+        
+        <div class="content">
+            <h2>简介</h2>
+            <p>思源笔记是一款本地优先的个人知识管理系统，支持完全离线使用，同时也支持端到端加密同步。</p>
+            <p>通过API，你可以：</p>
+            <ul>
+                <li>创建、修改、删除笔记和笔记本</li>
+                <li>插入、更新和删除内容块</li>
+                <li>查询数据库内容</li>
+                <li>导出各种格式的文档</li>
+                <li>设置和获取块属性</li>
+                <li>管理文件和资源</li>
+                <li>更多其他功能...</li>
+            </ul>
+            
+            <h2>开始使用</h2>
+            <p>选择左侧的API类别和具体接口，查看详细的API文档。每个API页面包含：</p>
+            <ul>
+                <li>接口描述</li>
+                <li>请求参数</li>
+                <li>返回值</li>
+                <li>示例代码</li>
+                <li>在线测试功能（需要开启思源笔记才能使用）</li>
+            </ul>
+            
+            <h2>认证</h2>
+            <pre><code>// 在请求头中添加认证信息
+fetch('http://127.0.0.1:6806/api/system/currentTime', {
+    method: 'POST',
+    headers: {
+        'Authorization': 'Token your-api-token',
+        'Content-Type': 'application/json'
+    }
+})
+.then(response => response.json())
+.then(data => console.log(data));</code></pre>
+        </div>
+    </div>
+
+    <script>
+        // 可以添加交互式功能的JavaScript代码
+    </script>
+</body>
+</html> 

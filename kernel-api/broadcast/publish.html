@@ -1,0 +1,202 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-CN">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发布广播消息 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../../styles.css">
+</head>
+<body>
+    <a href="../../index.html" class="home-link">← 返回首页</a>
+    
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/broadcast/publish</span>
+    </div>
+    
+    <h1>发布广播消息</h1>
+    
+    <div class="auth-tags">
+        <span class="chip">需要认证</span>
+        <span class="chip">管理员权限</span>
+    </div>
+    
+    <h2>接口描述</h2>
+    <p>此 API 用于向一个或多个指定的广播频道推送（发布）多条消息。消息可以是字符串类型，也可以是二进制文件类型。</p>
+    
+    <h2>请求格式</h2>
+    <p><code>multipart/form-data</code></p>
+    <p>请求体通过 multipart/form-data 格式传递，其中每个表单字段的 <code>name</code> 对应一个频道名称，<code>value</code> 可以是该频道的字符串消息，或者是一个文件作为二进制消息。</p>
+    
+    <h3>请求参数 (form-data)</h3>
+    <ul>
+        <li><strong>频道名称 (动态表单字段名)</strong>: <code>string</code>
+            <p>表单的每个字段名代表一个频道名称。例如，如果要向名为 "updates" 的频道发送消息，则表单字段名应为 "updates"。</p>
+        </li>
+        <li><strong>消息内容 (表单字段值)</strong>: <code>string</code> 或 <code>File</code>
+            <p>对应于频道名称字段的值：</p>
+            <ul>
+                <li>如果是字符串消息，则直接提供字符串内容。一个频道可以接收多个同名字段的字符串消息。</li>
+                <li>如果是二进制消息，则上传一个文件。文件的原始文件名会被用作消息的一个标识。一个频道可以接收多个文件。</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>返回值</h2>
+    <p>返回一个 JSON 对象，其中 <code>data.results</code> 数组包含了每条消息的发送结果。</p>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>code</td><td>number</td><td>返回码，0 表示整体请求成功处理（具体每条消息的成功与否见 `data.results`）</td></tr>
+            <tr><td>msg</td><td>string</td><td>错误信息，成功时为空字符串</td></tr>
+            <tr><td>data</td><td>object</td><td>包含发送结果的对象</td></tr>
+            <tr><td>&nbsp;&nbsp;↳ results</td><td>array</td><td>一个数组，每个元素代表一条消息的发送结果</td></tr>
+            <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;↳ code</td><td>number</td><td>单条消息的发送结果码，0 表示成功</td></tr>
+            <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;↳ msg</td><td>string</td><td>单条消息的发送错误信息</td></tr>
+            <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;↳ channel</td><td>object</td><td>目标频道信息</td></tr>
+            <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ name</td><td>string</td><td>频道名称</td></tr>
+            <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ count</td><td>number</td><td>当前频道的订阅者数量</td></tr>
+            <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;↳ message</td><td>object</td><td>已发送消息的描述信息</td></tr>
+            <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ type</td><td>string</td><td>消息类型，"string" 或 "binary"</td></tr>
+            <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ size</td><td>number</td><td>消息大小 (字节)</td></tr>
+            <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ filename</td><td>string</td><td>文件名 (如果是二进制消息)</td></tr>
+        </tbody>
+    </table>
+    
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="example-tab">请求示例</div>
+            <div class="tab" data-target="response-tab">返回示例</div>
+        </div>
+        
+        <div id="example-tab" class="tab-content active">
+            <h3>请求示例</h3>
+            <p>向频道 "channel1" 发送字符串 "hello" 和 "world"，并向 "channel2" 发送文件 "data.bin":</p>
+            <pre><code>
+POST /api/broadcast/publish HTTP/1.1
+Host: 127.0.0.1:6806
+Authorization: YOUR_API_TOKEN_HERE (如果需要)
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="channel1"
+
+hello
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="channel1"
+
+world
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="channel2"; filename="data.bin"
+Content-Type: application/octet-stream
+
+(这里是 data.bin 文件的二进制内容)
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+</code></pre>
+        </div>
+        
+        <div id="response-tab" class="tab-content">
+            <h3>返回示例 (成功)</h3>
+            <pre><code>
+{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "results": [
+      {
+        "code": 0,
+        "msg": "",
+        "channel": {
+          "name": "channel1",
+          "count": 1
+        },
+        "message": {
+          "type": "string",
+          "size": 5,
+          "filename": ""
+        }
+      },
+      {
+        "code": 0,
+        "msg": "",
+        "channel": {
+          "name": "channel1",
+          "count": 1
+        },
+        "message": {
+          "type": "string",
+          "size": 5,
+          "filename": ""
+        }
+      },
+      {
+        "code": 0,
+        "msg": "",
+        "channel": {
+          "name": "channel2",
+          "count": 1
+        },
+        "message": {
+          "type": "binary",
+          "size": 12345, // 假设文件大小为 12345 字节
+          "filename": "data.bin"
+        }
+      }
+    ]
+  }
+}
+</code></pre>
+        </div>
+    </div>
+    
+    <h2>备注</h2>
+    <ul>
+        <li>如果目标频道不存在，但存在活动的 SSE (Server-Sent Events) 订阅者，则会自动创建该频道。</li>
+        <li>响应中的 <code>channel.count</code> 反映的是消息发送操作执行时，该频道的订阅者数量。</li>
+    </ul>
+    
+    <blockquote class="important-note">
+        <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    
+<p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p></blockquote>
+    <div class="test-area">
+        <h3>在线测试</h3>
+        <form id="api-test-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记中的 设置-关于 中查看 API Token">
+            </div>
+            
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/broadcast/publish" readonly="">
+            </div>
+            
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly="">
+            </div>
+            
+            <div class="form-group">
+                <label for="api-params-note">请求参数 (Multipart/Form-Data):</label>
+                <div id="api-params-note" style="background-color: #f8f9fa; border: 1px solid #dee2e6; padding: 10px; border-radius: .25rem; font-size: 0.9em;">
+                    此 API 使用 <code>multipart/form-data</code> 格式提交数据。<br>
+                    表单字段的 <code>name</code> 是频道名称，<code>value</code> 是字符串消息或上传的文件。<br>
+                    例如: 字段名 <code>channel1</code> 对应值 <code>Hello</code> (字符串消息)；或字段名 <code>channel1</code> 对应一个文件 <code>myfile.txt</code> (二进制消息)。<br>
+                    <strong>注意:</strong> 由于 <code>multipart/form-data</code> (特别是文件上传) 的复杂性，此简易测试器可能无法直接构造此类请求。建议使用 Postman、curl 或自定义脚本进行测试。
+                </div>
+            </div>
+            
+            <button type="submit" class="btn">发送请求 </button>
+        </form>
+        
+        <div id="api-result" class="result"></div>
+    </div>
+    <script src="../../api-tester.js"></script>
+
+
+</body></html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>批量删除 LocalStorage 条目 (removeLocalStorageVals)</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>批量删除 LocalStorage 条目 (removeLocalStorageVals)</h1>
+        <p class="api-path">POST /api/storage/removeLocalStorageVals</p>
+
+        <h2 id="认证与权限">认证与权限</h2>
+        <p>需要身份验证 (通过 API Token)。</p>
+        <p>需要管理员权限。</p>
+        <p>此操作在只读模式下不可用。</p>
+
+        <h2 id="接口描述">接口描述</h2>
+        <p>此接口用于从思源笔记的内部 LocalStorage (实际存储在 <code>data/storage/local-storage.json</code> 文件中) 批量删除一个或多个键值对。</p>
+        <p>成功删除后，会广播一个 <code>removeLocalStorageVals</code> 事件，通知其他客户端更新其 LocalStorage 状态 (不包括发起请求的客户端)。</p>
+
+        <h2 id="请求体参数">请求体参数</h2>
+        <p>请求体为一个 JSON 对象，包含以下字段：</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>参数</th>
+                    <th>类型</th>
+                    <th>必需</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>keys</code></td>
+                    <td>string[]</td>
+                    <td>是</td>
+                    <td>一个包含要删除的键名 (string) 的数组。</td>
+                </tr>
+                <tr>
+                    <td><code>app</code></td>
+                    <td>string</td>
+                    <td>是</td>
+                    <td>发起请求的应用/客户端的唯一标识符。用于事件广播时的排除。</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="请求体示例">请求体示例</h2>
+        <pre><code class="language-json">
+{
+    "keys": ["myPluginSettings_v1", "someOldUserData", "temp_flag"],
+    "app": "plugin-copilot-xxxxxxxxxxxx"
+}
+        </code></pre>
+
+        <h2 id="响应体说明">响应体说明</h2>
+        <p>标准的思源笔记 API 响应结构：</p>
+        <pre><code class="language-json">
+{
+    "code": 0,     // 0 表示成功，非 0 表示失败
+    "msg": "",      // 成功时为空，失败时为错误信息
+    "data": null   // 成功时固定为 null
+}
+        </code></pre>
+        <p>如果指定的键在 LocalStorage 中原本就不存在，操作通常也会被视为成功。错误主要指文件读写失败等情况。</p>
+
+        <h2 id="cURL调用示例">cURL 调用示例</h2>
+        <pre><code class="language-bash">
+curl -X POST \
+  http://127.0.0.1:6806/api/storage/removeLocalStorageVals \
+  -H 'Authorization: Token YOUR_API_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "keys": ["key_to_delete1", "key_to_delete2"],
+    "app": "my_js_script_instance_123"
+  }'
+        </code></pre>
+
+        <h2 id="JavaScript调用示例">JavaScript 调用示例</h2>
+        <pre><code class="language-javascript">
+async function removeLocalStorageItems(keysArray, appId) {
+    const requestBody = {
+        keys: keysArray,
+        app: appId
+    };
+
+    try {
+        const response = await fetch('/api/storage/removeLocalStorageVals', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token YOUR_API_TOKEN' // 如果配置了API Token
+            },
+            body: JSON.stringify(requestBody)
+        });
+        const result = await response.json();
+
+        if (result.code === 0) {
+            console.log(`LocalStorage 条目 (${keysArray.join(", ")}) 删除成功。`);
+            document.getElementById('apiResponse').textContent = `条目 (${keysArray.join(", ")}) 删除成功。`;
+        } else {
+            console.error('删除失败:', result.msg);
+            document.getElementById('apiResponse').textContent = `错误 ${result.code}: ${result.msg}`;
+        }
+        return result;
+    } catch (error) {
+        console.error('请求过程中发生错误:', error);
+        document.getElementById('apiResponse').textContent = `请求错误: ${error.message}`;
+        return null;
+    }
+}
+
+// 示例：
+// const keysToRemove = ['plugin_setting_A', 'user_preference_X'];
+// const currentAppId = 'my-plugin-unique-id-' + Date.now(); // 确保 app ID 唯一性以避免自己收到广播
+// removeLocalStorageItems(keysToRemove, currentAppId);
+        </code></pre>
+        
+        <h2 id="在线测试">在线测试</h2>
+        <form id="removeLocalStorageForm">
+            <div class="form-group">
+                <label for="localStorageKeysToRemove">要删除的 Keys (逗号分隔):</label>
+                <input type="text" id="localStorageKeysToRemove" required placeholder="例如: key1,key2,key3">
+            </div>
+            <div class="form-group">
+                <label for="localStorageAppId">App ID:</label>
+                <input type="text" id="localStorageAppId" required placeholder="例如: my-app-instance">
+            </div>
+            <button type="submit">发送删除请求</button>
+        </form>
+        <h3>响应:</h3>
+        <pre id="apiResponse">此处将显示API的响应结果。</pre>
+        
+        <p style="margin-top: 20px;"><strong>提示:</strong> 你可以先使用 <a href="./getLocalStorage.html">/api/storage/getLocalStorage</a> (如果已存在文档) 或通过开发者工具查看当前的 LocalStorage 内容，以确定要删除的键。</p>
+
+    </div>
+    <script src="../js/scripts.js"></script>
+    <script>
+        // 填充 Token
+        const storedToken = localStorage.getItem('siyuanApiToken');
+        if (storedToken) {
+            const jsExampleElement = document.querySelector('code.language-javascript');
+            if (jsExampleElement) {
+                jsExampleElement.textContent = jsExampleElement.textContent.replace('YOUR_API_TOKEN', storedToken);
+            }
+            const curlExampleElement = document.querySelector('code.language-bash');
+            if (curlExampleElement) {
+                curlExampleElement.textContent = curlExampleElement.textContent.replace('YOUR_API_TOKEN', storedToken);
+            }
+        }
+
+        document.getElementById('removeLocalStorageForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const keysString = document.getElementById('localStorageKeysToRemove').value;
+            const appId = document.getElementById('localStorageAppId').value;
+            
+            if (!keysString || !appId) {
+                document.getElementById('apiResponse').textContent = '请输入所有必填字段。';
+                return;
+            }
+            const keysArray = keysString.split(',').map(key => key.trim()).filter(key => key !== "");
+            if (keysArray.length === 0) {
+                 document.getElementById('apiResponse').textContent = '请输入至少一个有效的 Key。';
+                return;
+            }
+            await removeLocalStorageItems(keysArray, appId);
+        });
+    </script>
+</body>
+</html> 

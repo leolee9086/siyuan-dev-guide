@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>获取速记 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+    
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/inbox/getShorthand</span>
+    </div>
+    
+    <h1>获取速记</h1>
+    
+    <!-- Authentication status chip will be added here once confirmed -->
+    
+    <h2>接口描述</h2>
+    <p>根据指定的 ID 获取单个云端速记 (Cloud Shorthand) 的详细信息。</p>
+    
+    <h2>请求参数 (JSON Body)</h2>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+                <th>是否必需</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>id</td>
+                <td>string</td>
+                <td>要获取的速记的唯一标识符。</td>
+                <td>是</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <h2>返回值 (JSON)</h2>
+    <p>返回一个包含速记数据的 JSON 对象。</p>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>code</td>
+                <td>number</td>
+                <td>返回码，<code>0</code> 表示成功，其他值表示失败。</td>
+            </tr>
+            <tr>
+                <td>msg</td>
+                <td>string</td>
+                <td>错误信息，成功时为空字符串。</td>
+            </tr>
+            <tr>
+                <td>data</td>
+                <td>object</td>
+                <td>包含速记详细信息的对象。具体字段结构取决于 <code>CloudShorthand</code> 数据模型，通常会包含速记的创建时间、更新时间、内容等。</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="example-tab">请求示例</div>
+            <div class="tab" data-target="response-tab">返回示例</div>
+        </div>
+        
+        <div id="example-tab" class="tab-content active">
+            <h3>请求示例</h3>
+            <pre><code>POST /api/inbox/getShorthand HTTP/1.1
+Host: 127.0.0.1:6806
+Content-Type: application/json
+Authorization: Token YOUR_API_TOKEN_IF_REQUIRED
+
+{
+  "id": "xxxxxxxxxxxxxx"
+}</code></pre>
+        </div>
+        
+        <div id="response-tab" class="tab-content">
+            <h3>成功返回示例</h3>
+            <pre><code>{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "id": "xxxxxxxxxxxxxx",
+    "content": "这是一条速记内容示例。",
+    "hPath": "/思源笔记/速记本",
+    "box": "20230101000000-abcdefg",
+    "created": "2023-10-26T10:00:00Z",
+    "updated": "2023-10-26T10:05:00Z"
+    // ... 其他可能的字段
+  }
+}</code></pre>
+            <h3>失败返回示例 (例如 ID 不存在)</h3>
+            <pre><code>{
+  "code": 1,
+  "msg": "Error: shorthand not found for id xxxxxxxxxxxxxx",
+  "data": null
+}</code></pre>
+        </div>
+    </div>
+    
+    <blockquote class="important-note">
+        <p><strong>[织的笔记]</strong></p>
+        <ul>
+            <li>此接口的认证要求待确认 (通过检查 <code>router.go</code> 或通用 API 指南)。请求示例中暂时加入了 <code>Authorization</code> 头作为通用提醒。</li>
+            <li><code>data</code> 对象中返回的具体字段依赖于后端 <code>model.CloudShorthand</code> 的定义，上述示例仅为推测的常见字段。</li>
+        </ul>
+        <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+        <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+    </blockquote>
+
+ </body>
+</html> 

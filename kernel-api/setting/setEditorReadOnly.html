@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>/api/setting/setEditorReadOnly - Siyuan Kernel API</title>
+    <link rel="stylesheet" href="../style.min.css?20231218">
+    <link rel="icon" type="image/png" href="../favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="../favicon-16x16.png" sizes="16x16">
+</head>
+<body>
+<div class="markdown-body">
+    <h1>/api/setting/setEditorReadOnly</h1>
+    <p>快速设置或切换编辑器的只读状态。</p>
+    <p>此 API 直接修改全局配置中 <code>conf.Editor.ReadOnly</code> 的值并保存。与 <code>/api/setting/setEditor</code> 不同，后者需要传递完整的 <code>conf.Editor</code> 对象，而此 API 更轻量，仅用于切换只读状态。</p>
+    <p><span class="warning">该 API 需要进行身份验证，请在请求头中包含 <code>Authorization</code> 字段，并确保用户角色为管理员且非只读模式。</span></p>
+    <h2>请求</h2>
+    <p><code>POST</code></p>
+    <h3>参数 (JSON Body)</h3>
+    <ul>
+        <li><code>readonly</code>: <code>boolean</code> - 设置编辑器是否为只读模式。<code>true</code> 为只读，<code>false</code> 为可编辑。</li>
+    </ul>
+    <div class="language-json HIDE">
+    <pre class="highlight"><code><span class="p">{</span>
+    <span class="nt">"readonly"</span><span class="p">:</span> <span class="kc">true</span>
+<span class="p">}</span>
+</code></pre>
+    </div>
+    <h3>示例 CURL</h3>
+    <div class="language-shell HIDE">
+    <pre class="highlight"><code>curl -X POST -H "Content-Type: application/json" -H "Authorization: Token YOUR_API_TOKEN" -d '{
+    "readonly": true
+}' http://127.0.0.1:6806/api/setting/setEditorReadOnly
+</code></pre>
+    </div>
+    <h2>响应</h2>
+    <p>操作成功时，通常返回如下：</p>
+    <div class="language-json HIDE">
+    <pre class="highlight"><code><span class="p">{</span>
+    <span class="nt">"code"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">"msg"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+    <span class="nt">"data"</span><span class="p">:</span> <span class="kc">null</span>
+<span class="p">}</span>
+</code></pre>
+    </div>
+    <p>如果操作失败，<code>code</code> 将是非零值，<code>msg</code> 中会包含错误信息。</p>
+
+    <h2>在线测试</h2>
+    <p>
+        <label>API Token: (从思源"设置-关于"中获取)<br>
+            <input type="text" id="apiTokenInput" style="width: 100%;" placeholder="粘贴你的 API Token">
+        </label>
+    </p>
+    <p>
+        <label>只读状态 (readonly): 
+            <select id="readonlyValue">
+                <option value="true" selected>true (只读)</option>
+                <option value="false">false (可编辑)</option>
+            </select>
+        </label>
+    </p>
+    <p><button onclick="testAPI()">发送请求</button></p>
+    <p><label>响应:<br><textarea id="responseArea" rows="10" style="width: 100%;" readonly></textarea></label></p>
+</div>
+<script>
+    let currentToken = localStorage.getItem('siyuanUserToken') || '';
+    if (currentToken) {
+        document.getElementById('apiTokenInput').value = currentToken;
+    }
+
+    document.getElementById('apiTokenInput').addEventListener('input', (event) => {
+        currentToken = event.target.value;
+        localStorage.setItem('siyuanUserToken', currentToken);
+    });
+
+    function getToken() {
+        const storedToken = localStorage.getItem('siyuanUserToken');
+        const inputToken = document.getElementById('apiTokenInput').value;
+        if (inputToken && inputToken !== storedToken) {
+            localStorage.setItem('siyuanUserToken', inputToken);
+            return inputToken;
+        }
+        return storedToken || inputToken;
+    }
+
+    async function testAPI() {
+        const token = getToken();
+        if (!token) {
+            document.getElementById('responseArea').value = '错误：API Token 未设置。';
+            return;
+        }
+
+        const readonlyValue = document.getElementById('readonlyValue').value === 'true';
+        const requestBody = { readonly: readonlyValue };
+
+        try {
+            const response = await fetch('/api/setting/setEditorReadOnly', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Token ' + token
+                },
+                body: JSON.stringify(requestBody)
+            });
+            const data = await response.json();
+            document.getElementById('responseArea').value = JSON.stringify(data, null, 2);
+        } catch (error) {
+            document.getElementById('responseArea').value = '请求失败：\n' + error;
+        }
+    }
+</script>
+<script src="../style.js?20231218"></script>
+</body>
+</html> 

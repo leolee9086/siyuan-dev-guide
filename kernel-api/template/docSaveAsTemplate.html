@@ -1,0 +1,128 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文档保存为模板 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/template/docSaveAsTemplate</span>
+    </div>
+
+    <h1>文档保存为模板</h1>
+
+    <div class="github-source">
+        <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/template.go" target="_blank" title="查看源文件">源文件 (GitHub)</a>
+    </div>
+
+    <div class="auth-tags">
+        <span class="chip auth-required">需要认证</span>
+        <span class="chip admin-required">需要管理员权限</span>
+    </div>
+
+    <h2>接口描述</h2>
+    <p>将指定文档的内容保存为一个新的模板文件。</p>
+
+    <h2>请求参数</h2>
+    <table class="param-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>必选</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>id</td>
+                <td>string</td>
+                <td><span class="required">是</span></td>
+                <td>要作为模板保存的文档块 ID。</td>
+            </tr>
+            <tr>
+                <td>name</td>
+                <td>string</td>
+                <td><span class="required">是</span></td>
+                <td>新模板的文件名（不含扩展名，例如 `my-template`）。</td>
+            </tr>
+            <tr>
+                <td>content</td>
+                <td>string</td>
+                <td><span class="required">是</span></td>
+                <td>要保存为模板的内容（通常是文档的 Markdown 文本）。</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>返回值</h2>
+    <p>操作成功时不返回 `data`。</p>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>code</td><td>number</td><td>返回码，0表示成功</td></tr>
+            <tr><td>msg</td><td>string</td><td>返回信息</td></tr>
+            <tr><td>data</td><td>null</td><td>成功时为 null</td></tr>
+        </tbody>
+    </table>
+
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="example-tab">请求示例 (cURL)</div>
+            <div class="tab" data-target="response-tab">返回示例</div>
+        </div>
+
+        <div id="example-tab" class="tab-content active">
+            <h3>请求示例 (cURL)</h3>
+            <pre><code>curl -X POST \
+  http://127.0.0.1:6806/api/template/docSaveAsTemplate \
+  -H 'Authorization: Token YOUR_API_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "id": "20231027163000-docid",
+    "name": "我的文档模板",
+    "content": "# 这是一个模板\n\n模板内容..."
+}'</code></pre>
+        </div>
+
+        <div id="response-tab" class="tab-content">
+            <h3>返回示例</h3>
+            <pre><code>{
+    "code": 0,
+    "msg": "",
+    "data": null
+}</code></pre>
+        </div>
+    </div>
+
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<div class="test-area">
+        <h3>在线测试</h3>
+        <textarea class="request-body" placeholder="输入请求体 JSON，例如：{ &quot;id&quot;: &quot;doc-block-id&quot;, &quot;name&quot;: &quot;template-name&quot;, &quot;content&quot;: &quot;template content&quot; }"></textarea>
+        <button class="test-button">发送请求</button>
+        <div class="response-output"></div>
+    </div>
+
+    <div class="nav-links">
+        <a href="../index.html">返回首页</a>
+        <a href="../pages/template.html">返回 Template API</a>
+        <a href="renderSprig.html">上一个接口: 使用Sprig渲染模板</a>
+        <a href="../file/getFile.html">下一个接口: 获取文件</a>
+    </div>
+
+    <script src="../api-tester.js"></script>
+
+ </body></html>

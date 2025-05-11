@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创建/更新搜索替换条件 (setCriterion)</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>创建/更新搜索替换条件 (setCriterion)</h1>
+        <p class="api-path">POST /api/storage/setCriterion</p>
+
+        <h2 id="认证与权限">认证与权限</h2>
+        <p>需要身份验证 (通过 API Token)。</p>
+        <p>需要管理员权限。</p>
+        <p>此操作在只读模式下不可用。</p>
+
+        <h2 id="接口描述">接口描述</h2>
+        <p>此接口用于创建或更新一个用户自定义的搜索/替换条件。这些条件保存在 <code>data/storage/criteria.json</code> 文件中。</p>
+        <p>如果请求中提供的 <code>criterion.name</code> 已存在，则会更新现有的同名条件；如果不存在，则会创建一个新的条件。</p>
+        <p>条件的名称 (<code>criterion.name</code>) 不能为空。</p>
+
+        <h2 id="请求体参数">请求体参数</h2>
+        <p>请求体为一个 JSON 对象，包含一个名为 <code>criterion</code> 的键，其值为一个完整的搜索/替换条件对象 (<code>model.Criterion</code>)。</p>
+        <pre><code class="language-json">
+{
+    "criterion": {
+        "name": "我的条件", // string, 必需
+        "sort": 0,          // int, 0:块类型, 1:创建升, 2:创建降, 3:更新升, 4:更新降, 5:内容顺序
+        "group": 0,         // int, 0:不分组, 1:按文档
+        "hasReplace": false,// boolean
+        "method": 0,        // int, 0:文本, 1:查询语法, 2:SQL, 3:正则
+        "hPath": "",         // string, 人类可读路径 (如 "笔记本/文档")
+        "idPath": [],       // string[], 块ID路径 (如 ["boxid", "docid"])
+        "k": "搜索词",      // string, 搜索关键词
+        "r": "替换词",      // string, 替换关键词 (if hasReplace is true)
+        "types": {          // CriterionTypes object, 搜索时应用的块类型过滤
+            "mathBlock": false,
+            "table": true,
+            "blockquote": false,
+            "superBlock": false,
+            "paragraph": true,
+            // ... 其他所有 CriterionTypes 中的布尔字段
+            "widgetBlock": false
+        },
+        "replaceTypes": null // CriterionReplaceTypes object or null (if hasReplace is false)
+                            // 如果 hasReplace 为 true, 则结构如下:
+        // "replaceTypes": {
+        //     "text": true,
+        //     "imgText": false,
+        //     // ... 其他所有 CriterionReplaceTypes 中的布尔字段
+        //     "htmlBlock": false
+        // }
+    }
+}
+        </code></pre>
+
+        <h3><code>Criterion</code> 对象详细说明:</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>字段名</th>
+                    <th>类型</th>
+                    <th>描述</th>
+                    <th>是否必需</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>name</td><td>string</td><td>条件名称</td><td>是</td></tr>
+                <tr><td>sort</td><td>int</td><td>排序方式 (0:块类型, 1:创建升, 2:创建降, 3:更新升, 4:更新降, 5:内容顺序)</td><td>否 (默认为0)</td></tr>
+                <tr><td>group</td><td>int</td><td>分组方式 (0:不分组, 1:按文档)</td><td>否 (默认为0)</td></tr>
+                <tr><td>hasReplace</td><td>boolean</td><td>是否有替换操作</td><td>否 (默认为false)</td></tr>
+                <tr><td>method</td><td>int</td><td>搜索方法 (0:文本, 1:查询语法, 2:SQL, 3:正则)</td><td>否 (默认为0)</td></tr>
+                <tr><td>hPath</td><td>string</td><td>人类可读的路径限制 (可选)</td><td>否</td></tr>
+                <tr><td>idPath</td><td>string[]</td><td>ID 路径限制 (可选)</td><td>否</td></tr>
+                <tr><td>k</td><td>string</td><td>搜索关键字</td><td>是 (逻辑上)</td></tr>
+                <tr><td>r</td><td>string</td><td>替换关键字 (如果 <code>hasReplace</code> 为 true)</td><td>条件性必需</td></tr>
+                <tr><td>types</td><td>object (CriterionTypes)</td><td>搜索时应用的块类型过滤。若为 null，则使用默认值 (通常全为false或true，需参照内核具体实现)</td><td>是</td></tr>
+                <tr><td>replaceTypes</td><td>object (CriterionReplaceTypes)</td><td>替换时应用的文本/块类型过滤。如果 <code>hasReplace</code> 为 false，此字段可为 null。</td><td>条件性必需</td></tr>
+            </tbody>
+        </table>
+        <p>关于 <code>CriterionTypes</code> 和 <code>CriterionReplaceTypes</code> 对象的具体字段，请参考 <a href="./getCriteria.html">/api/storage/getCriteria</a> 接口文档中的说明。</p>
+
+
+        <h2 id="响应体说明">响应体说明</h2>
+        <p>标准的思源笔记 API 响应结构：</p>
+        <pre><code class="language-json">
+{
+    "code": 0,     // 0 表示成功，非 0 表示失败
+    "msg": "",      // 成功时为空，失败时为错误信息 (例如 "Name cannot be empty")
+    "data": null   // 成功时固定为 null
+}
+        </code></pre>
+
+        <h2 id="cURL调用示例">cURL 调用示例</h2>
+        <pre><code class="language-bash">
+curl -X POST \
+  http://127.0.0.1:6806/api/storage/setCriterion \
+  -H 'Authorization: Token YOUR_API_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '
+{
+    "criterion": {
+        "name": "我的新搜索条件",
+        "sort": 0,
+        "group": 0,
+        "hasReplace": false,
+        "method": 1,
+        "hPath": "",
+        "idPath": [],
+        "k": "(important OR urgent) AND NOT done",
+        "r": "",
+        "types": {
+            "mathBlock": false, "table": false, "blockquote": false, "superBlock": false,
+            "paragraph": true, "document": true, "heading": true, "list": true,
+            "listItem": true, "codeBlock": false, "htmlBlock": false, "embedBlock": false,
+            "databaseBlock": false, "audioBlock": false, "videoBlock": false,
+            "iframeBlock": false, "widgetBlock": false
+        },
+        "replaceTypes": null
+    }
+}'
+        </code></pre>
+
+        <h2 id="JavaScript调用示例">JavaScript 调用示例</h2>
+        <pre><code class="language-javascript">
+async function setSiyuanCriterion(criterionObject) {
+    const requestBody = {
+        criterion: criterionObject
+    };
+
+    try {
+        const response = await fetch('/api/storage/setCriterion', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token YOUR_API_TOKEN' // 如果配置了API Token
+            },
+            body: JSON.stringify(requestBody)
+        });
+        const result = await response.json();
+
+        if (result.code === 0) {
+            console.log(`搜索/替换条件 "${criterionObject.name}" 设置成功。`);
+            document.getElementById('apiResponse').textContent = `条件 "${criterionObject.name}" 设置成功。`;
+        } else {
+            console.error(`设置条件 "${criterionObject.name}" 失败:`, result.msg);
+            document.getElementById('apiResponse').textContent = `错误 ${result.code}: ${result.msg}`;
+        }
+        return result;
+    } catch (error) {
+        console.error('请求过程中发生错误:', error);
+        document.getElementById('apiResponse').textContent = `请求错误: ${error.message}`;
+        return null;
+    }
+}
+
+// 示例：
+// const myCriterion = {
+//     name: "编程相关待办",
+//     sort: 1, // 按创建时间升序
+//     group: 0, // 不分组
+//     hasReplace: false,
+//     method: 1, // 查询语法
+//     k: "#coding AND待办",
+//     types: { /* ... 根据需要填充 ... document: true, paragraph: true, listItem: true */ },
+//     replaceTypes: null
+// };
+// setSiyuanCriterion(myCriterion);
+        </code></pre>
+        
+        <h2 id="在线测试">在线测试</h2>
+        <form id="setCriterionForm">
+            <div class="form-group">
+                <label for="criterionJson">Criterion JSON 对象:</label>
+                <textarea id="criterionJson" rows="15" required placeholder="在此处粘贴或编写完整的 criterion JSON 对象..."></textarea>
+            </div>
+            <button type="button" onclick="loadExampleCriterion()">加载示例</button>
+            <button type="submit">发送请求</button>
+        </form>
+        <h3>响应:</h3>
+        <pre id="apiResponse">此处将显示API的响应结果。</pre>
+
+    </div>
+    <script src="../js/scripts.js"></script>
+    <script>
+        // 填充 Token
+        const storedToken = localStorage.getItem('siyuanApiToken');
+        if (storedToken) {
+            const jsExampleElement = document.querySelector('code.language-javascript');
+            if (jsExampleElement) {
+                jsExampleElement.textContent = jsExampleElement.textContent.replace('YOUR_API_TOKEN', storedToken);
+            }
+            const curlExampleElement = document.querySelector('code.language-bash');
+            if (curlExampleElement) {
+                curlExampleElement.textContent = curlExampleElement.textContent.replace('YOUR_API_TOKEN', storedToken);
+            }
+        }
+        
+        function loadExampleCriterion() {
+            const exampleCriterion = {
+                name: "我的示例条件",
+                sort: 0,
+                group: 0,
+                hasReplace: false,
+                method: 1, // 查询语法
+                hPath: "",
+                idPath: [],
+                k: "思源笔记 AND (API OR 文档)",
+                r: "",
+                types: {
+                    mathBlock: false, table: true, blockquote: false, superBlock: false,
+                    paragraph: true, document: true, heading: true, list: true,
+                    listItem: true, codeBlock: true, htmlBlock: false, embedBlock: false,
+                    databaseBlock: false, audioBlock: false, videoBlock: false,
+                    iframeBlock: false, widgetBlock: false
+                },
+                replaceTypes: null
+            };
+            document.getElementById('criterionJson').value = JSON.stringify(exampleCriterion, null, 2);
+        }
+
+        document.getElementById('setCriterionForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const criterionJsonString = document.getElementById('criterionJson').value;
+            const outputDiv = document.getElementById('apiResponse');
+            let criterionObject;
+
+            if (!criterionJsonString) {
+                outputDiv.textContent = '请输入 Criterion JSON 对象。';
+                return;
+            }
+            try {
+                criterionObject = JSON.parse(criterionJsonString);
+            } catch (e) {
+                outputDiv.textContent = 'Criterion JSON 解析失败: ' + e.message;
+                return;
+            }
+            
+            if (!criterionObject.name) {
+                outputDiv.textContent = 'Criterion 对象中的 name 字段不能为空。';
+                return;
+            }
+
+            await setSiyuanCriterion(criterionObject);
+        });
+    </script>
+</body>
+</html> 

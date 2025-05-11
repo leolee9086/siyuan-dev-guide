@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>根据ID移动多个文档 (moveDocsByID)</title>
+    <link rel="stylesheet" href="../common/css/styles.css">
+    <link rel="stylesheet" href="../common/css/prism.css">
+</head>
+<body>
+    <header class="api-header">
+        <h1>根据ID移动多个文档 (moveDocsByID)</h1>
+        <p class="endpoint-container">
+            <span class="method post">POST</span>
+            <span class="endpoint">/api/filetree/moveDocsByID</span>
+        </p>
+        <nav class="nav-links">
+            <a href="#description">接口描述</a>
+            <a href="#request-parameters">请求参数</a>
+            <a href="#response-body">响应体</a>
+            <a href="#example-request">请求示例</a>
+            <a href="#example-response">响应示例</a>
+            <a href="#error-codes">错误码</a>
+            <a href="#source-code">源码定位</a>
+            <a href="../index.html" class="back-to-index">返回分类索引</a>
+            <a href="../../index.html" class="back-to-main-index">返回总索引</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="description">
+            <h2>接口描述</h2>
+            <p>本接口用于根据文档ID将多个文档移动到目标位置。与moveDocs接口不同，该接口使用文档ID来指定来源和目标，而不是路径。</p>
+            <p>移动文档时会保持文档的内容、属性和子文档关系，仅更改文档的位置。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体为一个 JSON 对象，包含以下字段：</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>参数名</th>
+                        <th>类型</th>
+                        <th>必需</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>fromIDs</code></td>
+                        <td>array</td>
+                        <td>是</td>
+                        <td>要移动的文档ID数组，例如 <code>["20210808180117-czj9bvb", "20200813125239-hbwpz87"]</code>。</td>
+                    </tr>
+                    <tr>
+                        <td><code>toID</code></td>
+                        <td>string</td>
+                        <td>是</td>
+                        <td>目标文档ID，例如 <code>20210210102319-m0ql889</code>。文档会被移动到该ID对应的文档所在位置。</td>
+                    </tr>
+                    <tr>
+                        <td><code>callback</code></td>
+                        <td>string</td>
+                        <td>否</td>
+                        <td>回调函数标识，用于操作完成后前端接收通知。</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="response-body">
+            <h2>响应体</h2>
+            <p>成功时，响应体为一个 JSON 对象，包含以下字段：</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>参数名</th>
+                        <th>类型</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>code</code></td>
+                        <td>number</td>
+                        <td>状态码，0 表示成功。</td>
+                    </tr>
+                    <tr>
+                        <td><code>msg</code></td>
+                        <td>string</td>
+                        <td>错误信息，成功时为空字符串。</td>
+                    </tr>
+                    <tr>
+                        <td><code>data</code></td>
+                        <td>null</td>
+                        <td>此接口无返回数据，成功时为 <code>null</code>。</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="example-request">
+            <h2>请求示例</h2>
+            <pre><code class="language-json">
+{
+  "fromIDs": [
+    "20200813125239-hbwpz87",
+    "20200822191536-rm6hwid"
+  ],
+  "toID": "20210210102319-m0ql889"
+}
+            </code></pre>
+        </section>
+
+        <section id="example-response">
+            <h2>响应示例</h2>
+            <p>成功响应：</p>
+            <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": null
+}
+            </code></pre>
+            <p>失败响应（ID不存在）：</p>
+            <pre><code class="language-json">
+{
+  "code": -1,
+  "msg": "加载文档树失败 id [20210210102319-xxxx]: 文档块不存在",
+  "data": {
+    "closeTimeout": 7000
+  }
+}
+            </code></pre>
+        </section>
+
+        <section id="error-codes">
+            <h2>错误码</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>错误码</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>0</code></td>
+                        <td>成功</td>
+                    </tr>
+                    <tr>
+                        <td><code>-1</code></td>
+                        <td>失败，可能原因包括：文档ID不存在、无权限等</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="source-code">
+            <h2>源码定位</h2>
+            <p>后端实现相关的核心逻辑可以在以下文件中找到：</p>
+            <ul>
+                <li>路由定义：<code>siyuan/kernel/api/router.go</code>（路由 <code>/api/filetree/moveDocsByID</code>）</li>
+                <li>API 处理函数：<code>siyuan/kernel/api/filetree.go</code>（函数 <code>moveDocsByID</code>）</li>
+                <li>模型层实现：<code>siyuan/kernel/model/file.go</code>（函数 <code>MoveDocs</code>）</li>
+            </ul>
+        </section>
+
+        <section class="test-area">
+            <h2>在线测试</h2>
+            <p><strong>警告</strong>：此操作会实际移动文档，请确保在测试环境操作或使用不重要的文档。</p>
+            <p>请在下方输入请求 JSON，然后点击"发送请求"按钮。</p>
+            <textarea id="request-payload" rows="12" placeholder='{
+  "fromIDs": [
+    "20200813125239-hbwpz87",
+    "20200822191536-rm6hwid"
+  ],
+  "toID": "20210210102319-m0ql889"
+}'></textarea>
+            <button id="send-request-btn">发送请求</button>
+            <h3>响应:</h3>
+            <pre><code id="response-output" class="language-json"></code></pre>
+        </section>
+    </main>
+
+    <blockquote class="important-note">
+        <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+        <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+    </blockquote>
+
+    <footer>
+        <p>&copy; 2024 社区贡献者们. <a href="https://github.com/siyuan-note/siyuan-kernelApi-docs">本文档源码</a></p>
+    </footer>
+    <script src="../common/js/prism.js"></script>
+    <script src="../common/js/api-tester.js"></script>
+</body>
+</html> 

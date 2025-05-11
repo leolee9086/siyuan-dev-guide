@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API: /api/setting/getPublish</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../script.js" defer></script>
+</head>
+<body>
+    <header>
+        <div class="logo_title">
+            <img src="../logo.png" alt="Logo" class="logo">
+            <h1>思源笔记 Kernel API</h1>
+        </div>
+        <nav>
+            <a href="https://b3log.org/siyuan" target="_blank">官网</a>
+            <a href="https://github.com/siyuan-note/siyuan" target="_blank">GitHub</a>
+            <a href="../index.html">API 索引</a>
+        </nav>
+    </header>
+    <main>
+        <div class="content">
+            <h1>/api/setting/getPublish</h1>
+            <p class="api-path">POST /api/setting/getPublish</p>
+
+            <div class="api-section">
+                <h2>认证状态</h2>
+                <p><span class="label auth">需要认证</span> <span class="label admin">需要管理员权限</span> <span class="label readonly">检查只读模式</span></p>
+                <p>此接口需要用户登录，并且当前用户必须拥有管理员权限。只读模式检查依然会执行，但对于获取配置信息的操作，通常不产生直接影响。</p>
+            </div>
+
+            <div class="api-section">
+                <h2>接口描述</h2>
+                <p>获取当前思源笔记的发布服务配置信息以及该服务正在运行的端口号。</p>
+                <p>调用此接口时，如果发布服务尚未初始化，系统会尝试进行初始化。成功后返回当前的发布配置详情和端口号。</p>
+            </div>
+
+            <div class="api-section">
+                <h2>请求体</h2>
+                <p>此接口不需要请求体。</p>
+            </div>
+
+            <div class="api-section">
+                <h2>响应体 (JSON)</h2>
+                <p>接口会返回一个标准的 JSON 对象，其 <code>data</code> 字段包含发布配置和端口信息：</p>
+                <pre><code class="language-json">
+{
+    "code": 0,
+    "msg": "",
+    "data": {
+        "port": 6807, // 发布服务运行的端口号
+        "publish": { // 完整的发布配置对象 (结构参考 conf.Publish)
+            "apiKey": "your-publish-api-key",
+            "enabled": true,
+            "servePath": "/publish/",
+            "cloudServePath": "",
+            "cname": "",
+            "cors": false,
+            "baiduAnalytics": "",
+            "googleAnalytics": "",
+            "umamiAnalytics": "",
+            "canonical": "",
+            "responseHeaders": {},
+            "customHTMLHead": "",
+            "customCSS": "",
+            "customJS": "",
+            "imageMaxSize": 2048,
+            "listSize": 20,
+            "sitemap": true,
+            "sitemapExcludeKeywords": [],
+            "slugBlockLimit": 0,
+            "slugUsePropertyKey": "",
+            "theme": "",
+            "themeMode": 0,
+            "themeLight": "",
+            "themeDark": "",
+            "webhooks": [],
+            "rss": true,
+            "rssTitle": "",
+            "rssDescription": "",
+            "rssItemCount": 20,
+            "rssFooter": "",
+            "rssFullText": false,
+            "docAllowList": "",
+            "docBlockAllowList": "",
+            "publishBlockCount": 0,
+            "publishFileCount": 0
+            // ... 其他可能的发布配置项
+        }
+    }
+}
+                </code></pre>
+                <ul>
+                    <li><code>code</code> (number): 返回码，<code>0</code> 表示成功，其他值表示失败。</li>
+                    <li><code>msg</code> (string): 返回消息，通常在失败时（如发布服务初始化失败）提供额外信息。</li>
+                    <li><code>data</code> (object): 包含发布信息的对象。
+                        <ul>
+                            <li><code>port</code> (number): 发布服务当前运行的端口号。</li>
+                            <li><code>publish</code> (object): 一个对象，包含了所有当前的发布配置项。其具体字段和结构对应于思源笔记内部的 `conf.Publish` 结构体。</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="api-section">
+                <h2>请求示例</h2>
+                <pre><code class="language-json">
+POST /api/setting/getPublish
+Host: 127.0.0.1:6806
+Content-Type: application/json
+Authorization: Token YOUR_API_TOKEN
+
+{}
+                </code></pre>
+                <p class="note">即使不需要请求体，也建议发送一个空的 JSON 对象 <code>{}</code>。</p>
+            </div>
+
+            <div class="api-section test-area">
+                <h2>在线测试</h2>
+                <p>服务器地址: <input type="text" id="serverAddr" value="http://127.0.0.1:6806"></p>
+                <p>API Token: <input type="text" id="apiToken" value=""></p>
+                <button onclick="sendRequest('/api/setting/getPublish', 'POST', true)">发送请求</button> <!-- true 表示不需要请求体 -->
+                <h3>响应:</h3>
+                <pre id="responseArea"></pre>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2024 B3log Team. All rights reserved.</p>
+        <p><a href="https://ld246.com/sponsor" target="_blank" class="sponsor-link">赞助我们</a></p>
+    </footer>
+</body>
+</html> 

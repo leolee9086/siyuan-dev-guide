@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>API: /api/sync/performBootSync - 执行启动时同步</title>
+    <link rel="stylesheet" href="../common.css">
+    <script src="../common.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>执行启动时同步</h1>
+        <p><strong>API Endpoint:</strong> <code>POST /api/sync/performBootSync</code></p>
+        <p><strong>认证:</strong> 需要登录 (<code>model.CheckAuth</code>)、管理员权限 (<code>model.CheckAdminRole</code>) 且非只读模式 (<code>model.CheckReadonly</code>)。</p>
+
+        <h2>功能描述</h2>
+        <p>此 API 用于触发一次"启动时同步"（Boot Sync）。这通常意味着从配置的云端存储服务拉取（下载）整个数据仓库，用于初始化或恢复数据。该操作会调用核心的 <code>model.BootSyncData()</code> 函数。</p>
+        <p>与 <code>/api/sync/getBootSync</code> 类似，实际的同步过程是异步的，此 API 调用会相对较快返回。其最终的同步状态和结果需要通过 WebSocket 事件 (如 <code>syncing</code>) 或后续调用 <code>/api/sync/getSyncInfo</code> 来确认。</p>
+        <p>API 会尝试返回一个即时状态码，该状态码来源于全局变量 <code>model.BootSyncSucc</code>，此变量由 <code>model.BootSyncData()</code> 函数在执行过程中更新。</p>
+        
+        <h2>请求</h2>
+        <p>此接口为 POST 请求，但不需要请求体。发送一个空的 JSON 对象 <code>{}</code> 或无内容的 POST 请求即可。</p>
+
+        <h2>响应</h2>
+        <p>服务器返回 HTTP 状态码 <code>200</code> 和一个 JSON 对象：</p>
+        <pre><code class="language-json">
+{
+    "code": -1, // 或 0, 或 1
+    "msg": "",
+    "data": null
+}
+        </code></pre>
+        <ul>
+            <li><code>code</code> (number): 表示尝试触发启动同步后的一个即时状态。
+                <ul>
+                    <li><code>-1</code>: 初始状态，可能表示 <code>model.BootSyncData</code> 尚未执行完成或其状态未被此 API 调用及时捕获。
+                    <li><code>0</code>: 表示 <code>model.BootSyncData</code> 内部逻辑在某次执行后将全局状态标记为"成功完成"。
+                    <li><code>1</code>: 表示 <code>model.BootSyncData</code> 内部逻辑在某次执行后将全局状态标记为"失败"。
+                </ul>
+                <p><strong>注意:</strong> 由于同步的异步特性，此 <code>code</code> 仅为触发后的即时指示，不代表同步操作已最终完成。实际结果需异步追踪。</p>
+            </li>
+            <li><code>msg</code> (string): 通常为空。如果 <code>model.BootSyncData</code> 内部遇到并设置了特定错误信息，可能会在此反映，但这不常见。</li>
+            <li><code>data</code> (object): 始终为 <code>null</code>。</li>
+        </ul>
+
+        <h2>与 <code>/api/sync/getBootSync</code> 的对比</h2>
+        <ul>
+            <li><code>/api/sync/getBootSync</code>: 接收 <code>app</code> 参数，明确通过 goroutine (<code>go model.BootSyncData()</code>) 异步启动同步，总是返回 <code>data: null</code>，不提供即时状态码。</li>
+            <li><code>/api/sync/performBootSync</code>: 不接收参数，直接调用 <code>model.BootSyncData()</code>，并尝试返回 <code>model.BootSyncSucc</code> 的当前值作为 <code>code</code>。</li>
+        </ul>
+        <p>两者都用于触发相同的核心启动同步逻辑 (<code>model.BootSyncData</code>)。</p>
+
+        <h2>在线测试</h2>
+        <div class="test-area">
+            <button type="button" onclick="performBootSyncRequest()">执行启动时同步</button>
+            <h3>响应:</h3>
+            <pre id="responseOutput">点击按钮发送请求</pre>
+        </div>
+
+        <script>
+            async function performBootSyncRequest() {
+                const outputElement = document.getElementById('responseOutput');
+                outputElement.textContent = '正在请求...';
+                try {
+                    const response = await fetch('/api/sync/performBootSync', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // 'Authorization': 'Token YOUR_API_TOKEN' // 如果需要，请取消注释并替换
+                        },
+                        body: JSON.stringify({})
+                    });
+                    const result = await response.json();
+                    outputElement.textContent = JSON.stringify(result, null, 2);
+                } catch (error) {
+                    outputElement.textContent = '请求失败: ' + error.message;
+                    console.error('Fetch Error:', error);
+                }
+            }
+        </script>
+    </div>
+</body>
+</html> 

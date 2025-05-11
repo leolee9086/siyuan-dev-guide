@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/system/getChangelog">
+    <title>获取更新日志 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../common/css/styles.css">
+</head>
+<body>
+    <header class="api-header">
+        <h1>获取更新日志 (getChangelog)</h1>
+        <nav>
+            <a href="../index.html">首页</a> |
+            <a href="index.html">System API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/system.go" target="_blank">GitHub Source (api/system.go)</a>
+        </nav>
+        <div class="endpoint-container">
+            <span class="endpoint">POST /api/system/getChangelog</span>
+        </div>
+    </header>
+    <main>
+        <section id="description">
+            <h2>接口描述</h2>
+            <p>此 API 端点 <code>POST /api/system/getChangelog</code> 用于获取当前思源笔记版本的更新日志内容。</p>
+            <p>通常在思源笔记启动后，如果配置项 <code>conf.ShowChangelog</code> 为 <code>true</code>，前端会调用此接口来显示"更新内容"弹窗。成功获取并显示一次后，<code>conf.ShowChangelog</code> 会被设置为 <code>false</code>，后续调用将不再返回更新日志，除非该配置被重新激活。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>此 API 不需要任何请求参数。发送一个空的 JSON 对象 <code>{}</code> 即可。</p>
+            <p><strong>请求示例 (空JSON对象):</strong></p>
+            <pre><code class="language-json">{}</code></pre>
+        </section>
+
+        <section id="response-body">
+            <h2>响应体</h2>
+            <p>响应体是一个 JSON 对象，包含以下字段：</p>
+            <ul>
+                <li><code>code</code> (number): 状态码，0 表示成功。</li>
+                <li><code>msg</code> (string): 状态信息。</li>
+                <li><code>data</code> (object): 包含实际数据的对象，结构如下：
+                    <ul>
+                        <li><code>show</code> (boolean): 指示是否应显示更新日志。如果为 <code>true</code>，表示成功获取到日志内容。如果为 <code>false</code>，则表示未找到日志文件、<code>conf.ShowChangelog</code> 为false或读取失败。</li>
+                        <li><code>html</code> (string): 更新日志的 HTML 内容字符串。如果 <code>show</code> 为 <code>false</code>，此字段通常为空字符串。</li>
+                    </ul>
+                </li>
+            </ul>
+            <p><strong>成功响应示例:</strong></p>
+            <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": {
+        "show": true,
+        "html": "&lt;h2&gt;版本 v3.0.0 更新内容&lt;/h2&gt;&lt;ul&gt;&lt;li&gt;新功能 A&lt;/li&gt;&lt;li&gt;修复 B&lt;/li&gt;&lt;/ul&gt;"
+    }
+}</code></pre>
+            <p><strong>不显示日志时的响应示例:</strong></p>
+            <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": {
+        "show": false,
+        "html": ""
+    }
+}</code></pre>
+        </section>
+
+        <section id="authentication">
+            <h2>认证与授权</h2>
+            <p>此 API 端点不需要用户认证即可访问。</p>
+        </section>
+
+        <section id="notes">
+            <h2>备注</h2>
+            <ul>
+                <li>更新日志的源文件位于思源工作目录下的 <code>changelogs/v&lt;版本号&gt;/v&lt;版本号&gt;[_语言代码].md</code>。</li>
+                <li>如果特定语言的日志文件不存在，会尝试加载不带语言代码的通用版本。</li>
+                <li>此接口主要由思源前端在启动时自动调用，用于向用户展示版本更新信息。</li>
+            </ul>
+        </section>
+
+        <div class="test-area">
+            <h2>在线测试</h2>
+            <p>您可以使用下面的按钮来测试此 API。由于此接口通常在启动后第一次调用时返回内容，后续调用可能返回 <code>"show": false</code>。您可以尝试修改内核配置文件中的 <code>showChangelog</code> 为 <code>true</code> 并重启内核来重复测试。</p>
+            <form id="getChangelogForm">
+                <button type="button" onclick="sendRequest('getChangelogForm', '/api/system/getChangelog', 'POST', '{}')">发送请求</button>
+            </form>
+            <h3>响应:</h3>
+            <pre><code id="getChangelogResponse" class="language-json">点击发送请求查看响应</code></pre>
+            <h3>响应详情 (HTML Content):</h3>
+            <div id="getChangelogHtmlOutput" class="b3-typography" style="border: 1px solid #ccc; padding: 10px; min-height: 50px; max-height: 300px; overflow-y: auto;">
+                <!-- HTML content will be rendered here -->
+            </div>
+        </div>
+    </main>
+    <blockquote>
+        <p>感谢您对思源笔记的关注与支持！</p>
+        <p><a href="https://afdian.com/a/leolee9086?tab=feed" target="_blank">在爱发电上赞助我们</a></p>
+    </blockquote>
+    <footer>
+        <p>&copy; 2024 <a href="https://b3log.org/siyuan">思源笔记 B3log.org</a>. All rights reserved.</p>
+    </footer>
+    <script src="../common/js/api-tester.js"></script>
+    <script src="../common/js/theme-toggle.js"></script>
+    <script>
+        // 监听 api-tester.js 发送的自定义事件，以获取响应并处理 HTML 内容
+        document.addEventListener('apiResponse', function(event) {
+            const formId = event.detail.formId;
+            const response = event.detail.response;
+
+            if (formId === 'getChangelogForm' && response && response.data && response.data.html) {
+                const htmlOutputDiv = document.getElementById('getChangelogHtmlOutput');
+                if (htmlOutputDiv) {
+                    htmlOutputDiv.innerHTML = response.data.html;
+                     // 如果有高亮函数，可以调用
+                    if (typeof hljs !== 'undefined' && typeof hljs.highlightAll === 'function') {
+                        // 需要确保 hljs 已经加载并且有 highlightAll 方法
+                        // setTimeout(() => hljs.highlightAll(), 0); // 异步执行确保DOM更新
+                    }
+                }
+            } else if (formId === 'getChangelogForm') {
+                const htmlOutputDiv = document.getElementById('getChangelogHtmlOutput');
+                if (htmlOutputDiv) {
+                    htmlOutputDiv.innerHTML = '<i>未获取到HTML内容或响应格式不符。</i>';
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>API: /api/sync/setSyncPerception</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../script.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>思源笔记 API 文档</h1>
+    </header>
+    <nav>
+        <a href="../index.html">返回首页</a>
+        <a href="index.html">返回 sync 分类</a>
+    </nav>
+    <main>
+        <h2>/api/sync/setSyncPerception</h2>
+        <p><strong>方法:</strong> POST</p>
+        <p><strong>认证:</strong> `model.CheckAuth`, `model.CheckAdminRole`, `model.CheckReadonly` (需要登录，管理员权限，非只读模式)</p>
+        <p><strong>功能:</strong> 设置是否启用同步感知。</p>
+        <p>同步感知指的是在编辑器中实时感知其他客户端的修改，并在当前编辑器中进行相应的更新提示或自动合并。开启后可以减少多端编辑时的冲突概率，但可能会略微增加网络和性能开销。</p>
+
+        <h3>请求参数 (JSON Body)</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>参数名</th>
+                    <th>类型</th>
+                    <th>是否必需</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>enabled</code></td>
+                    <td>boolean</td>
+                    <td>是</td>
+                    <td><code>true</code> 启用同步感知, <code>false</code> 禁用同步感知。</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>请求示例</h3>
+        <pre><code class="language-json">
+{
+    "enabled": true
+}
+        </code></pre>
+
+        <h3>响应结果</h3>
+        <p>成功时，返回的 JSON 对象中 <code>code</code> 为 0，<code>msg</code> 为空字符串，<code>data</code> 为 <code>null</code>。</p>
+        <pre><code class="language-json">
+{
+    "code": 0,
+    "msg": "",
+    "data": null
+}
+        </code></pre>
+        <p>失败时，<code>code</code> 非 0，<code>msg</code> 包含错误信息。</p>
+
+        <h3>在线测试</h3>
+        <div class="test-area">
+            <label for="param-enabled">enabled (boolean):</label>
+            <select id="param-enabled">
+                <option value="true" selected>true (启用)</option>
+                <option value="false">false (禁用)</option>
+            </select>
+            <br><br>
+            <button onclick="testAPI()">发送请求</button>
+            <h4>请求体:</h4>
+            <pre id="request-body-display"></pre>
+            <h4>响应:</h4>
+            <pre id="response-output"></pre>
+        </div>
+
+        <script>
+            function buildRequestBody() {
+                const enabled = document.getElementById('param-enabled').value === 'true';
+                const body = { enabled };
+                document.getElementById('request-body-display').textContent = JSON.stringify(body, null, 2);
+                return body;
+            }
+
+            async function testAPI() {
+                const requestBody = buildRequestBody();
+                const responseOutput = document.getElementById('response-output');
+                responseOutput.textContent = '正在请求...';
+
+                try {
+                    const response = await fetch('/api/sync/setSyncPerception', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // 'Authorization': 'Token YOUR_API_TOKEN_HERE' // 如果需要认证
+                        },
+                        body: JSON.stringify(requestBody)
+                    });
+                    const result = await response.json();
+                    responseOutput.textContent = JSON.stringify(result, null, 2);
+                } catch (error) {
+                    console.error('API 测试失败:', error);
+                    responseOutput.textContent = '发生错误，请查看控制台。\n' + error.message;
+                }
+            }
+
+            // 初始化请求体显示
+            buildRequestBody();
+            // 监听输入变化实时更新请求体
+            document.getElementById('param-enabled').addEventListener('change', buildRequestBody);
+        </script>
+    </main>
+    <footer>
+        <p>本文档由 AI 自动生成，可能存在不准确之处，请以实际 API 行为为准。</p>
+    </footer>
+</body>
+</html> 

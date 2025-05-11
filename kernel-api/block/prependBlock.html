@@ -1,0 +1,165 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>prependBlock API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>前置追加块 API (`/api/block/prependBlock`)</h1>
+            <nav>
+                <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/block_op.go#L409" target="_blank">在 GitHub 上查看源码</a>
+                <a href="../pages/block.html">返回块 API 列表</a>
+                <a href="../index.html">返回 API 主页</a>
+            </nav>
+        </header>
+        <main>
+            <section id="description">
+                <h2>接口描述</h2>
+                <p>该接口用于在一个指定的父块内容的<strong>开头</strong>插入一个新的块。</p>
+            </section>
+
+            <section id="request">
+                <h2>请求</h2>
+                <p><strong>方法:</strong> POST</p>
+                <p><strong>路径:</strong> `/api/block/prependBlock`</p>
+                <p><strong>认证:</strong> 需要 Token</p>
+                <h3>请求体 (JSON)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>参数</th>
+                            <th>类型</th>
+                            <th>必需</th>
+                            <th>描述</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>`data`</td>
+                            <td>string</td>
+                            <td>是</td>
+                            <td>要插入的块的内容。</td>
+                        </tr>
+                        <tr>
+                            <td>`dataType`</td>
+                            <td>string</td>
+                            <td>是</td>
+                            <td>数据类型，可选值为 'markdown' 或 'dom'。如果为 'markdown'，服务器会自动转换为 'dom'。</td>
+                        </tr>
+                        <tr>
+                            <td>`parentID`</td>
+                            <td>string</td>
+                            <td>是</td>
+                            <td>目标父块的 ID。</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h3>请求示例</h3>
+                <pre><code class="language-json">{
+    "data": "这是要前置插入的 Markdown 内容",
+    "dataType": "markdown",
+    "parentID": "20230517100000-ijklmnop"
+}</code></pre>
+                <pre><code class="language-json">{
+    "data": "&lt;div data-type=\"NodeParagraph\" data-node-id=\"20230518100000-cdefghij\"&gt;这是要前置插入的 DOM 内容&lt;/div&gt;",
+    "dataType": "dom",
+    "parentID": "20230517100000-ijklmnop"
+}</code></pre>
+            </section>
+
+            <section id="response">
+                <h2>响应</h2>
+                <h3>成功响应 (200 OK)</h3>
+                <p>成功时，返回一个包含执行的操作事务信息的对象。新的块 ID 会在 `doOperations` 中返回。</p>
+                <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": {
+        "transactions": [
+            {
+                "doOperations": [
+                    {
+                        "action": "prependInsert",
+                        "id": "20230518100000-cdefghij", // 新生成的块 ID
+                        "data": "&lt;div data-type=\"NodeParagraph\" data-node-id=\"20230518100000-cdefghij\"&gt;这是要前置插入的 Markdown 内容&lt;/div&gt;",
+                        "parentID": "20230517100000-ijklmnop"
+                        // 其他操作相关的字段...
+                    }
+                ],
+                // 其他事务相关的字段...
+            }
+        ]
+    }
+}</code></pre>
+                <h3>失败响应</h3>
+                <p>如果请求失败（例如，`parentID` 无效，`dataType` 为 'markdown' 但转换失败），将返回错误信息。</p>
+                <pre><code class="language-json">{
+    "code": -1,
+    "msg": "Invalid block ID pattern [无效的父ID]", // 或 "data block DOM failed: ..."
+    "data": null
+}</code></pre>
+            </section>
+
+            <section id="online-test">
+                <h2>在线测试</h2>
+                <form id="test-form">
+                    <div class="form-group">
+                        <label for="param-data">data (必填):</label>
+                        <textarea id="param-data" name="data" rows="4" required=""></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="param-dataType">dataType (必填):</label>
+                        <select id="param-dataType" name="dataType" required="">
+                            <option value="markdown" selected="">markdown</option>
+                            <option value="dom">dom</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="param-parentID">parentID (必填):</label>
+                        <input type="text" id="param-parentID" name="parentID" required="">
+                    </div>
+                    <button type="submit">发送请求</button>
+                </form>
+                <h3>测试结果:</h3>
+                <pre><code id="test-result"></code></pre>
+            </section>
+        </main>
+        <footer>
+            <p>© 2023 Siyuan Note API 文档</p>
+        </footer>
+    </div>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        document.getElementById('test-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const data = document.getElementById('param-data').value;
+            const dataType = document.getElementById('param-dataType').value;
+            const parentID = document.getElementById('param-parentID').value;
+            const resultContainer = document.getElementById('test-result');
+            resultContainer.textContent = '请求中...';
+
+            try {
+                const response = await fetch('/api/block/prependBlock', { // Updated API path
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Token ${getAuthToken()}` // 从 localStorage 或其他地方获取 Token
+                    },
+                    body: JSON.stringify({ data, dataType, parentID })
+                });
+                const result = await response.json();
+                resultContainer.textContent = JSON.stringify(result, null, 2);
+            } catch (error) {
+                resultContainer.textContent = `请求失败: ${error}`;
+            }
+        });
+    </script>
+
+ </body></html>

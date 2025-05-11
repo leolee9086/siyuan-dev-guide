@@ -1,0 +1,165 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>moveBlock API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>移动块 API (`/api/block/moveBlock`)</h1>
+            <nav>
+                <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/block_op.go#L309" target="_blank">在 GitHub 上查看源码</a>
+                <a href="../pages/block.html">返回块 API 列表</a>
+                <a href="../index.html">返回 API 主页</a>
+            </nav>
+        </header>
+        <main>
+            <section id="description">
+                <h2>接口描述</h2>
+                <p>该接口用于移动一个块到新的位置。可以通过指定新的父块和/或前一个兄弟块来确定新位置。</p>
+            </section>
+
+            <section id="request">
+                <h2>请求</h2>
+                <p><strong>方法:</strong> POST</p>
+                <p><strong>路径:</strong> `/api/block/moveBlock`</p>
+                <p><strong>认证:</strong> 需要 Token</p>
+                <h3>请求体 (JSON)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>参数</th>
+                            <th>类型</th>
+                            <th>必需</th>
+                            <th>描述</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>`id`</td>
+                            <td>string</td>
+                            <td>是</td>
+                            <td>要移动的块的 ID。</td>
+                        </tr>
+                        <tr>
+                            <td>`parentID`</td>
+                            <td>string</td>
+                            <td>否</td>
+                            <td>新的父块 ID。如果指定，块将被移动到此父块的子节点中。如果未指定 `previousID`，则默认添加到末尾。</td>
+                        </tr>
+                        <tr>
+                            <td>`previousID`</td>
+                            <td>string</td>
+                            <td>否</td>
+                            <td>新的前一个兄弟块 ID。块将被移动到该块之后。<strong>注意：</strong> `previousID` 不能是文档块的 ID。</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h3>请求示例</h3>
+                <pre><code class="language-json">{
+    "id": "20230517100000-abcdefgh",
+    "parentID": "20230517100000-ijklmnop",
+    "previousID": "20230517100000-qrstuvwx"
+}</code></pre>
+                <pre><code class="language-json">{
+    "id": "20230517100000-abcdefgh",
+    "parentID": "20230517100000-ijklmnop" // 移动到 parentID 末尾
+}</code></pre>
+            </section>
+
+            <section id="response">
+                <h2>响应</h2>
+                <h3>成功响应 (200 OK)</h3>
+                <p>成功时，返回一个包含执行的操作事务信息的对象。</p>
+                <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": {
+        "transactions": [
+            {
+                "doOperations": [
+                    {
+                        "action": "move",
+                        "id": "20230517100000-abcdefgh",
+                        "previousID": "20230517100000-qrstuvwx",
+                        "parentID": "20230517100000-ijklmnop"
+                        // 其他操作相关的字段...
+                    }
+                ],
+                // 其他事务相关的字段...
+            }
+        ]
+    }
+}</code></pre>
+                <h3>失败响应</h3>
+                <p>如果请求失败（例如，ID 无效，`previousID` 是文档块），将返回错误信息。</p>
+                <pre><code class="language-json">{
+    "code": -1,
+    "msg": "Invalid block ID pattern [无效的ID]", // 或 "`previousID` can not be the ID of a document"
+    "data": null
+}</code></pre>
+            </section>
+
+            <section id="online-test">
+                <h2>在线测试</h2>
+                <form id="test-form">
+                    <div class="form-group">
+                        <label for="param-id">id (必填):</label>
+                        <input type="text" id="param-id" name="id" required="">
+                    </div>
+                    <div class="form-group">
+                        <label for="param-parentID">parentID:</label>
+                        <input type="text" id="param-parentID" name="parentID">
+                    </div>
+                    <div class="form-group">
+                        <label for="param-previousID">previousID:</label>
+                        <input type="text" id="param-previousID" name="previousID">
+                    </div>
+                    <button type="submit">发送请求</button>
+                </form>
+                <h3>测试结果:</h3>
+                <pre><code id="test-result"></code></pre>
+            </section>
+        </main>
+        <footer>
+            <p>© 2023 Siyuan Note API 文档</p>
+        </footer>
+    </div>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        document.getElementById('test-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const id = document.getElementById('param-id').value;
+            const parentID = document.getElementById('param-parentID').value;
+            const previousID = document.getElementById('param-previousID').value;
+            const resultContainer = document.getElementById('test-result');
+            resultContainer.textContent = '请求中...';
+
+            const body = { id };
+            if (parentID) body.parentID = parentID;
+            if (previousID) body.previousID = previousID;
+
+            try {
+                const response = await fetch('/api/block/moveBlock', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Token ${getAuthToken()}` // 从 localStorage 或其他地方获取 Token
+                    },
+                    body: JSON.stringify(body)
+                });
+                const result = await response.json();
+                resultContainer.textContent = JSON.stringify(result, null, 2);
+            } catch (error) {
+                resultContainer.textContent = `请求失败: ${error}`;
+            }
+        });
+    </script>
+
+ </body></html>

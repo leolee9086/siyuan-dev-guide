@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>API: /api/sync/exportSyncProviderWebDAV - 导出 WebDAV 同步配置</title>
+    <link rel="stylesheet" href="../common.css">
+    <script src="../common.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>导出 WebDAV 同步配置</h1>
+        <p><strong>API Endpoint:</strong> <code>POST /api/sync/exportSyncProviderWebDAV</code></p>
+        <p><strong>认证:</strong> 需要登录 (<code>model.CheckAuth</code>) 和管理员权限 (<code>model.CheckAdminRole</code>)。</p>
+
+        <h2>功能描述</h2>
+        <p>此 API 用于导出当前已配置的 WebDAV 同步设置。配置信息会被 AES 加密后打包成一个 ZIP 文件，保存在服务器的临时导出目录中。接口会返回该 ZIP 文件的名称和可用于下载的相对路径。</p>
+        <p><strong>重要提示:</strong> 此接口本身不直接提供文件下载。客户端需要根据响应中返回的 <code>zip</code> 字段（例如 <code>/export/siyuan-webdav-xxxx.json.zip</code>），配合文件下载接口 (例如 <code>GET /api/file/getExportFile?path=/export/siyuan-webdav-xxxx.json.zip</code>) 来获取导出的 ZIP 文件。ZIP 文件内包含一个 JSON 文件，该 JSON 文件内容是经过 AES 加密的 WebDAV 配置详情。</p>
+
+        <h2>请求参数</h2>
+        <p>此接口不需要请求参数。</p>
+
+        <h2>响应</h2>
+        <p>成功时，服务器返回 HTTP 状态码 <code>200</code> 和一个 JSON 对象，包含以下字段：</p>
+        <pre><code class="language-json">
+{
+    "code": 0,
+    "msg": "",
+    "data": {
+        "name": "siyuan-webdav-20231027103000.json",
+        "zip": "/export/siyuan-webdav-20231027103000.json.zip"
+    }
+}
+        </code></pre>
+        <ul>
+            <li><code>code</code> (number): <code>0</code> 表示成功，其他值表示失败。</li>
+            <li><code>msg</code> (string): 错误信息（如果 <code>code</code> 非 <code>0</code>）。</li>
+            <li><code>data</code> (object): 包含导出文件信息的对象。
+                <ul>
+                    <li><code>name</code> (string): 导出的 WebDAV 配置文件名（JSON 格式，不包含 <code>.zip</code> 后缀）。</li>
+                    <li><code>zip</code> (string): 包含加密配置的 ZIP 文件在服务器上的相对路径。此路径可用于通过文件下载 API 获取文件。</li>
+                </ul>
+            </li>
+        </ul>
+
+        <h2>导出的 WebDAV 配置 (<code>conf.WebDAV</code>) 结构</h2>
+        <p>ZIP 包内的 JSON 文件（解密后）包含以下字段：</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>字段名</th>
+                    <th>类型</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>endpoint</code></td>
+                    <td>string</td>
+                    <td>WebDAV 服务的 URL 端点。</td>
+                </tr>
+                <tr>
+                    <td><code>username</code></td>
+                    <td>string</td>
+                    <td>WebDAV 服务的用户名。</td>
+                </tr>
+                <tr>
+                    <td><code>password</code></td>
+                    <td>string</td>
+                    <td>WebDAV 服务的密码。</td>
+                </tr>
+                <tr>
+                    <td><code>skipTlsVerify</code></td>
+                    <td>boolean</td>
+                    <td>是否跳过 TLS (SSL) 证书验证。如果为 <code>true</code>，则不验证 HTTPS 证书的有效性。</td>
+                </tr>
+                <tr>
+                    <td><code>timeout</code></td>
+                    <td>number</td>
+                    <td>请求超时时间，单位为秒。</td>
+                </tr>
+                <tr>
+                    <td><code>concurrentReqs</code></td>
+                    <td>number</td>
+                    <td>同步时允许的并发请求数量。</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>在线测试</h2>
+        <div class="test-area">
+            <button onclick="testExportWebDAV()">执行导出</button>
+            <h3>响应:</h3>
+            <pre id="responseOutput">点击按钮发送请求</pre>
+            <p id="downloadLinkContainer" style="display:none;">
+                文件已生成：<a id="downloadLink" href="#" target="_blank">点击下载导出的配置</a>
+            </p>
+        </div>
+
+        <script>
+            async function testExportWebDAV() {
+                const outputElement = document.getElementById('responseOutput');
+                const downloadLinkContainer = document.getElementById('downloadLinkContainer');
+                const downloadLink = document.getElementById('downloadLink');
+                outputElement.textContent = '正在请求...';
+                downloadLinkContainer.style.display = 'none';
+
+                try {
+                    const response = await fetch('/api/sync/exportSyncProviderWebDAV', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // 'Authorization': 'Token YOUR_API_TOKEN' // 如果需要，请取消注释并替换
+                        }
+                    });
+                    const result = await response.json();
+                    outputElement.textContent = JSON.stringify(result, null, 2);
+
+                    if (result.code === 0 && result.data && result.data.zip) {
+                        // 假设文件下载API是 /api/file/getExportFile?path=
+                        // 注意：在实际生产环境中，基础URL可能需要动态获取或配置
+                        const fileDownloadUrl = `${window.location.origin}/api/file/getExportFile?path=${encodeURIComponent(result.data.zip)}`;
+                        downloadLink.href = fileDownloadUrl;
+                        downloadLink.textContent = `下载 ${result.data.name}.zip`;
+                        downloadLinkContainer.style.display = 'block';
+                    } else if (result.code !== 0) {
+                        console.error('API Error:', result.msg);
+                    }
+                } catch (error) {
+                    outputElement.textContent = '请求失败: ' + error.message;
+                    console.error('Fetch Error:', error);
+                }
+            }
+        </script>
+    </div>
+</body>
+</html> 

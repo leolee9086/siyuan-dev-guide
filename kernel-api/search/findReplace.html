@@ -1,0 +1,213 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>查找替换 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+    
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/search/findReplace</span>
+    </div>
+    
+    <h1>查找替换</h1>
+    
+    <div class="auth-tags">
+        <span class="chip auth-required">需要认证</span>
+    </div>
+    
+     <div class="warning-box">
+        <strong>警告：这是一个不可逆的操作！</strong> 查找替换会直接修改块内容。请务必在执行前确认查找和替换的范围及内容，或进行备份！
+    </div>
+    
+    <h2>接口描述</h2>
+    <p>在指定范围（整个工作空间、笔记本或文档）内查找文本，并将其替换为新的文本。</p>
+    
+    <h2>请求参数</h2>
+    <table class="param-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>必选</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>k</td>
+                <td>string</td>
+                <td><span class="required">是</span></td>
+                <td>要查找的关键词</td>
+            </tr>
+            <tr>
+                <td>r</td>
+                <td>string</td>
+                <td><span class="required">是</span></td>
+                <td>替换后的文本</td>
+            </tr>
+            <tr>
+                <td>id</td>
+                <td>string</td>
+                <td><span class="optional">否</span></td>
+                <td>查找范围的 ID。可以是笔记本 ID 或文档块 ID。如果为空，则在整个工作空间内查找替换。</td>
+            </tr>
+            <tr>
+                <td>ignoreCase</td>
+                <td>boolean</td>
+                <td><span class="optional">否</span></td>
+                <td>是否忽略大小写，默认为 false</td>
+            </tr>
+            <tr>
+                <td>regex</td>
+                <td>boolean</td>
+                <td><span class="optional">否</span></td>
+                <td>是否使用正则表达式进行查找，默认为 false</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <h2>返回值</h2>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>code</td>
+                <td>number</td>
+                <td>返回码，0表示成功</td>
+            </tr>
+            <tr>
+                <td>msg</td>
+                <td>string</td>
+                <td>返回信息</td>
+            </tr>
+            <tr>
+                <td>data</td>
+                <td>object</td>
+                <td>包含替换结果的对象</td>
+            </tr>
+            <tr>
+                <td class="nested">data.replaceCount</td>
+                <td>number</td>
+                <td>成功替换的数量</td>
+            </tr>
+             <tr>
+                <td class="nested">data.ids</td>
+                <td>array</td>
+                <td>被修改的块 ID 列表</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="example-tab">请求示例</div>
+            <div class="tab" data-target="response-tab">返回示例</div>
+        </div>
+        
+        <div id="example-tab" class="tab-content active">
+            <h3>请求示例 (在指定文档内查找替换)</h3>
+            <pre><code>POST /api/search/findReplace HTTP/1.1
+Host: 127.0.0.1:6806
+Content-Type: application/json
+Authorization: Token your-token
+
+{
+  "k": "旧文本",
+  "r": "新文本",
+  "id": "20231027150000-abcdefg", 
+  "ignoreCase": false,
+  "regex": false
+}</code></pre>
+             <h3>请求示例 (在整个工作空间查找替换，忽略大小写)</h3>
+            <pre><code>POST /api/search/findReplace HTTP/1.1
+Host: 127.0.0.1:6806
+Content-Type: application/json
+Authorization: Token your-token
+
+{
+  "k": "siyuan",
+  "r": "思源笔记",
+  "id": "", 
+  "ignoreCase": true,
+  "regex": false
+}</code></pre>
+        </div>
+        
+        <div id="response-tab" class="tab-content">
+            <h3>返回示例</h3>
+            <pre><code>{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "replaceCount": 5,
+    "ids": [
+      "20231027150000-abcdefg",
+      "20231027150100-hijklmn",
+      "20231027150200-opqrstu",
+      "20231027150300-vwxyzab",
+      "20231027150400-cdefghi"
+    ]
+  }
+}</code></pre>
+        </div>
+    </div>
+    
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<div class="test-area">
+        <h3>在线测试</h3>
+        <form id="api-test-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记中的" 设置-关于"中查看api="" token"="">
+            </div>
+            
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/search/findReplace">
+            </div>
+            
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly="">
+            </div>
+            
+            <div class="form-group">
+                <label for="api-params">请求参数 (JSON):</label>
+                <textarea id="api-params">{
+  "k": "输入要查找的关键词",
+  "r": "输入替换后的文本",
+  "id": "(可选)输入笔记本或文档ID，留空则全局",
+  "ignoreCase": false,
+  "regex": false
+}</textarea>
+            </div>
+            
+            <button type="submit" class="btn danger-btn">发送请求</button>
+        </form>
+        
+        <div id="api-result" class="result"></div>
+    </div>
+    
+    <div class="nav-links">
+        <a href="../index.html">返回首页</a>
+        <a href="../pages/search.html">返回搜索API</a>
+        <a href="searchTemplate.html">上一个接口: 搜索模板</a>
+        <!-- 如果有下一个，放这里 -->
+    </div>
+    
+    <script src="../api-tester.js"></script>
+
+ </body></html>

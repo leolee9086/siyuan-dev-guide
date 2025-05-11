@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/system/getWorkspaceInfo">
+    <title>获取工作空间信息 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../common/css/styles.css">
+</head>
+<body>
+    <header class="api-header">
+        <h1>获取工作空间信息 (getWorkspaceInfo)</h1>
+        <nav>
+            <a href="../index.html">首页</a> |
+            <a href="index.html">System API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/system.go" target="_blank">GitHub Source (api/system.go)</a>
+        </nav>
+        <div class="endpoint-container">
+            <span class="endpoint">POST /api/system/getWorkspaceInfo</span>
+        </div>
+    </header>
+    <main>
+        <section id="description">
+            <h2>接口描述</h2>
+            <p>此 API 端点 <code>POST /api/system/getWorkspaceInfo</code> 用于获取当前思源笔记的工作空间基本信息，包括工作空间目录路径和当前思源的版本号。</p>
+            <p>此接口需要管理员权限。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>此 API 不需要任何请求参数。发送一个空的 JSON 对象 <code>{}</code> 即可。</p>
+            <p><strong>请求示例 (空JSON对象):</strong></p>
+            <pre><code class="language-json">{}</code></pre>
+        </section>
+
+        <section id="response-body">
+            <h2>响应体</h2>
+            <p>响应体是一个 JSON 对象，包含以下字段：</p>
+            <ul>
+                <li><code>code</code> (number): 状态码，0 表示成功。</li>
+                <li><code>msg</code> (string): 状态信息，成功时为空字符串。</li>
+                <li><code>data</code> (object): 包含实际数据的对象，结构如下：
+                    <ul>
+                        <li><code>workspaceDir</code> (string): 当前工作空间的绝对路径。例如：<code>"D:\SiyuanWorkspace\MyNotes"</code>。</li>
+                        <li><code>siyuanVer</code> (string): 当前思源笔记的版本号。例如：<code>"2.10.0"</code>。</li>
+                    </ul>
+                </li>
+            </ul>
+            <p><strong>成功响应示例:</strong></p>
+            <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": {
+        "workspaceDir": "/Users/username/Documents/SiYuan/data",
+        "siyuanVer": "2.10.5"
+    }
+}</code></pre>
+            <p><strong>失败响应示例 (例如认证失败或无管理员权限):</strong></p>
+            <pre><code class="language-json">{
+    "code": -1, // 或其他错误码，如 401 Unauthorized
+    "msg": "permission denied", // 或具体的错误信息
+    "data": null
+}</code></pre>
+        </section>
+
+        <section id="authentication">
+            <h2>认证与授权</h2>
+            <p>此 API 需要有效的用户认证和管理员权限：</p>
+            <ul>
+                <li>必须在 HTTP Header 中提供 <code>Authorization</code> 字段，其值为 API Token。</li>
+                <li>调用者必须具有管理员角色 (<code>model.CheckAdminRole</code>)。</li>
+                <li>接口行为可能在只读模式 (<code>model.CheckReadonly</code>) 下受影响，但对于此接口，主要是权限检查。</li>
+            </ul>
+            <p>如果认证失败或权限不足，服务器通常会返回相应的错误状态码 (如 HTTP 401 Unauthorized 或 403 Forbidden) 和错误信息。</p>
+        </section>
+
+        <section id="notes">
+            <h2>备注</h2>
+            <ul>
+                <li>此接口主要用于程序化获取当前环境的基本信息。</li>
+            </ul>
+        </section>
+
+        <div class="test-area">
+            <h2>在线测试</h2>
+            <p>您可以使用下面的按钮来测试此 API。请确保您已在浏览器中以管理员身份登录思源笔记，或者在请求头中正确设置了有效的管理员 API Token。</p>
+            <form id="getWorkspaceInfoForm">
+                <button type="button" onclick="sendRequest('getWorkspaceInfoForm', '/api/system/getWorkspaceInfo', 'POST', '{}', true)">发送请求 (需要管理员认证)</button>
+            </form>
+            <h3>响应:</h3>
+            <pre><code id="getWorkspaceInfoResponse" class="language-json">点击发送请求查看响应</code></pre>
+        </div>
+    </main>
+    <blockquote>
+        <p>感谢您对思源笔记的关注与支持！</p>
+        <p><a href="https://afdian.com/a/leolee9086?tab=feed" target="_blank">在爱发电上赞助我们</a></p>
+    </blockquote>
+    <footer>
+        <p>&copy; 2024 <a href="https://b3log.org/siyuan">思源笔记 B3log.org</a>. All rights reserved.</p>
+    </footer>
+    <script src="../common/js/api-tester.js"></script>
+    <script src="../common/js/theme-toggle.js"></script>
+</body>
+</html> 

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>/api/search/listInvalidBlockRefs - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../stylesheets/styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/search/listInvalidBlockRefs</span>
+    </div>
+
+    <h1>列出失效的块引用</h1>
+
+    <div class="auth-tags">
+        <span class="chip">需要认证</span>
+    </div>
+
+    <h2>接口描述</h2>
+    <p>列出工作空间中所有包含失效块引用的块。</p>
+    <p>失效块引用是指块链接 <code>((...))</code> 或锚文本链接 <code>[](:siyuan://blocks/...)</code> 指向的目标块 ID 已经不存在的情况。</p>
+    <p>此接口通常用于"数据->检查器->失效块引用"功能。</p>
+
+    <h2>实现链接</h2>
+    <ul>
+        <li>后端路由: <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/router.go" target="_blank">siyuan/kernel/api/router.go</a></li>
+        <li>处理函数: <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/search.go" target="_blank">siyuan/kernel/api/search.go</a> (<code>listInvalidBlockRefs</code> 函数)</li>
+        <li>核心逻辑: <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/model/search.go" target="_blank">siyuan/kernel/model/search.go</a> (<code>ListInvalidBlockRefs</code> 函数)</li>
+    </ul>
+
+    <h2>请求参数</h2>
+    <table class="parameter-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>是否必须</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>page</td>
+                <td>number</td>
+                <td>否</td>
+                <td>页码，从 1 开始，默认为 1。</td>
+            </tr>
+            <tr>
+                <td>pageSize</td>
+                <td>number</td>
+                <td>否</td>
+                <td>每页结果数量，默认为 32。</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>返回值</h2>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>code</td>
+                <td>number</td>
+                <td>返回码，0 表示成功。</td>
+            </tr>
+            <tr>
+                <td>msg</td>
+                <td>string</td>
+                <td>错误信息，成功时为空字符串。</td>
+            </tr>
+            <tr>
+                <td>data</td>
+                <td>object</td>
+                <td>包含结果数据的对象。</td>
+            </tr>
+            <tr>
+                <td class="indent-1">data.blocks</td>
+                <td>array</td>
+                <td>包含失效块引用的块信息对象数组。</td>
+            </tr>
+            <tr>
+                <td class="indent-2">data.blocks[].id</td>
+                <td>string</td>
+                <td>块 ID。</td>
+            </tr>
+             <!-- 省略 block 内其他字段，参考 /api/block/getBlockInfo -->
+            <tr>
+                <td class="indent-1">data.matchedBlockCount</td>
+                <td>number</td>
+                <td>总共找到的包含失效引用的块数量。</td>
+            </tr>
+            <tr>
+                <td class="indent-1">data.matchedRootCount</td>
+                <td>number</td>
+                <td>总共涉及的文档（根块）数量。</td>
+            </tr>
+            <tr>
+                <td class="indent-1">data.pageCount</td>
+                <td>number</td>
+                <td>总页数。</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="request-example-tab">请求示例</div>
+            <div class="tab" data-target="response-example-tab">返回示例</div>
+        </div>
+
+        <div id="request-example-tab" class="tab-content active">
+            <h3>请求示例</h3>
+            <pre><code class="language-json">{
+  "page": 1,
+  "pageSize": 10
+}
+</code></pre>
+        </div>
+
+        <div id="response-example-tab" class="tab-content">
+            <h3>返回示例</h3>
+            <pre><code class="language-json">{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "blocks": [
+      {
+        "id": "20231030100000-aaaaaaa",
+        "box": "20231027105900-abcdefg",
+        "path": "/20231027105900-abcdefg/文档A.sy",
+        "hPath": "/文档A/引用段落",
+        "name": "",
+        "alias": "",
+        "memo": "",
+        "tag": "",
+        "content": "这是一个引用 ((20231029000000-bbbbbbb '已删除块'))",
+        "markdown": "这是一个引用 ((20231029000000-bbbbbbb '已删除块'))",
+        "length": 40,
+        "type": "p",
+        // ... 其他块属性
+      },
+      {
+        "id": "20231031110000-ccccccc",
+        "box": "20231026090000-uvwxyz",
+        "path": "/20231026090000-uvwxyz/文档B.sy",
+        "hPath": "/文档B/链接段落",
+        // ... 其他块属性
+        "markdown": "这是一个链接 [已删除锚文本](siyuan://blocks/20231028000000-ddddddd)"
+      }
+    ],
+    "matchedBlockCount": 5,
+    "matchedRootCount": 3,
+    "pageCount": 1
+  }
+}
+</code></pre>
+        </div>
+    </div>
+
+    <blockquote class="important-note">
+        <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+        <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+    </blockquote>
+
+    <div class="test-area">
+        <h3>在线测试</h3>
+        <form id="api-test-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记中的 设置-关于 中查看 API Token">
+            </div>
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/search/listInvalidBlockRefs">
+            </div>
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly>
+            </div>
+            <div class="form-group">
+                <label for="api-params">请求参数 (JSON):</label>
+                <textarea id="api-params" rows="4">{
+  "page": 1,
+  "pageSize": 32
+}</textarea>
+            </div>
+            <button type="submit" class="btn">发送请求</button>
+        </form>
+        <div id="api-result" class="result"></div>
+    </div>
+
+    <script src="../api-tester.js"></script>
+
+</body>
+</html> 

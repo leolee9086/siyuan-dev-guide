@@ -1,0 +1,203 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>获取工作空间历史记录 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+    
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/history/getNotebookHistory</span>
+    </div>
+    
+    <h1>获取工作空间历史记录</h1>
+    
+    <div class="github-source">
+        <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/model/history.go#L543" target="_blank" title="查看源文件 (推测)">源文件 (GitHub, 推测位置)</a>
+    </div>
+    
+    <div class="auth-tags">
+        <span class="chip auth-required">需要认证</span>
+        <span class="chip admin-required">需要管理员权限</span>
+    </div>
+    
+    <h2>接口描述</h2>
+    <p>获取整个工作空间的历史快照列表。这些快照由思源自动（根据设置）或手动创建，记录了特定时间点附近的文件变更（创建、更新、删除、移动）。</p>
+    <p>该接口会读取 <code>data/history/</code> 目录下的时间戳子目录，并查询 <code>history.db</code> 数据库获取详细变更记录。返回结果按快照创建时间降序排列（最新的在前面）。</p>
+    <p><strong>注意：</strong>此接口返回的是<strong>所有笔记本</strong>的综合历史记录，反映整个工作空间的变更，而非单个笔记本的独立历史。同时，它不需要任何请求参数。</p>
+    
+    <h2>请求参数</h2>
+    <p>此接口不需要参数。</p>
+    
+    <h2>返回值</h2>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>code</td>
+                <td>number</td>
+                <td>返回码，0 表示成功，非 0 表示失败。</td>
+            </tr>
+            <tr>
+                <td>msg</td>
+                <td>string</td>
+                <td>错误信息，成功时为空字符串。</td>
+            </tr>
+            <tr>
+                <td>data</td>
+                <td>object</td>
+                <td>包含历史记录数据。</td>
+            </tr>
+            <tr>
+                <td class="indent-1">data.histories</td>
+                <td>array</td>
+                <td>历史快照对象数组，按创建时间降序排列。</td>
+            </tr>
+            <tr>
+                <td class="indent-2">data.histories[].hCreated</td>
+                <td>string</td>
+                <td>快照创建的时间戳字符串 (格式 <code>YYYYMMDDHHMMSS</code>)。</td>
+            </tr>
+            <tr>
+                <td class="indent-2">data.histories[].items</td>
+                <td>array</td>
+                <td>该快照包含的文件变更记录对象数组。</td>
+            </tr>
+            <tr>
+                <td class="indent-3">data.histories[].items[].title</td>
+                <td>string</td>
+                <td>被修改的文档或资源文件的标题/名称。</td>
+            </tr>
+            <tr>
+                <td class="indent-3">data.histories[].items[].path</td>
+                <td>string</td>
+                <td>被修改的文档或资源文件在 <code>data/</code> 目录下的相对路径 (相对于历史快照时间点)。</td>
+            </tr>
+            <tr>
+                <td class="indent-3">data.histories[].items[].op</td>
+                <td>string</td>
+                <td>操作类型：<code>"mk"</code> (创建), <code>"u"</code> (更新), <code>"rm"</code> (删除), <code>"mv"</code> (移动)。</td>
+            </tr>
+             <tr>
+                <td class="indent-3">data.histories[].items[].notebook</td>
+                <td>string</td>
+                <td>该文件所属的笔记本 ID (Box ID)。</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="example-tab">请求示例</div>
+            <div class="tab" data-target="response-tab">返回示例</div>
+        </div>
+        
+        <div id="example-tab" class="tab-content active">
+            <h3>请求示例</h3>
+            <p>请求体为空对象。</p>
+            <pre><code>POST /api/history/getNotebookHistory HTTP/1.1
+Host: 127.0.0.1:6806
+Content-Type: application/json
+Authorization: Token your-api-token
+
+{}</code></pre>
+        </div>
+        
+        <div id="response-tab" class="tab-content">
+            <h3>返回示例</h3>
+            <pre><code>{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "histories": [
+      {
+        "hCreated": "20231027110000",
+        "items": [
+          {
+            "title": "一篇新的笔记",
+            "path": "/20231027105900-abcdefg/20231027105901-hijklmn.sy",
+            "op": "mk",
+            "notebook": "20231027105900-abcdefg"
+          },
+          {
+            "title": "旧笔记标题修改",
+            "path": "/20231026090000-uvwxyz/20231026090005-opqrst.sy",
+            "op": "u",
+            "notebook": "20231026090000-uvwxyz"
+          }
+        ]
+      },
+      {
+        "hCreated": "20231027100000",
+        "items": [
+          {
+            "title": "被删除的文档",
+            "path": "/20231025150000-ghijkl/20231025150010-abcdef.sy",
+            "op": "rm",
+            "notebook": "20231025150000-ghijkl"
+          },
+          {
+            "title": "important_image.png",
+            "path": "/assets/important_image.png",
+            "op": "u",
+            "notebook": "" // Assets history notebook is empty
+          }
+        ]
+      }
+      // ... more history snapshots
+    ]
+  }
+}</code></pre>
+        </div>
+    </div>
+    
+    <blockquote class="important-note">
+        <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+        <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+    </blockquote>
+    
+    <div class="test-area">
+        <h3>在线测试</h3>
+        <form id="api-test-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记中的'设置-关于'中查看API token (需要管理员权限)">
+            </div>
+            
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/history/getNotebookHistory">
+            </div>
+            
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly>
+            </div>
+            
+            <div class="form-group">
+                <label for="api-params">请求参数 (JSON):</label>
+                <textarea id="api-params">{}</textarea>
+            </div>
+            
+            <button type="submit" class="btn">发送请求</button>
+        </form>
+        
+        <div id="api-result" class="result"></div>
+    </div>
+    
+    <div class="nav-links">
+        <a href="../index.html">返回首页</a>
+        <a href="rollbackNotebookHistory.html">下一个接口: 回滚笔记本历史</a> 
+    </div>
+    
+    <script src="../api-tester.js"></script>
+
+ </body></html>

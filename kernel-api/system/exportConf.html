@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>API: /api/system/exportConf</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../script.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>思源笔记 API 文档</h1>
+    </header>
+    <nav>
+        <a href="../index.html">返回首页</a>
+        <a href="index.html">返回 system 分类</a>
+    </nav>
+    <main>
+        <h2>/api/system/exportConf</h2>
+        <p><strong>方法:</strong> POST</p>
+        <p><strong>认证:</strong> `model.CheckAuth`, `model.CheckAdminRole` (需要登录，管理员权限)</p>
+        <p><strong>功能:</strong> 导出思源笔记的配置到一个 ZIP 文件。导出的配置是经过清理和脱敏的版本，移除了部分用户特定数据和运行时状态信息。</p>
+
+        <h3>请求参数</h3>
+        <p>此 API 当前版本不需要任何功能性的请求参数。虽然服务器端可能尝试解析JSON请求体，但其中的参数不会影响导出内容。</p>
+        
+        <h3>请求示例</h3>
+        <p>可以直接发送 POST 请求，无需特定请求体。</p>
+        <pre><code class="language-json">
+// 空请求体或任意JSON对象均可，例如：
+{}
+        </code></pre>
+
+        <h3>响应结果</h3>
+        <p>成功时，返回的 JSON 对象中 <code>code</code> 为 0，<code>msg</code> 为空字符串。<code>data</code> 对象包含两个字段：</p>
+        <ul>
+            <li><code>name</code> (string): 导出的 JSON 配置文件名 (例如: <code>siyuan-conf-20231027100000.json</code>)。</li>
+            <li><code>zip</code> (string): 包含上述 JSON 配置文件的 ZIP 包的相对路径 (例如: <code>/export/siyuan-conf-20231027100000.json.zip</code>)。可以通过此路径下载导出的文件。</li>
+        </ul>
+        <pre><code class="language-json">
+{
+    "code": 0,
+    "msg": "",
+    "data": {
+        "name": "siyuan-conf-20250511212400.json",
+        "zip": "/export/siyuan-conf-20250511212400.json.zip"
+    }
+}
+        </code></pre>
+        <p>失败时 (例如，创建临时文件或 ZIP 包失败)，<code>code</code> 非 0，<code>msg</code> 包含错误信息。</p>
+        <pre><code class="language-json">
+{
+    "code": -1,
+    "msg": "Failed to create export directory: ...error details...",
+    "data": null // 或者可能包含 closeTimeout
+}
+        </code></pre>
+
+        <h3>在线测试</h3>
+        <div class="test-area">
+            <p>此 API 不需要特定参数，可直接发送请求。</p>
+            <button onclick="testAPI()">发送请求</button>
+            <h4>响应:</h4>
+            <pre id="response-output"></pre>
+        </div>
+
+        <script>
+            async function testAPI() {
+                const responseOutput = document.getElementById('response-output');
+                responseOutput.textContent = '正在请求...';
+
+                try {
+                    const response = await fetch('/api/system/exportConf', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // 'Authorization': 'Token YOUR_API_TOKEN_HERE' // 如果需要认证
+                        },
+                        body: JSON.stringify({}) // 发送一个空JSON对象
+                    });
+                    const result = await response.json();
+                    responseOutput.textContent = JSON.stringify(result, null, 2);
+                    if (result.code === 0 && result.data && result.data.zip) {
+                        const downloadLink = document.createElement('a');
+                        downloadLink.href = result.data.zip;
+                        downloadLink.textContent = `下载 ${result.data.name}.zip`;
+                        downloadLink.target = '_blank'; //在新标签页打开下载
+                        responseOutput.appendChild(document.createElement('br'));
+                        responseOutput.appendChild(downloadLink);
+                    }
+                } catch (error) {
+                    console.error('API 测试失败:', error);
+                    responseOutput.textContent = '发生错误，请查看控制台。\n' + error.message;
+                }
+            }
+        </script>
+    </main>
+    <footer>
+        <p>本文档由 AI 自动生成，可能存在不准确之处，请以实际 API 行为为准。</p>
+    </footer>
+</body>
+</html> 

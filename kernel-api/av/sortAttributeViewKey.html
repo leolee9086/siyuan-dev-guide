@@ -1,0 +1,165 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sortAttributeViewKey - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+    
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/av/sortAttributeViewKey</span>
+    </div>
+    
+    <h1>sortAttributeViewKey</h1>
+
+    <div class="github-source">
+        <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/av.go" target="_blank" title="查看源文件">源文件 (GitHub)</a>
+    </div>
+
+    <div class="auth-tags">
+        <span class="chip auth-required">需要认证</span>
+        <span class="chip admin-required">需要管理员权限</span>
+        <span class="chip readonly-required">需要写权限</span>
+    </div>
+    
+    <h2>接口描述</h2>
+    <p>对指定属性视图 (Attribute View) 中的列 (Key) 进行排序，改变它们在界面上的显示顺序。</p>
+    
+    <h2>请求参数</h2>
+    <table class="param-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>必选</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>avID</td>
+                <td>string</td>
+                <td><span class="required">是</span></td>
+                <td>属性视图的 ID。</td>
+            </tr>
+            <tr>
+                <td>keyID</td>
+                <td>string</td>
+                <td><span class="required">是</span></td>
+                <td>要移动（排序）的列 (Key) 的 ID。</td>
+            </tr>
+            <tr>
+                <td>previousKeyID</td>
+                <td>string</td>
+                <td><span class="required">是</span></td>
+                <td>目标位置的前一个列 (Key) 的 ID。如果要把 `keyID` 移动到第一列，此参数应为空字符串 `""`。</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <h2>返回值</h2>
+    <p>成功时不返回具体数据，但会通知前端刷新该属性视图。</p>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>code</td><td>number</td><td>返回码，0 表示成功</td></tr>
+            <tr><td>msg</td><td>string</td><td>返回信息，成功时为空</td></tr>
+            <tr><td>data</td><td>null</td><td>成功时不返回数据，为 null</td></tr>
+        </tbody>
+    </table>
+    
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="example-tab">请求示例</div>
+            <div class="tab" data-target="response-tab">返回示例</div>
+        </div>
+        
+        <div id="example-tab" class="tab-content active">
+            <h3>请求示例 (将 key-3 移动到 key-1 之后)</h3>
+            <pre><code>POST /api/av/sortAttributeViewKey
+Content-Type: application/json
+Authorization: Token your-api-token
+
+{
+  "avID": "20231027150000-abcdefgh", 
+  "keyID": "key-3",
+  "previousKeyID": "key-1"
+}</code></pre>
+             <h3>请求示例 (将 key-2 移动到第一列)</h3>
+            <pre><code>POST /api/av/sortAttributeViewKey
+Content-Type: application/json
+Authorization: Token your-api-token
+
+{
+  "avID": "20231027150000-abcdefgh", 
+  "keyID": "key-2",
+  "previousKeyID": ""
+}</code></pre>
+        </div>
+        
+        <div id="response-tab" class="tab-content">
+            <h3>返回示例</h3>
+            <pre><code>{
+  "code": 0,
+  "msg": "",
+  "data": null
+}</code></pre>
+        </div>
+    </div>
+    
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<div class="test-area">
+        <h3>在线测试</h3>
+        <form id="api-test-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记中的" 设置-关于"中查看api="" token"="">
+            </div>
+            
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/av/sortAttributeViewKey">
+            </div>
+            
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly="">
+            </div>
+            
+            <div class="form-group">
+                <label for="api-params">请求参数 (JSON):</label>
+                <textarea id="api-params">{
+  "avID": "",
+  "keyID": "",
+  "previousKeyID": ""
+}</textarea>
+            </div>
+            
+            <button type="submit" class="btn">发送请求</button>
+        </form>
+        
+        <div id="api-result" class="result"></div>
+    </div>
+    
+    <div class="nav-links">
+        <a href="../index.html">返回首页</a>
+        <a href="../pages/av.html">返回 AttributeView API</a>
+        <a href="setDatabaseBlockView.html">上一个接口: 设置数据库块视图</a>
+        <a href="sortAttributeViewViewKey.html">下一个接口: 排序属性视图特定视图中的列</a> <!-- 基于 check_docs.js 输出 -->
+    </div>
+    
+    <script src="../api-tester.js"></script>
+
+ </body></html>

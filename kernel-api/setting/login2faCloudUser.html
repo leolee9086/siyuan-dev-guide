@@ -1,0 +1,165 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>使用 2FA 登录云用户 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+    
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/setting/login2faCloudUser</span>
+    </div>
+    
+    <h1>使用 2FA 登录云用户</h1>
+    
+    <div class="auth-tags">
+        <span class="chip">需要认证</span>
+        <span class="chip">管理员权限</span>
+        <span class="chip">只读模式禁用</span>
+    </div>
+    
+    <h2>接口描述</h2>
+    <p>使用两步验证 (2FA) 代码登录云端用户。此操作需要在获取到临时 token 后进行，通常是 <code>/api/setting/getCloudUser</code> 在特定条件下返回2FA质询时，或类似场景。成功登录后会返回新的用户状态和认证信息。</p>
+    
+    <h2>请求参数 (JSON Body)</h2>
+    <table class="request-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>token</td>
+                <td>string</td>
+                <td>必需。2FA 登录流程中的临时令牌。</td>
+            </tr>
+            <tr>
+                <td>code</td>
+                <td>string</td>
+                <td>必需。用户提供的 2FA 验证码。</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <h2>返回值</h2>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>code</td>
+                <td>number</td>
+                <td>返回码，0 表示成功</td>
+            </tr>
+            <tr>
+                <td>msg</td>
+                <td>string</td>
+                <td>错误信息，成功时为空字符串</td>
+            </tr>
+            <tr>
+                <td>data</td>
+                <td>object</td>
+                <td>成功时返回包含用户认证信息和状态的对象。具体结构依赖于 <code>model.Login2fa</code> 的返回，通常可能包含新的 session token, 用户昵称, 邮箱等。失败时此字段可能为 null。</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="example-tab">请求示例</div>
+            <div class="tab" data-target="response-tab-success">成功返回示例</div>
+            <div class="tab" data-target="response-tab-failure">失败返回示例</div>
+        </div>
+        
+        <div id="example-tab" class="tab-content active">
+            <h3>请求示例</h3>
+            <pre><code>POST /api/setting/login2faCloudUser HTTP/1.1
+Host: 127.0.0.1:6806
+Content-Type: application/json
+Authorization: Token YOUR_API_TOKEN
+
+{
+    "token": "your_2fa_session_token_here",
+    "code": "123456"
+}</code></pre>
+        </div>
+        
+        <div id="response-tab-success" class="tab-content">
+            <h3>成功返回示例</h3>
+            <pre><code>{
+  "code": 0,
+  "msg": "",
+  "data": {
+      "userNick": "用户昵称",
+      "userEmail": "user@example.com",
+      "userAvatarURL": "url_to_avatar",
+      "userSiYuanPro": true,
+      "userPerm": 0, 
+      "userSpace": 10737418240,
+      "userUsedSpace": 102400,
+      "loggedIn": true,
+      "token": "new_permanent_auth_token_if_applicable"
+  }
+}</code></pre>
+        </div>
+
+        <div id="response-tab-failure" class="tab-content">
+            <h3>失败返回示例</h3>
+            <pre><code>{
+  "code": -1,
+  "msg": "Invalid 2FA code or token.",
+  "data": null
+}</code></pre>
+        </div>
+    </div>
+    
+    <blockquote class="important-note">
+        <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+        <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+    </blockquote>
+
+    <div class="test-area">
+        <h3>在线测试</h3>
+        <form id="api-test-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记的 设置-关于 中查看 API Token">
+            </div>
+            
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/setting/login2faCloudUser" readonly>
+            </div>
+            
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly>
+            </div>
+            
+            <div class="form-group">
+                <label for="api-params">请求参数 (JSON):</label>
+                <textarea id="api-params">{
+    "token": "",
+    "code": ""
+}</textarea>
+            </div>
+            
+            <button type="submit" class="btn">发送请求</button>
+        </form>
+        
+        <div id="api-result" class="result"></div>
+    </div>
+    
+    <script src="../api-tester.js"></script>
+
+ </body></html> 

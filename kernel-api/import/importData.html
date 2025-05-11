@@ -1,0 +1,98 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导入数据 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../pages/import.html" class="back-link">← 返回 Import API 列表</a>
+    <h1>导入数据</h1>
+    <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/import.go#L101" target="_blank" class="github-link">在 GitHub 上查看源码</a>
+
+    <p class="endpoint"><code>POST /api/import/importData</code></p>
+
+    <h2>描述</h2>
+    <p>导入之前通过"导出数据"功能生成的 <code>data.zip</code> 数据包。这个 API 主要用于恢复备份或迁移整个工作空间的数据。</p>
+    <p><strong>警告：</strong> 导入数据会覆盖当前工作空间的全部内容（笔记本、配置等），请务必在执行前备份好当前数据！</p>
+
+    <h2>请求参数</h2>
+    <p>请求需要使用 <code>multipart/form-data</code> 格式发送。</p>
+    <table>
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+                <th>必需</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>file</code></td>
+                <td><code>File</code></td>
+                <td>要导入的 <code>data.zip</code> 数据包文件。</td>
+                <td>是</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>响应结果</h2>
+    <p>响应体是 JSON 格式。<code>code</code> 为 0 表示成功。导入过程是异步的，API 成功返回仅代表接收文件成功并开始处理。</p>
+    <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": null
+}
+    </code></pre>
+    <p>如果请求处理或文件接收过程中出错（例如文件未上传、创建临时文件失败等），<code>code</code> 会是 -1，并包含错误信息。</p>
+    <p>导入操作本身可能耗时较长，并且可能因数据包损坏或格式问题导致失败，这些错误通常会通过系统日志或界面消息提示。</p>
+
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<div class="test-area">
+        <h3>在线测试 (注意：测试会覆盖当前工作空间!)</h3>
+        <p>由于此 API 涉及文件上传和数据覆盖，不建议在此处直接测试。请通过思源笔记的"设置 -&gt; 关于 -&gt; 导入数据"功能进行操作。</p>
+        <form id="api-test-form" class="disabled-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记中的" 设置-关于"中查看api="" token"="" disabled="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/import/importData" readonly="" disabled="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly="" disabled="">
+            </div>
+
+             <div class="form-group">
+                <label for="api-file">选择 data.zip 文件:</label>
+                <input type="file" id="api-file" accept=".zip" disabled="">
+            </div>
+
+            <button type="submit" class="btn" disabled="">发送请求 (已禁用)</button>
+        </form>
+
+        <div id="api-result" class="result"></div>
+        <script>
+            // 简单的脚本阻止表单提交
+            document.getElementById('api-test-form').addEventListener('submit', function(event) {
+                event.preventDefault();
+                alert('此 API 存在风险，已禁用在线测试功能。请通过思源笔记界面操作。');
+            });
+        </script>
+    </div>
+
+    <footer>
+        <p>思源笔记 API 文档</p>
+    </footer>
+    <script src="../api-tester.js"></script>  <!-- 保留 api-tester.js 以处理其他部分 -->
+
+ </body></html>

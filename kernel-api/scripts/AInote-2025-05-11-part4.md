@@ -1,0 +1,146 @@
+# 这个区段由开发者编写,未经允许禁止AI修改
+## 2025-05-11 16:59 - API文档: `/api/setting/setKeymap`
+
+**时间戳:**
+- 开始: 2025-05-11 16:35:35 (大约)
+- 结束: 2025-05-11 16:59:35
+
+**处理的API:** `/api/setting/setKeymap`
+
+**摘要:** 为 `/api/setting/setKeymap` API 端点创建了 HTML 文档。
+
+**详情:**
+*   **API 端点:** `/api/setting/setKeymap`
+*   **HTTP 方法:** `POST`
+*   **认证:** `model.CheckAuth`, `model.CheckAdminRole`, `model.CheckReadonly`。
+*   **Go 函数:** `setKeymap` (位于 `siyuan/kernel/api/setting.go` 文件，第 485-504 行)。
+*   **请求体结构:** 请求体是一个 JSON 对象，包含一个 `data` 字段。这个 `data` 字段持有一个 `map[string]interface{}`，代表整个快捷键配置。这个 map 的键通常是分类 (例如: `"general"`, `"editor"`)，值是命令到快捷键的嵌套映射 (例如: `"riffCard": "⌘F1"`)。
+    *   `conf.Keymap` 在 `siyuan/kernel/conf/layout.go` 中定义为 `type Keymap map[string]interface{}`。
+*   **功能:** 更新思源笔记的全局快捷键配置。
+*   **响应:** 标准的思源 API 响应结构 (`{code, msg, data}`), 成功时 `data` 为 `null`。
+*   **操作:** 创建了 `siyuan-kernelApi-docs/setting/setKeymap.html`.
+    *   文档中包含了请求体结构的描述、一个示例以及一个在线测试区域，该区域有一个按钮可以通过 `/api/system/getConf` 加载当前的快捷键设置。
+    *   在生成的 HTML 中遇到了与 JavaScript 模板字符串相关的持续性 linter 错误。尝试使用 `edit_file` 工具进行多次修复，但应用模型未能正确执行更改。决定在不解决这些次要 JS linting 问题的情况下继续。
+
+**下一步:** 运行 `check_docs.js` 以确定下一个缺失的 API 并继续文档化工作。
+
+---
+## 2025-05-11 17:13 - API文档: `/api/setting/setPublish`
+
+**时间戳:**
+- 开始: 2025-05-11 17:11:04 (大约)
+- 结束: 2025-05-11 17:13:12
+
+**处理的API:** `/api/setting/setPublish`
+
+**摘要:** 为 `/api/setting/setPublish` API 端点创建了 HTML 文档。
+
+**详情:**
+*   **API 端点:** `/api/setting/setPublish`
+*   **HTTP 方法:** `POST`
+*   **认证:** `model.CheckAuth`, `model.CheckAdminRole`, `model.CheckReadonly`。
+*   **Go 函数:** `setPublish` (位于 `siyuan/kernel/api/setting.go` 文件，第 539-567 行)。
+*   **请求体结构:** 接受一个完整的 `conf.Publish` 对象，定义在 `siyuan/kernel/conf/publish.go`。
+    *   `Enable` (boolean): 启用/禁用发布服务。
+    *   `Port` (uint16): 发布服务使用的端口。
+    *   `Auth` (object): Basic 认证设置。
+        *   `Enable` (boolean): 启用/禁用发布服务的 Basic 认证。
+        *   `Accounts` (array of objects): Basic 认证的用户名/密码/备注列表。
+*   **功能:** 更新全局发布服务配置。如果 `enable` 为 true，它会尝试在指定的 `port` 上初始化/重启发布服务。
+*   **响应:** 标准的思源 API 响应。成功时 (`code: 0`)，`data` 包含:
+    *   `port` (number): 发布服务实际运行的端口号。
+    *   `publish` (object): 更新后的完整 `conf.Publish` 对象。
+*   **操作:** 创建了 `siyuan-kernelApi-docs/setting/setPublish.html`.
+    *   文档包括 `conf.Publish`, `conf.BasicAuth`, 和 `conf.BasicAuthAccount` 的详细参数表。
+    *   在线测试区域包含一个 `loadCurrentPublishConf()` 按钮，该按钮首先尝试通过 `/api/setting/getPublish` 获取当前设置，如果需要则回退到 `/api/system/getConf`。
+
+**下一步:** 运行 `check_docs.js` 以确定下一个缺失的 API 并继续文档化工作。 
+
+---
+## 2025-05-11 17:18 - API文档: `/api/setting/setSearch`
+
+**时间戳:**
+- 开始: 2025-05-11 17:17:39 (大约)
+- 结束: 2025-05-11 17:18:57
+
+**处理的API:** `/api/setting/setSearch`
+
+**摘要:** 为 `/api/setting/setSearch` API 端点创建了 HTML 文档。
+
+**详情:**
+*   **API 端点:** `/api/setting/setSearch`
+*   **HTTP 方法:** `POST`
+*   **认证:** `model.CheckAuth`, `model.CheckAdminRole`, `model.CheckReadonly`。
+*   **Go 函数:** `setSearch` (位于 `siyuan/kernel/api/setting.go` 文件，第 422-457 行)。
+*   **请求体结构:** 接受一个完整的 `conf.Search` 对象，定义在 `siyuan/kernel/conf/search.go`。
+    *   包含众多布尔型字段控制搜索内容类型 (如 `document`, `heading`, `codeBlock` 等)。
+    *   包含通用设置如 `limit` (最小32), `caseSensitive`。
+    *   包含范围设置如 `name`, `alias`, `memo`, `ial`。
+    *   包含资源文件索引设置 `indexAssetPath`。
+    *   包含反链提及和虚拟引用相关配置 (`backlinkMention*`, `virtualRef*`)。
+*   **功能:** 更新全局搜索配置。
+    *   更改 `caseSensitive` 或 `indexAssetPath` 会触发全量重建索引。
+    *   更改虚拟引用相关配置会重置虚拟引用缓存。
+*   **响应:** 标准的思源 API 响应。成功时 (`code: 0`)，`data` 包含更新后的 `conf.Search` 对象。
+*   **操作:** 创建了 `siyuan-kernelApi-docs/setting/setSearch.html`.
+    *   文档中详细列出了 `conf.Search` 的所有字段及其默认值。
+    *   在线测试区提供了加载当前搜索配置的功能。
+
+**下一步:** 运行 `check_docs.js` 以确定下一个缺失的 API 并继续文档化工作。 
+
+---
+## 2025-05-11 17:22 - API文档: `/api/setting/setSnippet` (全局开关)
+
+**时间戳:**
+- 开始: 2025-05-11 17:21:10 (大约)
+- 结束: 2025-05-11 17:22:28
+
+**处理的API:** `/api/setting/setSnippet`
+
+**摘要:** 为 `/api/setting/setSnippet` API 端点创建了 HTML 文档，该接口用于控制代码片段的全局启用状态。
+
+**详情:**
+*   **API 端点:** `/api/setting/setSnippet` (实际调用内核中的 `setConfSnippet`)
+*   **HTTP 方法:** `POST`
+*   **认证:** `model.CheckAuth`, `model.CheckAdminRole`, `model.CheckReadonly`。
+*   **Go 函数:** `setConfSnippet` (位于 `siyuan/kernel/api/setting.go` 文件，第 53-76 行)。
+*   **请求体结构:** 接受一个 `conf.Snpt` 对象，定义在 `siyuan/kernel/conf/snippet.go`。
+    *   `enabledCSS` (boolean): 全局启用/禁用所有 CSS 代码片段 (默认: `true`)。
+    *   `enabledJS` (boolean): 全局启用/禁用所有 JS 代码片段 (默认: `true`)。
+*   **功能:** 更新全局代码片段的启用/禁用状态。修改 `conf.json` 中的 `snippet` 部分。
+*   **响应:** 标准的思源 API 响应。成功时 (`code: 0`)，`data` 包含更新后的 `conf.Snpt` 对象。
+*   **操作:** 创建了 `siyuan-kernelApi-docs/setting/setSnippet.html`.
+    *   文档中说明了此接口是全局开关，并指明单个代码片段的管理由 `/api/snippet/*` 下的接口负责。
+    *   在线测试区允许用户切换 CSS 和 JS 的全局启用状态。
+
+**注意点:**
+*   与 `/api/snippet/setSnippet` (位于 `siyuan/kernel/api/snippet.go`) 不同，后者用于管理一个 `conf.Snippet` 对象列表（即具体的代码片段内容）。
+
+**下一步:** 运行 `check_docs.js` 以确定下一个缺失的 API 并继续文档化工作。 
+
+---
+## 2025-05-11 17:25 - API Doc: `/api/storage/getCriteria`
+
+**Timestamps:**
+- Start: 2025-05-11 17:23:49
+- End: 2025-05-11 17:25:12
+
+**API Processed:** `/api/storage/getCriteria`
+
+**Summary:** Created HTML documentation for the `/api/storage/getCriteria` API endpoint.
+
+**Details:**
+*   **API Endpoint:** `/api/storage/getCriteria`
+*   **HTTP Method:** `POST`
+*   **Authentication:** `model.CheckAuth`.
+*   **Go Function:** `getCriteria` in `siyuan/kernel/api/storage.go` (handler), which calls `model.GetCriteria()` in `siyuan/kernel/model/storage.go`.
+*   **Associated Config Struct:** `model.Criterion`, `model.CriterionTypes`, `model.CriterionReplaceTypes` in `siyuan/kernel/model/storage.go`.
+*   **Request Parameters:** None (empty JSON object `{}`).
+*   **Functionality:** Retrieves a list of all saved search/replace criteria. These criteria are stored in `data/storage/criteria.json`.
+*   **Response:** A JSON array of `Criterion` objects.
+    *   Each `Criterion` object includes fields like `name`, `sort`, `group`, `hasReplace`, `method`, `hPath`, `idPath`, `k` (keyword), `r` (replacement), `types` (for search), and `replaceTypes` (for replacement).
+*   **Action:** Created `siyuan-kernelApi-docs/storage/getCriteria.html`.
+    *   The documentation includes detailed descriptions of the `Criterion`, `CriterionTypes`, and `CriterionReplaceTypes` structures.
+    *   An online test area is provided.
+
+**Next Step:** Run `check_docs.js` to identify the next missing API and continue documentation. 

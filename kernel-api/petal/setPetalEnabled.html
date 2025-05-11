@@ -1,0 +1,109 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/petal/setPetalEnabled"> <!-- API Endpoint Meta Tag -->
+    <title>设置挂件启用状态 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <h1>设置挂件启用状态 (setPetalEnabled)</h1>
+        <nav>
+            <a href="../index.html">首页</a> | 
+            <a href="index.html">Petal API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/petal.go#L41" target="_blank">GitHub Source</a>
+        </nav>
+    </header>
+    <main>
+        <section id="description">
+            <h2>功能描述</h2>
+            <p>此 API 端点 <code>POST /api/petal/setPetalEnabled</code> 用于设置指定前端界面中特定挂件（由包名识别）的启用或禁用状态。</p>
+            <p>通过这个 API，可以动态地控制哪些挂件在特定的前端环境中是激活的。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体必须是 JSON 格式，包含以下参数：</p>
+            <ul>
+                <li><code>packageName</code> (string): <strong>必填</strong>。要设置状态的挂件的包名（唯一标识符），例如 <code>"siyuan-petal-clock"</code>。</li>
+                <li><code>enabled</code> (boolean): <strong>必填</strong>。设置挂件的启用状态，<code>true</code> 表示启用，<code>false</code> 表示禁用。</li>
+                <li><code>frontend</code> (string): <strong>必填</strong>。指定要设置哪个前端界面的挂件状态，例如 <code>"desktop"</code>, <code>"mobile"</code> 等。</li>
+            </ul>
+            <p><strong>请求示例 (启用时钟挂件):</strong></p>
+            <pre><code class="language-json">
+{
+  "packageName": "siyuan-petal-clock",
+  "enabled": true,
+  "frontend": "desktop"
+}
+            </code></pre>
+            <p><strong>请求示例 (禁用时钟挂件):</strong></p>
+            <pre><code class="language-json">
+{
+  "packageName": "siyuan-petal-clock",
+  "enabled": false,
+  "frontend": "desktop"
+}
+            </code></pre>
+        </section>
+
+        <section id="response-format">
+            <h2>响应结果</h2>
+            <p>成功的请求将返回一个 JSON 对象，<code>code</code> 为 0。</p>
+            <p><code>data</code> 字段的内容取决于后端 <code>model.SetPetalEnabled</code> 函数的返回值，可能为 <code>null</code> 或包含一些确认信息。通常在设置类操作成功后，如果没有特殊数据需要返回，<code>data</code> 会是 <code>null</code>。</p>
+            <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": null // 或其他确认信息
+}
+            </code></pre>
+            <ul>
+                <li><code>code</code>: 0 表示成功，非 0 表示失败（例如找不到指定的挂件包名）。</li>
+                <li><code>msg</code>: 错误信息（如果 code 非 0）。</li>
+                <li><code>data</code>: 操作成功时通常为 `null`。</li>
+            </ul>
+        </section>
+
+        <section id="online-testing">
+            <h2>在线测试</h2>
+            <p>您可以在下方输入请求参数进行在线测试。</p>
+            <div class="api-tester">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="请输入您的 API Token (可选)" value=""><br>
+
+                <label for="endpoint">Endpoint:</label>
+                <input type="text" id="endpoint" value="/api/petal/setPetalEnabled" readonly=""><br>
+
+                <label for="method">Method:</label>
+                <input type="text" id="method" value="POST" readonly=""><br>
+
+                <label for="params">Parameters (JSON):</label><br>
+                <textarea id="params" rows="8" placeholder="{
+  &quot;packageName&quot;: &quot;挂件包名&quot;,
+  &quot;enabled&quot;: true, 
+  &quot;frontend&quot;: &quot;desktop&quot;
+}"></textarea><br>
+
+                <button onclick="sendRequest()">发送请求</button>
+
+                <h3>响应结果:</h3>
+                <pre id="response-output"></pre>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>思源笔记 API 文档 | 最后更新时间：<span id="last-updated"></span></p>
+    </footer>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        // 更新最后更新时间
+        document.getElementById('last-updated').textContent = new Date().toLocaleString();
+    </script>
+
+ </body></html>

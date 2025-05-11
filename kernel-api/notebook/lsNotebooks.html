@@ -1,0 +1,209 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>列出笔记本 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+    <a href="./index.html" class="back-link">← 返回 Notebook API 列表</a>
+    
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/notebook/lsNotebooks</span>
+    </div>
+    
+    <h1>列出笔记本</h1>
+    <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/notebook.go#L399" target="_blank" class="github-link">在 GitHub 上查看源码 (notebook.go)</a>
+    <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/model/box.go#L48" target="_blank" class="github-link">Box 定义 (box.go)</a>
+
+    <div class="auth-tags">
+        <span class="chip auth-required">需要认证</span>
+    </div>
+    
+    <h2>接口描述</h2>
+    <p>列出当前工作空间中的所有笔记本。可以通过参数指定是否只列出包含闪卡功能的笔记本。</p>
+    <p>此接口会根据参数调用内核的 <code>model.ListNotebooks()</code> 或 <code>model.GetFlashcardNotebooks()</code> 方法。</p>
+    
+    <h2>请求参数</h2>
+    <p>请求体为一个 JSON 对象，可以包含以下可选字段：</p>
+    <table class="request-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>必需</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>flashcard</td>
+                <td>boolean</td>
+                <td>否</td>
+                <td>如果为 <code>true</code>，则只列出包含闪卡功能的笔记本。默认为 <code>false</code>，列出所有笔记本。</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <h2>返回值</h2>
+    <p>返回标准的 JSON 结构，其中 <code>data</code> 字段包含一个名为 <code>notebooks</code> 的数组，数组中的每个元素都是一个 <code>Box</code> 对象：</p>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>code</td>
+                <td>number</td>
+                <td>返回码，0 表示成功，其他表示失败。</td>
+            </tr>
+            <tr>
+                <td>msg</td>
+                <td>string</td>
+                <td>错误信息，成功时为空字符串。</td>
+            </tr>
+            <tr>
+                <td>data</td>
+                <td>object</td>
+                <td>成功时，包含 <code>notebooks</code> 数组的对象；失败时可能为 null。</td>
+            </tr>
+            <tr>
+                <td>data.notebooks</td>
+                <td>array</td>
+                <td><code>Box</code> 对象组成的数组，每个对象代表一个笔记本。</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3><code>Box</code> 对象结构</h3>
+    <p>数组中的每个 <code>Box</code> 对象包含以下字段：</p>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>字段名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>id</td>
+                <td>string</td>
+                <td>笔记本的唯一标识符 (ID)。</td>
+            </tr>
+            <tr>
+                <td>name</td>
+                <td>string</td>
+                <td>笔记本的名称。</td>
+            </tr>
+            <tr>
+                <td>icon</td>
+                <td>string</td>
+                <td>笔记本的图标，通常是一个 Emoji 字符或图片文件名。</td>
+            </tr>
+            <tr>
+                <td>sort</td>
+                <td>number</td>
+                <td>笔记本的排序值，用于自定义排序。</td>
+            </tr>
+            <tr>
+                <td>sortMode</td>
+                <td>number</td>
+                <td>笔记本内文档列表的默认排序模式。具体值请参考 <code>kernel/util/sort.go</code> 中的 <code>SortMode*</code> 常量。</td>
+            </tr>
+            <tr>
+                <td>closed</td>
+                <td>boolean</td>
+                <td>笔记本是否处于关闭状态 (未在工作空间中加载)。</td>
+            </tr>
+            <tr>
+                <td>newFlashcardCount</td>
+                <td>number</td>
+                <td>该笔记本中新的闪卡数量。</td>
+            </tr>
+            <tr>
+                <td>dueFlashcardCount</td>
+                <td>number</td>
+                <td>该笔记本中到期的闪卡数量。</td>
+            </tr>
+            <tr>
+                <td>flashcardCount</td>
+                <td>number</td>
+                <td>该笔记本中总的闪卡数量。</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="example-tab-all">请求示例 (所有笔记本)</div>
+            <div class="tab" data-target="example-tab-flashcard">请求示例 (仅闪卡笔记本)</div>
+            <div class="tab" data-target="response-tab">返回示例</div>
+        </div>
+        
+        <div id="example-tab-all" class="tab-content active">
+            <h3>请求示例 (列出所有笔记本)</h3>
+            <pre><code class="language-json">{}</code></pre>
+            <p class="note">或者，可以明确指定 <code>flashcard: false</code>:</p>
+            <pre><code class="language-json">{
+  "flashcard": false
+}</code></pre>
+        </div>
+
+        <div id="example-tab-flashcard" class="tab-content">
+            <h3>请求示例 (仅列出含闪卡的笔记本)</h3>
+            <pre><code class="language-json">{
+  "flashcard": true
+}</code></pre>
+        </div>
+        
+        <div id="response-tab" class="tab-content">
+            <h3>成功返回示例</h3>
+            <pre><code class="language-json">{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "notebooks": [
+      {
+        "id": "20200812220409-rng0qan",
+        "name": "我的知识库",
+        "icon": "1f4da",
+        "sort": 0,
+        "sortMode": 0,
+        "closed": false,
+        "newFlashcardCount": 10,
+        "dueFlashcardCount": 5,
+        "flashcardCount": 100
+      },
+      {
+        "id": "20210310100000-abcdefg",
+        "name": "学习笔记",
+        "icon": "",
+        "sort": 1,
+        "sortMode": 3,
+        "closed": true,
+        "newFlashcardCount": 0,
+        "dueFlashcardCount": 0,
+        "flashcardCount": 0
+      }
+      // ... 可能有更多笔记本对象
+    ]
+  }
+}</code></pre>
+            <h3>失败返回示例 (例如，内核方法出错)</h3>
+            <pre><code class="language-json">{
+  "code": -1, 
+  "msg": "Failed to list notebooks: specific error message from kernel",
+  "data": null
+}</code></pre>
+        </div>
+    </div>
+    
+    <script src="../script.js"></script>
+</body>
+</html>

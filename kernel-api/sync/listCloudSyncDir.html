@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>API: /api/sync/listCloudSyncDir - 列出云端同步目录</title>
+    <link rel="stylesheet" href="../common.css">
+    <script src="../common.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>列出云端同步目录</h1>
+        <p><strong>API Endpoint:</strong> <code>POST /api/sync/listCloudSyncDir</code></p>
+        <p><strong>认证:</strong> 需要登录 (<code>model.CheckAuth</code>) 和管理员权限 (<code>model.CheckAdminRole</code>)。</p>
+
+        <h2>功能描述</h2>
+        <p>此 API 用于列出当前配置的云存储服务提供商中可用的所有同步目录（数据仓库）。它还会返回这些目录的总大小以及当前在思源配置中选定的同步目录名称。</p>
+        <p>此接口会首先检查同步功能是否已启用以及云服务是否在线且已配置。</p>
+
+        <h2>请求</h2>
+        <p>此接口为 POST 请求，但不需要请求体。发送一个空的 JSON 对象 <code>{}</code> 或无内容的 POST 请求即可。</p>
+
+        <h2>响应</h2>
+        <p>成功后，服务器返回 HTTP 状态码 <code>200</code> 和一个 JSON 对象，其 <code>data</code> 字段包含以下信息：</p>
+        <pre><code class="language-json">
+{
+    "code": 0,
+    "msg": "",
+    "data": {
+        "syncDirs": [
+            {"name": "SiyuanData-Main"},
+            {"name": "MyArchive"}
+            // ...更多目录
+        ],
+        "hSize": "2.1 GB", // 所有列出目录的总大小（人类可读格式）
+        "checkedSyncDir": "SiyuanData-Main" // 当前在 conf.sync.cloudName 中配置的目录名
+    }
+}
+        </code></pre>
+        <ul>
+            <li><code>code</code> (number): <code>0</code> 表示成功，其他值（如 <code>1</code>）表示失败。</li>
+            <li><code>msg</code> (string): 错误信息（如果 <code>code</code> 非 <code>0</code>）。</li>
+            <li><code>data</code> (object): 包含同步目录信息的对象。
+                <ul>
+                    <li><code>syncDirs</code> (array): 一个对象数组，每个对象代表一个云端同步目录。
+                        <ul>
+                            <li><code>name</code> (string): 目录的名称。</li>
+                            <!-- 根据 model.ListCloudSyncDir 分析，Sync 结构体的 HSize 未被填充 -->
+                        </ul>
+                    </li>
+                    <li><code>hSize</code> (string): 所有 `syncDirs` 中列出的目录的总大小，以人类可读的格式表示 (例如 "1.5 GB")。</li>
+                    <li><code>checkedSyncDir</code> (string): 当前在思源配置中 (<code>model.Conf.Sync.CloudName</code>) 选定的云端同步目录的名称。</li>
+                </ul>
+            </li>
+        </ul>
+        <p>如果发生错误（例如同步未启用、云服务未连接或未配置、或无法列出目录），<code>code</code> 将为非零值，<code>msg</code> 会包含错误描述，并且 <code>data</code> 可能包含 <code>{"closeTimeout": 5000}</code>。</p>
+
+        <h2>在线测试</h2>
+        <div class="test-area">
+            <button type_="button" onclick="listDirs()">列出云端目录</button>
+            <h3>响应:</h3>
+            <pre id="responseOutput">点击按钮发送请求</pre>
+        </div>
+
+        <script>
+            async function listDirs() {
+                const outputElement = document.getElementById('responseOutput');
+                outputElement.textContent = '正在请求...';
+                try {
+                    const response = await fetch('/api/sync/listCloudSyncDir', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // 'Authorization': 'Token YOUR_API_TOKEN' // 如果需要，请取消注释并替换
+                        },
+                        body: JSON.stringify({})
+                    });
+                    const result = await response.json();
+                    outputElement.textContent = JSON.stringify(result, null, 2);
+                } catch (error) {
+                    outputElement.textContent = '请求失败: ' + error.message;
+                    console.error('Fetch Error:', error);
+                }
+            }
+        </script>
+    </div>
+</body>
+</html> 

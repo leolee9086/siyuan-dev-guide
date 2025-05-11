@@ -1,0 +1,134 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/repo/diffRepoSnapshots"> <!-- API Endpoint Meta Tag -->
+    <title>对比快照差异 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <h1>对比快照差异 (diffRepoSnapshots)</h1>
+        <nav>
+            <a href="../index.html">首页</a> | 
+            <a href="index.html">Repo API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/repo.go#L83" target="_blank">GitHub Source</a>
+        </nav>
+    </header>
+    <main>
+        <section id="description">
+            <h2>功能描述</h2>
+            <p>此 API 端点 <code>POST /api/repo/diffRepoSnapshots</code> 用于对比两个指定的版本库快照之间的差异。</p>
+            <p>它可以帮助用户或开发者了解两个不同时间点的版本库状态变化，例如哪些文件被添加、修改或删除了。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体必须是 JSON 格式，包含以下参数：</p>
+            <ul>
+                <li><code>left</code> (string): <strong>必填</strong>。第一个（通常是较旧的）快照的 ID。</li>
+                <li><code>right</code> (string): <strong>必填</strong>。第二个（通常是较新的）快照的 ID。</li>
+            </ul>
+            <p><strong>请求示例:</strong></p>
+            <pre><code class="language-json">
+{
+  "left": "20231026100000-abcdefg", 
+  "right": "20231027100000-hijklmn"
+}
+            </code></pre>
+        </section>
+
+        <section id="response-format">
+            <h2>响应结果</h2>
+            <p>成功的请求将返回一个 JSON 对象，<code>code</code> 为 0，<code>data</code> 字段包含差异信息。</p>
+            <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "addsLeft": [ // 相对于 right，left 中新增的文件列表 (通常为空，除非 left 比 right 新)
+        // {"path": "/path/to/new/file1.sy", "type": "f", "hash": "...", "size": 123, "hSize": "123 B", "mode": 436, "mtime": 1666771200, "hMtime": "..."},...
+    ],
+    "updatesLeft": [ // 相对于 right，left 中更新的文件列表
+        // {"path": "/path/to/updated/file2.sy", ... },...
+    ],
+    "updatesRight": [ // 相对于 left，right 中更新的文件列表 (内容应与 updatesLeft 一致)
+        // {"path": "/path/to/updated/file2.sy", ... },...
+    ],
+    "removesRight": [ // 相对于 left，right 中移除的文件列表
+        // {"path": "/path/to/removed/file3.sy", ... },...
+    ],
+    "left": { // 第一个快照的索引信息
+      "time": 1666771200,
+      "hTime": "2023-10-26 10:00:00",
+      "id": "20231026100000-abcdefg",
+      "size": 102400,
+      "hSize": "100 KB",
+      "tag": "", // 快照标签（如果有）
+      "files": [ /* ... left 快照中的所有文件列表 ... */ ]
+    },
+    "right": { // 第二个快照的索引信息
+      "time": 1666857600,
+      "hTime": "2023-10-27 10:00:00",
+      "id": "20231027100000-hijklmn",
+      "size": 103424,
+      "hSize": "101 KB",
+      "tag": "v1.0",
+      "files": [ /* ... right 快照中的所有文件列表 ... */ ]
+    }
+  }
+}
+            </code></pre>
+            <ul>
+                <li><code>code</code>: 0 表示成功，非 0 表示失败（例如快照 ID 无效）。</li>
+                <li><code>msg</code>: 错误信息（如果 code 非 0）。</li>
+                <li><code>data.addsLeft</code>: 一个数组，包含只存在于 `left` 快照中的文件信息。</li>
+                <li><code>data.updatesLeft</code>: 一个数组，包含在 `left` 和 `right` 中都存在但内容不同的文件信息（基于 `left` 的视角）。</li>
+                <li><code>data.updatesRight</code>: 一个数组，包含在 `left` 和 `right` 中都存在但内容不同的文件信息（基于 `right` 的视角，文件列表应与 `updatesLeft` 相同）。</li>
+                <li><code>data.removesRight</code>: 一个数组，包含只存在于 `left` 快照中但在 `right` 快照中已被删除的文件信息。</li>
+                <li><code>data.left</code>: `left` 快照的完整索引信息，包括时间、ID、大小、标签和文件列表。</li>
+                <li><code>data.right</code>: `right` 快照的完整索引信息。</li>
+            </ul>
+             <p>每个文件信息对象通常包含 `path` (路径), `type` (类型，如 'f' 文件, 'd' 目录), `hash` (内容哈希), `size` (大小), `hSize` (可读大小), `mode` (权限), `mtime` (修改时间戳), `hMtime` (可读修改时间)。</p>
+        </section>
+
+        <section id="online-testing">
+            <h2>在线测试</h2>
+            <p>您可以在下方输入要对比的两个快照 ID 进行在线测试。</p>
+            <div class="api-tester">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="请输入您的 API Token (可选)" value=""><br>
+
+                <label for="endpoint">Endpoint:</label>
+                <input type="text" id="endpoint" value="/api/repo/diffRepoSnapshots" readonly=""><br>
+
+                <label for="method">Method:</label>
+                <input type="text" id="method" value="POST" readonly=""><br>
+
+                <label for="params">Parameters (JSON):</label><br>
+                <textarea id="params" rows="8" placeholder="{
+  &quot;left&quot;: &quot;第一个快照ID&quot;, 
+  &quot;right&quot;: &quot;第二个快照ID&quot;
+}"></textarea><br>
+
+                <button onclick="sendRequest()">发送请求</button>
+
+                <h3>响应结果:</h3>
+                <pre id="response-output"></pre>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>思源笔记 API 文档 | 最后更新时间：<span id="last-updated"></span></p>
+    </footer>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        // 更新最后更新时间
+        document.getElementById('last-updated').textContent = new Date().toLocaleString();
+    </script>
+
+ </body></html>

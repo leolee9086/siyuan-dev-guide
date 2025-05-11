@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>添加虚拟引用排除关键词 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+    
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/setting/addVirtualBlockRefExclude</span>
+    </div>
+    
+    <h1>添加虚拟引用排除关键词</h1>
+    
+    <div class="auth-tags">
+        <span class="chip auth-required">需要认证</span>
+        <span class="chip admin-required">需要管理员</span>
+        <span class="chip readonly-checked">检查只读模式</span>
+    </div>
+    
+    <h2>接口描述</h2>
+    <p>添加一批关键词到虚拟块引用的排除列表中。当系统生成虚拟引用（例如，通过某些算法自动发现的潜在关联内容）时，如果目标块或其上下文包含了这些排除列表中的关键词，则这些虚拟引用可能不会被显示或建议。</p>
+    <p>此功能用于优化虚拟引用的相关性，避免不必要的干扰。在只读模式下，此操作被禁止。</p>
+    <p>操作成功后，会广播 <code>setConf</code> 事件以通知客户端配置已更新。</p>
+    
+    <h2>请求参数 (JSON Body)</h2>
+    <table class="request-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>必需</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>keywords</code></td>
+                <td>string[]</td>
+                <td>是</td>
+                <td>要添加到排除列表的关键词数组。</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <h2>返回值 (JSON)</h2>
+    <p>标准的思源笔记 API 返回结构：</p>
+    <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": null
+}</code></pre>
+    <p>成功时，<code>code</code> 为 0，<code>data</code> 为 <code>null</code>。</p>
+    
+    <h2>示例请求</h2>
+    <pre><code class="language-json">{
+    "keywords": ["示例排除词1", "ignore this"]
+}</code></pre>
+
+    <div class="test-area">
+        <h2>在线测试</h2>
+        <p>服务器地址: <input type="text" id="serverAddr" value="http://127.0.0.1:6806"></p>
+        <p>API Token: <input type="text" id="apiToken" value=""></p>
+        <p>请求体 (JSON):</p>
+        <textarea id="reqBody" rows="5" placeholder='{
+    "keywords": ["示例排除词1", "ignore this"]
+}'>{
+    "keywords": ["示例排除词1", "ignore this"]
+}</textarea>
+        <button onclick="testAPI()">发送请求</button>
+        <p>响应:</p>
+        <pre id="respArea"></pre>
+    </div>
+
+    <script>
+        async function testAPI() {
+            const serverAddr = document.getElementById('serverAddr').value;
+            const apiToken = document.getElementById('apiToken').value;
+            const reqBody = document.getElementById('reqBody').value;
+            const respArea = document.getElementById('respArea');
+            
+            try {
+                const response = await fetch(serverAddr + '/api/setting/addVirtualBlockRefExclude', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Token ' + apiToken
+                    },
+                    body: reqBody
+                });
+                const result = await response.json();
+                respArea.textContent = JSON.stringify(result, null, 2);
+            } catch (e) {
+                respArea.textContent = '请求失败: ' + e.message;
+            }
+        }
+    </script>
+</body>
+</html> 

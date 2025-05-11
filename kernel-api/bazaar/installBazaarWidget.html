@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>installBazaarWidget API</title>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../github-markdown.css">
+<link rel="stylesheet" href="../styles.css">
+<style>
+    .markdown-body { box-sizing: border-box; min-width: 200px; max-width: 980px; margin: 0 auto; padding: 45px; }
+    @media (max-width: 767px) { .markdown-body { padding: 15px; } }
+    .package-list { list-style: none; padding-left: 0; }
+    .package-item { margin-bottom: 1em; border: 1px solid #eee; padding: 1em; }
+    .package-item h4 { margin-top: 0; }
+    .copy-button { position: absolute; top: 0.5em; right: 0.5em; padding: 0.3em 0.6em; font-size: 0.8em; background-color: #eee; border: 1px solid #ccc; border-radius: 3px; cursor: pointer; }
+    .copy-button:hover { background-color: #ddd; }
+    pre { position: relative; }
+    .usage-examples { margin-top: 2em; border-top: 1px solid #eee; padding-top: 1em; }
+    .usage-examples h3 { margin-bottom: 0.5em; }
+    .usage-examples ul { list-style: disc; margin-left: 2em; }
+    /* 严重风险提示样式 */
+    .critical-warning { background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 0.75rem 1.25rem; margin-bottom: 1rem; border-radius: 0.25rem; }
+    .critical-warning strong { font-weight: bold; }
+</style>
+</head>
+<body class="markdown-body">
+<blockquote>
+<p>本文档非官方出品，主要由 AI 辅助编写，不保证绝对准确。如有疑问，请以 <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/bazaar.go">kernel/api/bazaar.go</a> 中的源码为准。</p>
+<p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<h1>installBazaarWidget</h1>
+<p>从集市下载并安装指定的挂件 (Widget)。</p>
+<p><strong>新手提示：</strong> 这个 API 就是你在思源集市里点击挂件"安装"按钮时背后执行的操作。</p>
+<div class="critical-warning">
+    <p><strong>🚨🚨🚨 严重风险警告！请务必仔细阅读！ 🚨🚨🚨</strong></p>
+    <ul>
+        <li>安装挂件是**高风险操作**！挂件代码（通常是 HTML/CSS/JavaScript）可以访问你的笔记数据、执行任意脚本，甚至可能连接互联网。</li>
+        <li><strong>请仅安装来自你完全信任的、声誉良好的开发者的挂件！</strong> 在安装前尽可能了解挂件的功能和来源。</li>
+        <li>恶意或编写拙劣的挂件可能导致**数据泄露、性能问题、界面卡死、甚至安全风险**！</li>
+        <li>此操作会从网络下载代码并在本地文件系统 (`data/widgets/`) 中执行安装。</li>
+        <li>需要**管理员权限**并且不能在**只读模式**下运行。</li>
+        <li>安装过程可能因网络、仓库或挂件本身的问题而失败。</li>
+    </ul>
+    <p><strong>后果自负！如果您不确定挂件的安全性，请不要安装！</strong></p>
+</div>
+<p><strong>注意</strong>: 此 API 需要认证、管理员权限且非只读模式。</p>
+<h2>地址</h2>
+<p><code>POST /api/bazaar/installBazaarWidget</code></p>
+<h2>请求体 (JSON)</h2>
+<pre><code class="language-json">{
+  "repoURL": "挂件的 Git 仓库地址",
+  "repoHash": "仓库特定提交的哈希值",
+  "packageName": "挂件名称",
+  "keyword": "可选的关键词"
+}
+</code></pre>
+<ul>
+<li><code>repoURL</code>: (<code>string</code>) 必填。挂件的来源 Git 仓库 URL。通常从 <code>getBazaarWidget</code> API 获取。</li>
+<li><code>repoHash</code>: (<code>string</code>) 必填。仓库的特定 commit 哈希值，代表要安装的版本。通常从 <code>getBazaarWidget</code> API 获取。</li>
+<li><code>packageName</code>: (<code>string</code>) 必填。要安装的挂件的名称。</li>
+<li><code>keyword</code>: (<code>string</code>) 可选。用于安装成功后刷新集市挂件列表时的过滤，对安装操作本身影响不大。可以留空。</li>
+</ul>
+<h2>响应体 (JSON)</h2>
+<p>安装请求成功后，返回标准响应体，`data` 字段包含刷新后的集市挂件列表。</p>
+<pre><code class="language-json">{
+  "code": 0, // 0 表示安装任务启动成功
+  "msg": "", // 成功时为空，失败时包含错误信息
+  "data": {
+    "packages": [
+      // 安装后刷新得到的 *所有* 集市可用挂件列表 (针对指定 keyword)...
+      // (结构同 getBazaarWidget 返回的 packages)
+    ]
+  }
+}
+</code></pre>
+<p><strong>注意:</strong></p>
+<ul>
+    <li><code>code: 0</code> 仅表示后端接受了安装请求。实际下载和安装过程可能失败。</li>
+    <li>如果安装失败，<code>code</code> 会是非 0 值，<code>msg</code> 会包含错误信息。</li>
+    <li>安装挂件后，可能需要刷新挂件列表或相关文档才能看到。</li>
+</ul>
+<h2>示例</h2>
+<div style="position: relative;">
+<pre id="example-fetch-code"><code class="language-javascript">// 假设要安装名为 "simple-clock-widget" 的挂件
+const repo = "https://github.com/user/siyuan-simple-clock";
+const hash = "aabbccddeeff"; // 要安装的版本哈希
+const pkgName = "simple-clock-widget";
+
+// **再次警告：执行此代码会实际安装挂件，请确保来源可信！**
+fetch('/api/bazaar/installBazaarWidget', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Token YOUR_API_TOKEN' // 替换为你的管理员 API Token
+  },
+  body: JSON.stringify({
+    repoURL: repo,
+    repoHash: hash,
+    packageName: pkgName,
+    keyword: ""
+  })
+})
+.then(response => response.json())
+.then(data => {
+  if (data.code === 0) {
+    console.log('挂件安装请求成功，后台正在处理...');
+    // 可以根据需要处理返回的 packages 数据，例如刷新界面
+  } else {
+    console.error('挂件安装失败:', data.msg);
+    // 向用户显示错误信息 data.msg
+  }
+})
+.catch(error => console.error('请求错误:', error));
+</code></pre>
+<button class="copy-button" onclick="copyCode('example-fetch-code')">复制</button>
+</div>
+
+<!-- 在线测试区域 -->
+<div class="test-area">
+    <h3>在线测试</h3>
+    <p>你需要先通过 <code>getBazaarWidget</code> 获取到一个具体挂件的 <code>repoURL</code>, <code>repoHash</code> 和 <code>packageName</code> 才能测试此接口。</p>
+    <div class="critical-warning"><strong>极其危险！</strong> 在此测试会实际下载并安装挂件！请确保你完全信任要安装的挂件来源和代码！<strong>不要随意安装未知挂件！</strong></div>
+    <form id="api-test-form">
+        <div class="form-group">
+            <label for="api-token">API Token (管理员):</label>
+            <input type="text" id="api-token" placeholder="需要管理员权限的Token">
+        </div>
+        <div class="form-group">
+            <label for="api-endpoint">接口地址:</label>
+            <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/bazaar/installBazaarWidget">
+        </div>
+        <div class="form-group">
+            <label for="api-method">请求方法:</label>
+            <input type="text" id="api-method" value="POST" readonly>
+        </div>
+        <div class="form-group">
+            <label for="api-params">请求参数 (JSON):</label>
+            <textarea id="api-params">{
+  "repoURL": "输入挂件仓库 URL",
+  "repoHash": "输入仓库 commit hash",
+  "packageName": "输入挂件名称",
+  "keyword": ""
+}</textarea>
+        </div>
+        <button type="submit" class="btn" style="background-color: #dc3545; color: white;">发送安装请求 (风险自负!)</button>
+    </form>
+    <div id="api-result" class="result"></div>
+</div>
+
+<!-- 实际应用案例 -->
+<div class="usage-examples">
+    <h3>实际应用案例 / Who Uses This API?</h3>
+    <p>如果你的外部工具使用了这个 API 来管理挂件安装，欢迎提交 Pull Request 将你的项目添加到下方列表！</p>
+    <ul>
+        <li>暂无 （期待你的贡献！）</li>
+    </ul>
+</div>
+
+<script src="../api-tester.js"></script>
+<script>
+// 复制按钮的 JavaScript 函数
+function copyCode(elementId) {
+    const codeElement = document.getElementById(elementId);
+    if (codeElement) {
+        const code = codeElement.textContent || codeElement.innerText;
+        navigator.clipboard.writeText(code).then(() => {
+            const button = codeElement.nextElementSibling;
+            if (button && button.classList.contains('copy-button')) {
+                const originalText = button.textContent;
+                button.textContent = '已复制!';
+                setTimeout(() => { button.textContent = originalText; }, 2000);
+            }
+        }).catch(err => {
+            console.error('复制失败:', err);
+        });
+    }
+}
+</script>
+
+</body>
+</html> 

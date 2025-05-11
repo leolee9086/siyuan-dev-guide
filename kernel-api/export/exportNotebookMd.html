@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导出笔记本为 Markdown (exportNotebookMd)</title>
+    <link rel="stylesheet" href="../common/css/styles.css">
+    <link rel="stylesheet" href="../common/css/prism.css">
+</head>
+<body>
+    <header class="api-header">
+        <h1>导出笔记本为 Markdown (exportNotebookMd)</h1>
+        <p class="endpoint-container">
+            <span class="method post">POST</span>
+            <span class="endpoint">/api/export/exportNotebookMd</span>
+        </p>
+        <nav class="nav-links">
+            <a href="#description">接口描述</a>
+            <a href="#request-parameters">请求参数</a>
+            <a href="#response-body">响应体</a>
+            <a href="#example-request">请求示例</a>
+            <a href="#example-response">响应示例</a>
+            <a href="#error-codes">错误码</a>
+            <a href="#source-code">源码定位</a>
+            <a href="../index.html" class="back-to-index">返回分类索引</a>
+            <a href="../../index.html" class="back-to-main-index">返回总索引</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="description">
+            <h2>接口描述</h2>
+            <p>本接口用于将指定 ID 的整个笔记本导出为一系列 Markdown 文件，并将这些文件及其相关资源（如图片）打包成一个 ZIP 压缩文件。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体为一个 JSON 对象，包含以下字段：</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>参数名</th>
+                        <th>类型</th>
+                        <th>必需</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>notebook</code></td>
+                        <td>string</td>
+                        <td>是</td>
+                        <td>需要导出的笔记本的 ID。</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="response-body">
+            <h2>响应体</h2>
+            <p>成功时，响应体为一个 JSON 对象，包含导出的 ZIP 文件信息：</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>参数名</th>
+                        <th>类型</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>name</code></td>
+                        <td>string</td>
+                        <td>导出的 ZIP 压缩包的文件名 (例如：<code>MyNotebook.zip</code>)。</td>
+                    </tr>
+                    <tr>
+                        <td><code>zip</code></td>
+                        <td>string</td>
+                        <td>导出的 ZIP 压缩包在服务器上的临时路径。</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>如果发生错误，响应体的 <code>code</code> 字段将为非 0 值，<code>msg</code> 字段将包含错误信息。</p>
+        </section>
+
+        <section id="example-request">
+            <h2>请求示例</h2>
+            <pre><code class="language-json">
+{
+  "notebook": "20200812223209-gtylnr2"
+}
+            </code></pre>
+        </section>
+
+        <section id="example-response">
+            <h2>响应示例</h2>
+            <p>成功响应：</p>
+            <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "name": "笔记本标题.zip",
+    "zip": "/temp/export/笔记本标题-20230509110500.zip"
+  }
+}
+            </code></pre>
+            <p>失败响应（示例）：</p>
+            <pre><code class="language-json">
+{
+  "code": 1,
+  "msg": "Notebook not found or export failed.",
+  "data": null
+}
+            </code></pre>
+        </section>
+
+        <section id="error-codes">
+            <h2>错误码</h2>
+            <ul>
+                <li><code>0</code>: 成功</li>
+                <li>其他非零值: 失败，具体错误信息请参考 <code>msg</code> 字段。例如，笔记本 ID 无效或导出过程中发生内部错误。</li>
+            </ul>
+        </section>
+
+        <section id="source-code">
+            <h2>源码定位</h2>
+            <p>后端实现相关的核心逻辑可以在以下文件中找到：</p>
+            <ul>
+                <li>路由定义: <code>siyuan/kernel/api/router.go</code> (搜索 <code>/api/export/exportNotebookMd</code>)</li>
+                <li>主要逻辑: <code>siyuan/kernel/api/export.go</code> (函数 <code>exportNotebookMd</code>)</li>
+                <li>模型层导出逻辑: <code>siyuan/kernel/model/export.go</code> (函数 <code>ExportNotebookMarkdown</code>)</li>
+            </ul>
+        </section>
+
+        <section class="test-area">
+            <h2>在线测试</h2>
+            <p>请在下方输入请求 JSON，然后点击"发送请求"按钮。</p>
+            <textarea id="request-payload" rows="3" placeholder='{ "notebook": "your_notebook_id" }'></textarea>
+            <button id="send-request-btn">发送请求</button>
+            <h3>响应:</h3>
+            <pre><code id="response-output" class="language-json"></code></pre>
+        </section>
+    </main>
+
+    <blockquote class="important-note">
+        <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+        <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+    </blockquote>
+
+    <footer>
+        <p>&copy; 2024 社区贡献者们. <a href="https://github.com/siyuan-note/siyuan-kernelApi-docs">本文档源码</a></p>
+    </footer>
+    <script src="../common/js/prism.js"></script>
+    <script src="../common/js/api-tester.js"></script>
+</body>
+</html> 

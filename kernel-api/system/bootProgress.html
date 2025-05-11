@@ -1,0 +1,159 @@
+<!DOCTYPE html><html lang="zh-cmn-Hans"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>获取启动进度 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../api-tester.js" defer=""></script>
+</head>
+<body>
+    <div class="api-document">
+        <h1>获取启动进度</h1>
+        
+        <div class="api-info">
+            <div class="method">
+                <span class="label">请求方式:</span>
+                <span class="value">GET 或 POST</span>
+            </div>
+            <div class="endpoint">
+                <span class="label">接口路径:</span>
+                <span class="value">/api/system/bootProgress</span>
+            </div>
+        </div>
+
+        <div class="description">
+            <p>获取思源笔记启动进程的当前进度和详细信息，系统启动时页面可以通过此接口获取启动状态。</p>
+        </div>
+
+        <div class="authentication">
+            <h2>认证要求</h2>
+            <p>需要在请求头中包含有效的 <code>Authorization</code> Token。</p>
+        </div>
+
+        <div class="parameters">
+            <h2>请求参数</h2>
+            <p>此接口不需要任何参数。</p>
+        </div>
+
+        <div class="response">
+            <h2>返回值</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>名称</th>
+                        <th>类型</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>code</td>
+                        <td>number</td>
+                        <td>返回码，0 表示成功</td>
+                    </tr>
+                    <tr>
+                        <td>msg</td>
+                        <td>string</td>
+                        <td>错误信息，成功时为空</td>
+                    </tr>
+                    <tr>
+                        <td>data</td>
+                        <td>object</td>
+                        <td>返回数据</td>
+                    </tr>
+                    <tr>
+                        <td>data.progress</td>
+                        <td>number</td>
+                        <td>启动进度，范围从 0 到 100</td>
+                    </tr>
+                    <tr>
+                        <td>data.details</td>
+                        <td>string</td>
+                        <td>启动详情描述，通常包含版本号和当前正在进行的操作</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="examples">
+            <h2>请求示例</h2>
+            <pre><code>{
+    // 无需请求体
+}</code></pre>
+
+            <h2>响应示例</h2>
+            <pre><code>{
+    "code": 0,
+    "msg": "",
+    "data": {
+        "progress": 63,
+        "details": "v3.0.17 Indexing blocks..."
+    }
+}</code></pre>
+        </div>
+
+        <div class="online-test">
+            <h2>在线测试</h2>
+            <div id="api-tester" class="api-tester-container">
+                <form class="api-form">
+                    <div class="form-group">
+                        <label for="token">API Token:</label>
+                        <input type="text" id="token" class="token-input" placeholder="输入您的 API Token">
+                        <button type="button" class="save-token">保存</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="endpoint">接口地址:</label>
+                        <input type="text" id="endpoint" value="/api/system/bootProgress" readonly="">
+                    </div>
+                    <div class="form-group">
+                        <label for="method">请求方法:</label>
+                        <select id="method">
+                            <option value="GET">GET</option>
+                            <option value="POST">POST</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="params">请求参数:</label>
+                        <textarea id="params" rows="4" placeholder="{}" readonly=""></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="submit-button">发送请求</button>
+                        <div class="tabs">
+                            <button type="button" class="tab-button active" data-tab="result">结果</button>
+                            <button type="button" class="tab-button" data-tab="curl">cURL</button>
+                            <button type="button" class="tab-button" data-tab="fetch">Fetch</button>
+                        </div>
+                    </div>
+                </form>
+                <div class="result-container">
+                    <div class="tab-content active" id="result-tab">
+                        <div class="result-display">
+                            <pre id="result">// 结果将显示在这里</pre>
+                        </div>
+                    </div>
+                    <div class="tab-content" id="curl-tab">
+                        <div class="code-example">
+                            <pre id="curl-code">// cURL 命令将显示在这里</pre>
+                            <button class="copy-button" data-target="curl-code">复制</button>
+                        </div>
+                    </div>
+                    <div class="tab-content" id="fetch-tab">
+                        <div class="code-example">
+                            <pre id="fetch-code">// Fetch 代码将显示在这里</pre>
+                            <button class="copy-button" data-target="fetch-code">复制</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2024 思源笔记</p>
+    </footer>
+
+ 
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+</body></html>

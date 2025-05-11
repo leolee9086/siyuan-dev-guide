@@ -1,0 +1,153 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/system/exit"> <!-- API Endpoint Meta Tag -->
+    <title>退出程序 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .warning {
+            color: #d32f2f; /* Red text */
+            background-color: #ffcdd2; /* Light red background */
+            border: 1px solid #d32f2f;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        .warning strong {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>退出程序 (exit)</h1>
+        <nav>
+            <a href="../index.html">首页</a> | 
+            <a href="index.html">System API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/system.go#L486" target="_blank">GitHub Source</a>
+        </nav>
+    </header>
+    <main>
+        <section id="warning-section">
+            <div class="warning">
+                <strong>高风险操作！</strong> 调用此 API 将尝试关闭并退出当前运行的思源笔记程序。
+            </div>
+        </section>
+
+        <section id="description">
+            <h2>功能描述</h2>
+            <p>此 API 端点 <code>POST /api/system/exit</code> 用于请求思源笔记程序执行关闭流程并退出。</p>
+            <p>关闭流程通常包括保存数据、执行必要的同步操作等。可以指定是否强制退出以及退出时如何处理新版本安装包。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体是 JSON 格式，可以包含以下可选参数：</p>
+            <ul>
+                <li><code>force</code> (boolean): <em>可选</em>。是否强制退出。如果设置为 <code>true</code>，可能会跳过某些检查或同步失败时的等待，直接尝试退出。默认为 <code>false</code>。</li>
+                <li><code>execInstallPkg</code> (integer): <em>可选</em>。控制退出时如何处理检测到的新版本安装包。
+                    <ul>
+                        <li><code>0</code> (默认): 检查新版本，行为由系统决定（可能提示或自动执行）。</li>
+                        <li><code>1</code>: 明确指示不执行新版本安装。</li>
+                        <li><code>2</code>: 明确指示执行新版本安装（如果存在）。</li>
+                    </ul>
+                </li>
+            </ul>
+            <p><strong>请求示例 (正常退出，默认行为):</strong></p>
+            <pre><code class="language-json">
+{}
+            </code></pre>
+             <p><strong>请求示例 (强制退出，不安装新版本):</strong></p>
+            <pre><code class="language-json">
+{
+  "force": true,
+  "execInstallPkg": 1
+}
+            </code></pre>
+        </section>
+
+        <section id="response-format">
+            <h2>响应结果</h2>
+            <p>API 会尝试返回一个 JSON 对象，但由于程序即将退出，客户端不一定能完整接收到响应。</p>
+            <ul>
+                <li><strong>正常退出 (预期)</strong>: 理想情况下，返回 <code>code: 0</code>。但程序可能在响应发送前就已退出。
+                    <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": null
+}
+                    </code></pre>
+                </li>
+                <li><strong>同步失败等情况</strong>: 如果关闭过程中遇到可恢复的错误（如同步失败且未强制退出），可能返回 <code>code: 1</code> 和提示信息，程序此时可能不会退出，等待用户交互。
+                    <pre><code class="language-json">
+{
+  "code": 1,
+  "msg": "同步执行失败...<button>...</button>", // 包含提示和按钮的 HTML
+  "data": { "closeTimeout": 0 }
+}
+                    </code></pre>
+                </li>
+                 <li><strong>发现新版本</strong>: 如果检测到新版本并准备安装/提示，可能返回 <code>code: 2</code> 和提示信息。
+                    <pre><code class="language-json">
+{
+  "code": 2,
+  "msg": "检测到新版本...", // 提示信息
+  "data": { "closeTimeout": 0 }
+}
+                    </code></pre>
+                </li>
+            </ul>
+             <p><strong>注意：</strong>由于此 API 的目的是退出程序，依赖其返回值进行后续操作是不可靠的。</p>
+        </section>
+
+        <section id="online-testing">
+            <h2>在线测试</h2>
+             <div class="warning">
+                <strong>极度危险！</strong> 在线测试此 API 将导致您的思源笔记实例尝试关闭并退出！除非您明确知道自己在做什么，否则请不要使用此测试功能。
+            </div>
+            <div class="api-tester">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="请输入您的 API Token (可选)" value=""><br>
+
+                <label for="endpoint">Endpoint:</label>
+                <input type="text" id="endpoint" value="/api/system/exit" readonly=""><br>
+
+                <label for="method">Method:</label>
+                <input type="text" id="method" value="POST" readonly=""><br>
+
+                <label for="params">Parameters (JSON, 可选):</label><br>
+                <textarea id="params" rows="6" placeholder="{
+  &quot;force&quot;: false, // 可选, true 或 false
+  &quot;execInstallPkg&quot;: 0 // 可选, 0, 1, 或 2
+}"></textarea><br>
+
+                <button onclick="confirmSendRequest('警告：您确定要发送退出程序的请求吗？这将关闭当前的思源笔记实例！')">发送请求 (危险)</button>
+
+                <h3>响应结果:</h3>
+                <pre id="response-output"></pre>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>思源笔记 API 文档 | 最后更新时间：<span id="last-updated"></span></p>
+    </footer>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        // 更新最后更新时间
+        document.getElementById('last-updated').textContent = new Date().toLocaleString();
+
+        // 添加确认弹窗逻辑
+        function confirmSendRequest(message) {
+            if (confirm(message)) {
+                sendRequest();
+            }
+        }
+    </script>
+
+ </body></html>

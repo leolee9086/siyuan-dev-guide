@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>删除块 API</title>
+    <link rel="stylesheet" href="../lib/bulma.min.css">
+    <link rel="stylesheet" href="../lib/highlight/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="../assets/styles.css">
+    <script src="../lib/highlight/highlight.min.js"></script>
+    <script src="../lib/fetch-event-source.js"></script>
+    <script src="../assets/helper.js"></script>
+</head>
+<body>
+<div class="container">
+    <header class="my-5">
+        <h1 class="title is-1 endpoint">/api/block/deleteBlock</h1>
+        <h2 class="subtitle is-4">删除块</h2>
+        <p><strong>方法:</strong> POST</p>
+        <p><strong>认证:</strong> Token (通过 Authorization 头或者 Cookie _xsrf 传递)</p>
+        <nav class="breadcrumb my-3" aria-label="breadcrumbs">
+            <ul>
+                <li><a href="../index.html">API 文档</a></li>
+                <li><a href="../pages/block.html">块 API</a></li>
+                <li class="is-active"><a href="#" aria-current="page">deleteBlock</a></li>
+                <li><a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/block_op.go#L608" target="_blank">查看源码</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="content mb-5">
+        <h2 class="title is-3">接口描述</h2>
+        <blockquote>
+            <p>该接口用于删除指定 ID 的块。如果删除的是文档块，其关联的文件也会被放入回收站。</p>
+        </blockquote>
+    </section>
+
+    <section class="content mb-5">
+        <h2 class="title is-3">参数</h2>
+        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth param-table">
+            <thead>
+            <tr>
+                <th>参数</th>
+                <th>类型</th>
+                <th>位置</th>
+                <th>必需</th>
+                <th>描述</th>
+                <th>默认值</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><code>id</code></td>
+                <td>string</td>
+                <td>Body (JSON)</td>
+                <td>是</td>
+                <td>要删除的块的 ID。</td>
+                <td>-</td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="content mb-5">
+        <h2 class="title is-3">响应</h2>
+        <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth response-table">
+            <thead>
+            <tr>
+                <th>状态码</th>
+                <th>描述</th>
+                <th>响应体</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><code>200 OK</code></td>
+                <td>成功</td>
+                <td>
+                    <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": {
+        "transactions": [
+            {
+                "doOperations": [
+                    {
+                        "action": "delete",
+                        "id": "块ID"
+                        // 其他操作相关的字段...
+                    }
+                ],
+                // 其他事务相关的字段...
+            }
+        ]
+    }
+}</code></pre>
+                </td>
+            </tr>
+             <tr>
+                 <td><code>400 Bad Request</code></td>
+                 <td>请求错误（如 ID 无效或块不存在）</td>
+                 <td>
+                     <pre><code class="language-json">{
+    "code": -1,
+    "msg": "Invalid block ID pattern [...] 或 Block not found [...]",
+    "data": null
+}</code></pre>
+                 </td>
+             </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="content mb-5">
+        <h2 class="title is-3">示例</h2>
+        <div class="tabs">
+            <ul>
+                <li class="is-active"><a href="#request-example">请求示例</a></li>
+                <li><a href="#response-example">成功响应示例</a></li>
+                <li><a href="#curl-example">cURL 示例</a></li>
+            </ul>
+        </div>
+        <div id="request-example" class="tab-content">
+            <h3 class="title is-4">请求体 (JSON)</h3>
+            <pre><code class="language-json">{
+    "id": "20230517100000-abcdefgh"
+}</code></pre>
+        </div>
+        <div id="response-example" class="tab-content" style="display: none;">
+             <h3 class="title is-4">响应体 (JSON)</h3>
+            <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": {
+        "transactions": [
+            {
+                "doOperations": [
+                    {
+                        "action": "delete",
+                        "id": "20230517100000-abcdefgh",
+                        "previousID": "20230517095900-uvwxyz01",
+                        "parentID": "20230517095800-qwerty00",
+                        "box": "20210810165618-q9n3dk0"
+                    }
+                ],
+                "undoOperations": [
+                    {
+                        "action": "insert",
+                        "id": "20230517100000-abcdefgh",
+                        "previousID": "20230517095900-uvwxyz01",
+                        "parentID": "20230517095800-qwerty00",
+                        "data": "块内容...",
+                        "markdown": "块内容...",
+                        "dataType": "dom"
+                    }
+                ],
+                "sessionID": "random-session-id"
+            }
+        ]
+    }
+}</code></pre>
+        </div>
+        <div id="curl-example" class="tab-content" style="display: none;">
+             <h3 class="title is-4">cURL</h3>
+            <pre><code class="language-bash">curl -X POST http://127.0.0.1:6806/api/block/deleteBlock \
+     -H "Authorization: Token YOUR_API_TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "id": "20230517100000-abcdefgh"
+         }'</code></pre>
+        </div>
+    </section>
+
+    <div class="test-area content box">
+        <h2 class="title is-3">在线测试</h2>
+        <div class="tabs">
+            <ul>
+                <li class="is-active"><a href="#test-params">参数</a></li>
+                <li><a href="#test-request-body">请求体</a></li>
+                <li><a href="#test-response">响应</a></li>
+                <li><a href="#test-curl">cURL</a></li>
+            </ul>
+        </div>
+
+        <div id="test-params" class="tab-content">
+            <form id="params-form">
+                 <!-- /api/block/deleteBlock 只有 Body 参数，这里为空 -->
+                 <p>此 API 通过请求体传递参数。</p>
+            </form>
+        </div>
+
+        <div id="test-request-body" class="tab-content" style="display: none;">
+             <div class="field">
+                <label class="label">请求体 (JSON)</label>
+                <div class="control">
+                    <textarea id="request-body-input" class="textarea" rows="5">{
+    "id": ""
+}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <div id="test-response" class="tab-content" style="display: none;">
+            <div class="field">
+                <label class="label">响应内容</label>
+                <div class="control">
+                    <pre><code id="response-output" class="language-json">点击"发送请求"后在此处查看响应...</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div id="test-curl" class="tab-content" style="display: none;">
+            <div class="field">
+                <label class="label">cURL 命令</label>
+                <div class="control">
+                    <pre><code id="curl-output" class="language-bash">点击"发送请求"后在此处生成 cURL 命令...</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="field is-grouped is-grouped-right mt-4">
+            <div class="control">
+                <button id="send-request-btn" class="button is-primary">发送请求</button>
+            </div>
+            <div class="control">
+                 <button id="reset-fields-btn" class="button is-light">重置</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer mt-6">
+        <div class="content has-text-centered">
+             <blockquote class="important-note">
+                <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+                <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+             </blockquote>
+             <p>&copy; 2024 Siyuan API 文档</p>
+        </div>
+    </footer>
+
+</div><!-- End of container -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        setupTabs();
+        hljs.highlightAll();
+        setupTestArea('/api/block/deleteBlock', 'POST', document.getElementById('params-form'), document.getElementById('request-body-input'), document.getElementById('response-output'), document.getElementById('curl-output'), document.getElementById('send-request-btn'), document.getElementById('reset-fields-btn'));
+
+        // Custom logic for reset button if needed, e.g., resetting specific fields
+        const resetButton = document.getElementById('reset-fields-btn');
+        const requestBodyInput = document.getElementById('request-body-input');
+        const responseOutput = document.getElementById('response-output');
+        const curlOutput = document.getElementById('curl-output');
+        resetButton.addEventListener('click', () => {
+            requestBodyInput.value = JSON.stringify({"id": ""}, null, 4); // Reset request body
+            responseOutput.textContent = '点击"发送请求"后在此处查看响应...';
+            responseOutput.className = 'language-json'; // Reset class
+            curlOutput.textContent = '点击"发送请求"后在此处生成 cURL 命令...';
+            curlOutput.className = 'language-bash'; // Reset class
+             hljs.highlightElement(responseOutput);
+             hljs.highlightElement(curlOutput);
+        });
+    });
+</script>
+
+</body>
+</html>

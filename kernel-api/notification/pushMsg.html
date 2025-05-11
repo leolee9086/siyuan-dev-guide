@@ -1,0 +1,103 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/notification/pushMsg">
+    <title>推送消息 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../pages/notification.html" class="back-link">← 返回 Notification API 列表</a>
+    <h1>推送消息</h1>
+    <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/notification.go#L25" target="_blank" class="github-link">在 GitHub 上查看源码</a>
+
+    <p class="endpoint"><code>POST /api/notification/pushMsg</code></p>
+
+    <h2>描述</h2>
+    <p>向思源笔记界面推送一条通知消息。该 API 会在界面顶部显示一个通知提示，可用于程序间通信或向用户显示重要信息。消息会在指定的超时时间后自动消失。</p>
+
+    <h2>请求参数</h2>
+    <p>请求体需要是 JSON 格式。</p>
+    <table>
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+                <th>必需</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>msg</code></td>
+                <td><code>string</code></td>
+                <td>要显示的消息内容</td>
+                <td>是</td>
+            </tr>
+            <tr>
+                <td><code>timeout</code></td>
+                <td><code>number</code></td>
+                <td>消息显示时间（毫秒），默认为 7000 毫秒</td>
+                <td>否</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>响应结果</h2>
+    <p>响应体是 JSON 格式。<code>code</code> 为 0 表示成功。<code>data</code> 包含消息 ID，可用于后续操作。</p>
+    <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "id": "abcdefg"  // 消息的唯一标识符（7位随机字符串）
+  }
+}
+    </code></pre>
+
+    <h2>补充说明</h2>
+    <p>消息推送机制会通过 WebSocket 广播给所有已连接的主界面，确保在多窗口环境下都能看到通知。</p>
+    <p>返回的消息 ID 可以用于后续调用 <code>/api/notification/pushClearMsg</code> API 来清除特定消息。</p>
+
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<div class="test-area">
+        <h3>在线测试</h3>
+        <form id="api-test-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记中的" 设置-关于"中查看api="" token"="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/notification/pushMsg" readonly="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-params">请求参数 (JSON):</label>
+                <textarea id="api-params">{
+    "msg": "这是一条测试消息",
+    "timeout": 5000
+}</textarea>
+            </div>
+
+            <button type="submit" class="btn">发送请求</button>
+        </form>
+
+        <div id="api-result" class="result"></div>
+    </div>
+
+    <footer>
+        <p>思源笔记 API 文档</p>
+    </footer>
+    <script src="../api-tester.js"></script>
+
+ </body></html>

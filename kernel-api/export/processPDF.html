@@ -1,0 +1,108 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>处理 PDF 导出 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../pages/export.html" class="back-link">← 返回 Export API 列表</a>
+    <h1>处理 PDF 导出</h1>
+    <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/export.go" target="_blank" class="github-link">在 GitHub 上查看源码</a>
+
+    <p class="endpoint"><code>POST /api/export/processPDF</code></p>
+
+    <h2>描述</h2>
+    <p>处理导出的 PDF 文件，执行后处理操作，如添加水印、页眉页脚等。此 API 通常在 PDF 导出流程中由系统内部调用，完善 PDF 输出的格式和功能。</p>
+
+    <h2>请求参数</h2>
+    <p>请求体需要是 JSON 格式。</p>
+    <table>
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+                <th>必需</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>path</code></td>
+                <td><code>string</code></td>
+                <td>需要处理的 PDF 文件路径</td>
+                <td>是</td>
+            </tr>
+            <tr>
+                <td><code>id</code></td>
+                <td><code>string</code></td>
+                <td>关联的文档块 ID</td>
+                <td>是</td>
+            </tr>
+            <tr>
+                <td><code>options</code></td>
+                <td><code>object</code></td>
+                <td>PDF 处理选项，如页眉页脚、水印等设置</td>
+                <td>否</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>响应结果</h2>
+    <p>响应体是 JSON 格式。<code>code</code> 为 0 表示成功。<code>data</code> 包含处理后的 PDF 文件信息。</p>
+    <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "path": "/temp/export/processed-xxx.pdf" // 处理后的 PDF 文件路径
+  }
+}
+    </code></pre>
+
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<div class="test-area">
+        <h3>在线测试</h3>
+        <form id="api-test-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记中的" 设置-关于"中查看api="" token"="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/export/processPDF" readonly="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-params">请求参数 (JSON):</label>
+                <textarea id="api-params">{
+    "path": "/temp/export/temp.pdf",
+    "id": "",
+    "options": {
+        "watermark": "思源笔记",
+        "footer": "第 {page} 页，共 {pages} 页"
+    }
+}</textarea>
+            </div>
+
+            <button type="submit" class="btn">发送请求</button>
+        </form>
+
+        <div id="api-result" class="result"></div>
+    </div>
+
+    <footer>
+        <p>思源笔记 API 文档</p>
+    </footer>
+    <script src="../api-tester.js"></script>
+
+ </body></html>

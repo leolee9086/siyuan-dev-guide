@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>初始化仓库密钥 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+    
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/repo/initRepoKey</span>
+    </div>
+    
+    <h1>初始化仓库密钥</h1>
+    
+    <div class="auth-tags">
+        <span class="chip">需要认证</span>
+        <span class="chip">管理员权限</span>
+        <span class="chip">检查只读模式</span>
+    </div>
+    
+    <h2>接口描述</h2>
+    <p>初始化一个新的仓库密钥（如果当前仓库尚未设置密钥），或者返回当前已存在的仓库密钥。这个密钥通常用于仓库的加密功能。</p>
+    
+    <h2>请求参数</h2>
+    <p>此接口不需要请求参数 (空 Body)。</p>
+    
+    <h2>返回值</h2>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>code</td>
+                <td>number</td>
+                <td>返回码，0 表示成功。</td>
+            </tr>
+            <tr>
+                <td>msg</td>
+                <td>string</td>
+                <td>错误信息，成功时为空字符串。失败时可能包含特定语言的错误提示。</td>
+            </tr>
+            <tr>
+                <td>data</td>
+                <td>object</td>
+                <td>成功时返回包含仓库密钥的对象；失败时可能包含 `closeTimeout` 字段。</td>
+            </tr>
+            <tr>
+                <td class="child-param">data.key</td>
+                <td>string</td>
+                <td>成功时返回的仓库密钥字符串 (通常是 Base64 编码的)。</td>
+            </tr>
+            <tr>
+                <td class="child-param">data.closeTimeout</td>
+                <td>number</td>
+                <td>失败时可能返回，提示错误消息框关闭的超时时间（毫秒）。</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="example-tab">请求示例</div>
+            <div class="tab" data-target="response-tab">返回示例</div>
+        </div>
+        
+        <div id="example-tab" class="tab-content active">
+            <h3>请求示例 (空 Body)</h3>
+            <pre><code>POST /api/repo/initRepoKey HTTP/1.1
+Host: 127.0.0.1:6806
+Content-Type: application/json
+Authorization: Token YOUR_API_TOKEN
+
+{}</code></pre>
+        </div>
+        
+        <div id="response-tab" class="tab-content">
+            <h3>成功返回示例 (获取到密钥)</h3>
+            <pre><code>{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "key": "generated_or_existing_repo_key_string"
+  }
+}</code></pre>
+            <h3>失败返回示例 (例如，初始化失败)</h3>
+            <pre><code>{
+  "code": -1,
+  "msg": "[语言包137] 初始化仓库密钥失败: some error occurred", // 实际错误信息会不同
+  "data": {
+    "closeTimeout": 5000
+  }
+}</code></pre>
+        </div>
+    </div>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+
+</body>
+</html> 

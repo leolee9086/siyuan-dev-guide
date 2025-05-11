@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>获取最近文档列表 (getRecentDocs)</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>获取最近文档列表 (getRecentDocs)</h1>
+        <p class="api-path">POST /api/storage/getRecentDocs</p>
+
+        <h2 id="认证与权限">认证与权限</h2>
+        <p>需要身份验证 (通过 API Token)。</p>
+
+        <h2 id="接口描述">接口描述</h2>
+        <p>此接口用于获取用户最近打开或编辑的文档列表。列表最多包含 32 条记录，并按最近访问顺序列出。</p>
+        <p>数据来源于内核维护的 <code>data/storage/recent-doc.json</code> 文件，并在返回前会尝试更新文档标题以反映最新状态。</p>
+
+        <h2 id="请求体参数">请求体参数</h2>
+        <p>该接口不需要请求体参数。</p>
+
+        <h2 id="请求体示例">请求体示例</h2>
+        <pre><code class="language-json">
+{}
+        </code></pre>
+
+        <h2 id="响应体说明">响应体说明</h2>
+        <p>成功时，接口返回一个 JSON 数组，数组中的每个元素代表一个最近访问的文档对象。每个对象包含以下字段：</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>字段名</th>
+                    <th>类型</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>rootID</td>
+                    <td>string</td>
+                    <td>文档根块的 ID。</td>
+                </tr>
+                <tr>
+                    <td>icon</td>
+                    <td>string</td>
+                    <td>文档的图标，通常是一个 Emoji 字符或图片资源的路径。</td>
+                </tr>
+                <tr>
+                    <td>title</td>
+                    <td>string</td>
+                    <td>文档的标题。接口会尝试返回最新的标题。</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="响应体示例">响应体示例</h2>
+        <pre><code class="language-json">
+[
+    {
+        "rootID": "20230101000000-abcdefgh",
+        "icon": "",
+        "title": "我最近看的第一篇文档"
+    },
+    {
+        "rootID": "20230215102030-ijklmnop",
+        "icon": "💡",
+        "title": "一些有趣的想法记录"
+    },
+    {
+        "rootID": "20221225080000-qrstuvwx",
+        "icon": "assets/custom-icon-image.png",
+        "title": "项目计划书 V3"
+    }
+    // ... 最多 32 条记录
+]
+        </code></pre>
+
+        <h2 id="cURL调用示例">cURL 调用示例</h2>
+        <pre><code class="language-bash">
+curl -X POST \
+  http://127.0.0.1:6806/api/storage/getRecentDocs \
+  -H 'Authorization: Token YOUR_API_TOKEN' \
+  -H 'Content-Type: application/json'
+        </code></pre>
+
+        <h2 id="JavaScript调用示例">JavaScript 调用示例</h2>
+        <pre><code class="language-javascript">
+async function getSiyuanRecentDocs() {
+    try {
+        const response = await fetch('/api/storage/getRecentDocs', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token YOUR_API_TOKEN' // 如果配置了API Token
+            }
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('获取最近文档列表失败:', response.status, errorData);
+            document.getElementById('apiResponse').textContent = `错误 ${response.status}: ${JSON.stringify(errorData, null, 2)}`;
+            return null;
+        }
+        const data = await response.json();
+        console.log('最近文档列表:', data);
+        document.getElementById('apiResponse').textContent = JSON.stringify(data, null, 2);
+        return data;
+    } catch (error) {
+        console.error('请求过程中发生错误:', error);
+        document.getElementById('apiResponse').textContent = `请求错误: ${error.message}`;
+        return null;
+    }
+}
+        </code></pre>
+
+        <h2 id="在线测试">在线测试</h2>
+        <div class="controls">
+            <button onclick="getSiyuanRecentDocs()">获取最近文档列表</button>
+        </div>
+        <h3>响应:</h3>
+        <pre id="apiResponse">点击按钮后，此处将显示API的响应结果。</pre>
+    </div>
+    <script src="../js/scripts.js"></script>
+    <script>
+        // 为了方便测试，如果localStorage中有token，则自动填充
+        const storedToken = localStorage.getItem('siyuanApiToken');
+        if (storedToken) {
+            const jsExampleElement = document.querySelector('code.language-javascript');
+            if (jsExampleElement) {
+                jsExampleElement.textContent = jsExampleElement.textContent.replace('YOUR_API_TOKEN', storedToken);
+            }
+            const curlExampleElement = document.querySelector('code.language-bash');
+            if (curlExampleElement) {
+                curlExampleElement.textContent = curlExampleElement.textContent.replace('YOUR_API_TOKEN', storedToken);
+            }
+        }
+    </script>
+</body>
+</html> 

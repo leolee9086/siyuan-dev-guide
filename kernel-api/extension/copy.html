@@ -1,0 +1,82 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/extension/copy"> <!-- API Endpoint Meta Tag -->
+    <title>处理扩展复制内容 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <h1>处理扩展复制内容 (copy)</h1>
+        <nav>
+            <a href="../index.html">首页</a> | 
+            <a href="index.html">Extension API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/extension.go#L39" target="_blank">GitHub Source</a>
+        </nav>
+    </header>
+    <main>
+        <section id="description">
+            <h2>功能描述</h2>
+            <p>此 API 端点 <code>POST /api/extension/copy</code> 用于处理来自思源笔记扩展（如浏览器剪藏扩展）或其他外部应用复制粘贴的内容。</p>
+            <p>它的核心功能是将传入的 HTML 内容（<code>dom</code> 字段）转换为 Markdown，并自动处理其中引用的外部资源（如图片）。它会下载这些资源，将其保存到思源笔记的本地 <code>assets</code> 目录下，并更新 Markdown 中相应的链接，使其指向本地保存的资源。</p>
+            <p>这使得用户可以方便地将网页片段或其他富文本内容连同其包含的图片等资源一起快速保存到思源笔记中，并转换为 Markdown 格式。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求必须使用 <code>POST</code> 方法，并且 Content-Type 必须是 <code>multipart/form-data</code>。</p>
+            <p>表单数据应包含以下部分：</p>
+            <ul>
+                <li><strong><code>dom</code></strong> (string): 必填。包含要处理的 HTML 内容的字符串。</li>
+                <li><strong><code>notebook</code></strong> (string): 可选。目标笔记本的 ID。如果提供，资源文件将尝试保存到此笔记本的 <code>assets/</code> 目录下（<code>data/{notebookID}/assets/</code>）；如果未提供或笔记本不存在，则保存到工作空间的公共 <code>assets/</code> 目录（<code>data/assets/</code>）。</li>
+                <li><strong>文件部分</strong>: 若干个文件字段。每个字段的 <code>name</code> 必须是该文件在原始 HTML 中的 URL（经过 URL 编码）。服务器会读取这些文件内容并保存到本地。
+                    <br>例如，如果 HTML 中有 <code>&lt;img src="https://example.com/image.png"&gt;</code>，则需要有一个名为 <code>https%3A%2F%2Fexample.com%2Fimage.png</code> 的文件字段。
+                </li>
+            </ul>
+        </section>
+
+        <section id="response-format">
+            <h2>响应结果</h2>
+            <p>成功的请求将返回一个 JSON 对象，格式如下：</p>
+            <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "", // 成功时通常为空或为语言包中的提示信息，例如 "剪藏成功"
+  "data": {
+    "md": "处理后的 Markdown 文本", // 包含本地资源链接的 Markdown
+    "withMath": false // 布尔值，指示转换后的 Markdown 是否包含数学公式块
+  }
+}
+            </code></pre>
+            <ul>
+                <li><code>code</code>: 0 表示成功，非 0 表示失败。</li>
+                <li><code>msg</code>: 错误信息或成功提示。</li>
+                <li><code>data.md</code>: 经过处理的 Markdown 文本，其中原始 HTML 中的外部资源链接已被替换为指向本地 <code>assets</code> 目录的相对路径链接。</li>
+                <li><code>data.withMath</code>: 一个布尔值，如果转换过程中检测到并处理了数学公式（例如 MathJax），则为 <code>true</code>，否则为 <code>false</code>。</li>
+            </ul>
+             <p>如果处理过程中发生错误（如创建目录失败、读取文件失败、写入文件失败等），<code>code</code> 将为 -1，并包含错误信息在 <code>msg</code> 字段中。</p>
+        </section>
+
+        <section id="online-testing">
+            <h2>在线测试</h2>
+            <p>由于此 API 涉及文件上传和复杂表单数据构造，不适合在简单的 Web 表单中进行在线测试。请使用支持发送 <code>multipart/form-data</code> 请求的工具（如 Postman、Insomnia 或 curl）进行测试。</p>
+            <div class="api-tester disabled-form">
+                <p><strong>在线测试已禁用。</strong></p>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>思源笔记 API 文档 | 最后更新时间：<span id="last-updated"></span></p>
+    </footer>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        // 更新最后更新时间
+        document.getElementById('last-updated').textContent = new Date().toLocaleString();
+    </script>
+
+ </body></html>

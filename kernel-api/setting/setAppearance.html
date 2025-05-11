@@ -1,0 +1,274 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置外观 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+    
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/setting/setAppearance</span>
+    </div>
+    
+    <h1>设置外观</h1>
+    
+    <div class="auth-tags">
+        <span class="chip">需要认证</span>
+        <span class="chip">管理员权限</span>
+        <span class="chip">只读模式禁用</span>
+    </div>
+    
+    <h2>接口描述</h2>
+    <p>更新思源笔记的整体外观配置。请求体应为一个完整的ในส่วน <code>conf.Appearance</code> 对象。</p>
+    
+    <h2>请求参数 (JSON Body)</h2>
+    <p>请求体是一个代表外观配置的 JSON 对象 (<code>conf.Appearance</code>)。</p>
+    <table class="request-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+                <th>示例值</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>mode</td>
+                <td>number</td>
+                <td>模式：0 表示明亮，1 表示暗黑。</td>
+                <td><code>0</code></td>
+            </tr>
+            <tr>
+                <td>modeOS</td>
+                <td>boolean</td>
+                <td>模式是否跟随操作系统设置。</td>
+                <td><code>true</code></td>
+            </tr>
+            <tr>
+                <td>darkThemes</td>
+                <td>array</td>
+                <td>暗黑模式下可用的主题列表。每个元素是一个包含 <code>name</code> (string) 和 <code>label</code> (string) 的对象。</td>
+                <td><code>[{"name": "midnight", "label": "午夜"}]</code></td>
+            </tr>
+            <tr>
+                <td>lightThemes</td>
+                <td>array</td>
+                <td>明亮模式下可用的主题列表。结构同 <code>darkThemes</code>。</td>
+                <td><code>[{"name": "daylight", "label": "日光"}]</code></td>
+            </tr>
+            <tr>
+                <td>themeDark</td>
+                <td>string</td>
+                <td>当前选择的暗黑模式主题的名称。</td>
+                <td><code>"midnight"</code></td>
+            </tr>
+            <tr>
+                <td>themeLight</td>
+                <td>string</td>
+                <td>当前选择的明亮模式主题的名称。</td>
+                <td><code>"daylight"</code></td>
+            </tr>
+            <tr>
+                <td>themeVer</td>
+                <td>string</td>
+                <td>当前选择主题的版本号。</td>
+                <td><code>"1.0.0"</code></td>
+            </tr>
+            <tr>
+                <td>icons</td>
+                <td>array</td>
+                <td>可用的图标包名称列表 (string)。</td>
+                <td><code>["material", "remixicon"]</code></td>
+            </tr>
+            <tr>
+                <td>icon</td>
+                <td>string</td>
+                <td>当前选择的图标包名称。</td>
+                <td><code>"material"</code></td>
+            </tr>
+            <tr>
+                <td>iconVer</td>
+                <td>string</td>
+                <td>当前选择图标包的版本号。</td>
+                <td><code>"1.0.0"</code></td>
+            </tr>
+            <tr>
+                <td>codeBlockThemeLight</td>
+                <td>string</td>
+                <td>明亮模式下代码块高亮主题的名称。</td>
+                <td><code>"github"</code></td>
+            </tr>
+            <tr>
+                <td>codeBlockThemeDark</td>
+                <td>string</td>
+                <td>暗黑模式下代码块高亮主题的名称。</td>
+                <td><code>"base16/dracula"</code></td>
+            </tr>
+            <tr>
+                <td>lang</td>
+                <td>string</td>
+                <td>选择的界面语言代码，例如 "zh_CN", "en_US"。</td>
+                <td><code>"zh_CN"</code></td>
+            </tr>
+            <tr>
+                <td>themeJS</td>
+                <td>boolean</td>
+                <td>是否允许当前主题执行 JavaScript。</td>
+                <td><code>false</code></td>
+            </tr>
+            <tr>
+                <td>closeButtonBehavior</td>
+                <td>number</td>
+                <td>主窗口关闭按钮行为：0 表示退出程序，1 表示最小化到系统托盘。</td>
+                <td><code>0</code></td>
+            </tr>
+            <tr>
+                <td>hideStatusBar</td>
+                <td>boolean</td>
+                <td>是否隐藏应用底部的状态栏。</td>
+                <td><code>false</code></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>返回值</h2>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>code</td>
+                <td>number</td>
+                <td>返回码，0 表示成功</td>
+            </tr>
+            <tr>
+                <td>msg</td>
+                <td>string</td>
+                <td>错误信息，成功时为空字符串</td>
+            </tr>
+            <tr>
+                <td>data</td>
+                <td>object</td>
+                <td>操作成功时，返回更新后的外观配置对象 (<code>conf.Appearance</code>)。</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="example-tab">请求示例</div>
+            <div class="tab" data-target="response-tab">返回示例 (成功)</div>
+        </div>
+        
+        <div id="example-tab" class="tab-content active">
+            <h3>请求示例 (部分字段)</h3>
+            <pre><code>POST /api/setting/setAppearance HTTP/1.1
+Host: 127.0.0.1:6806
+Content-Type: application/json
+Authorization: Token YOUR_API_TOKEN
+
+{
+  "mode": 1, 
+  "modeOS": false,
+  "themeDark": "another-dark-theme",
+  "lang": "en_US",
+  "hideStatusBar": true
+}</code></pre>
+        </div>
+        
+        <div id="response-tab" class="tab-content">
+            <h3>返回示例 (成功)</h3>
+            <pre><code>{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "mode": 1,
+    "modeOS": false,
+    "darkThemes": [
+      { "name": "midnight", "label": "午夜" },
+      { "name": "another-dark-theme", "label": "Another Dark" }
+      // ... 其他暗黑主题
+    ],
+    "lightThemes": [
+      { "name": "daylight", "label": "日光" }
+      // ... 其他明亮主题
+    ],
+    "themeDark": "another-dark-theme",
+    "themeLight": "daylight", // 假设未改变
+    "themeVer": "1.2.0",
+    "icons": ["material", "custom-icons"],
+    "icon": "material",
+    "iconVer": "2.0.0",
+    "codeBlockThemeLight": "github",
+    "codeBlockThemeDark": "base16/dracula",
+    "lang": "en_US",
+    "themeJS": false,
+    "closeButtonBehavior": 0,
+    "hideStatusBar": true
+  }
+}</code></pre>
+        </div>
+    </div>
+    
+    <blockquote class="important-note">
+        <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+        <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+    </blockquote>
+
+    <div class="test-area">
+        <h3>在线测试</h3>
+        <form id="api-test-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记中的 '设置-关于' 中查看API Token">
+            </div>
+            
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/setting/setAppearance">
+            </div>
+            
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly>
+            </div>
+            
+            <div class="form-group">
+                <label for="api-params">请求参数 (JSON):</label>
+                <textarea id="api-params" rows="15">{
+  "mode": 0,
+  "modeOS": true,
+  "darkThemes": [],
+  "lightThemes": [],
+  "themeDark": "midnight",
+  "themeLight": "daylight",
+  "themeVer": "",
+  "icons": [],
+  "icon": "material",
+  "iconVer": "",
+  "codeBlockThemeLight": "github",
+  "codeBlockThemeDark": "base16/dracula",
+  "lang": "zh_CN",
+  "themeJS": false,
+  "closeButtonBehavior": 0,
+  "hideStatusBar": false
+}</textarea>
+            </div>
+            
+            <button type="submit" class="btn">发送请求</button>
+        </form>
+        
+        <div id="api-result" class="result"></div>
+    </div>
+    
+    <script src="../api-tester.js"></script>
+
+</body></html> 

@@ -1,0 +1,99 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/repo/downloadCloudSnapshot"> <!-- API Endpoint Meta Tag -->
+    <title>下载云端快照 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <h1>下载云端快照 (downloadCloudSnapshot)</h1>
+        <nav>
+            <a href="../index.html">首页</a> | 
+            <a href="index.html">Repo API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/repo.go#L149" target="_blank">GitHub Source</a>
+        </nav>
+    </header>
+    <main>
+        <section id="description">
+            <h2>功能描述</h2>
+            <p>此 API 端点 <code>POST /api/repo/downloadCloudSnapshot</code> 用于从配置的云端存储（如 S3、WebDAV）下载指定的版本库快照到本地。</p>
+            <p>云端快照通常与标签（tag）相关联。</p>
+            <p>这是一个后台异步操作，API 调用成功仅表示下载任务已开始。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体必须是 JSON 格式，包含以下参数：</p>
+            <ul>
+                <li><code>id</code> (string): <strong>必填</strong>。要下载的云端快照的 ID。</li>
+                <li><code>tag</code> (string): <strong>必填</strong>。该快照在云端所属的标签名。</li>
+            </ul>
+            <p><strong>请求示例:</strong></p>
+            <pre><code class="language-json">
+{
+  "id": "20231027100000-hijklmn", 
+  "tag": "v1.0"
+}
+            </code></pre>
+        </section>
+
+        <section id="response-format">
+            <h2>响应结果</h2>
+            <p>如果请求参数有效且下载任务成功启动，将返回一个标准的成功响应。</p>
+            <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": null
+}
+            </code></pre>
+            <ul>
+                <li><code>code</code>: 0 表示下载任务已成功启动。非 0 （例如 -1）表示启动失败（如参数错误、网络配置问题、认证失败等）。</li>
+                <li><code>msg</code>: 错误信息（如果 code 非 0）。</li>
+                <li><code>data</code>: 总是 `null`。</li>
+            </ul>
+            <p><strong>注意：</strong> 这是一个异步操作。API 的成功响应不代表下载已完成。下载进度和最终结果需要通过其他方式（如界面状态、日志或可能的 WebSocket 通知）来确认。</p>
+        </section>
+
+        <section id="online-testing">
+            <h2>在线测试</h2>
+            <p>您可以在下方输入要下载的云端快照 ID 和标签进行在线测试。请确保您已正确配置云端同步设置。</p>
+            <div class="api-tester">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="请输入您的 API Token (可选)" value=""><br>
+
+                <label for="endpoint">Endpoint:</label>
+                <input type="text" id="endpoint" value="/api/repo/downloadCloudSnapshot" readonly=""><br>
+
+                <label for="method">Method:</label>
+                <input type="text" id="method" value="POST" readonly=""><br>
+
+                <label for="params">Parameters (JSON):</label><br>
+                <textarea id="params" rows="8" placeholder="{
+  &quot;id&quot;: &quot;云端快照ID&quot;, 
+  &quot;tag&quot;: &quot;快照标签&quot;
+}"></textarea><br>
+
+                <button onclick="sendRequest()">发送请求</button>
+
+                <h3>响应结果:</h3>
+                <pre id="response-output"></pre>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>思源笔记 API 文档 | 最后更新时间：<span id="last-updated"></span></p>
+    </footer>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        // 更新最后更新时间
+        document.getElementById('last-updated').textContent = new Date().toLocaleString();
+    </script>
+
+ </body></html>

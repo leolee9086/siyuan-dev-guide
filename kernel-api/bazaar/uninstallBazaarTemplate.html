@@ -1,0 +1,139 @@
+<!DOCTYPE html><html><head>
+    <title>/api/bazaar/uninstallBazaarTemplate</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../stylesheets/styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/bazaar/uninstallBazaarTemplate</span>
+    </div>
+
+    <h1>卸载集市模板</h1>
+
+    <div class="auth-tags">
+        <span class="chip">需要认证</span>
+        <span class="chip">需要管理员权限</span>
+        <span class="chip">非只读模式</span>
+    </div>
+
+    <h2>接口描述</h2>
+    <p>卸载指定的集市模板。</p>
+    <div class="critical-warning">
+        <p><strong>🚨🚨🚨 严重警告：文件删除操作！ 🚨🚨🚨</strong></p>
+        <ul>
+            <li>此操作将**永久删除**本地文件系统中的模板文件 (`data/templates/`)！</li>
+            <li>**请务必确认你要卸载的是正确的模板！一旦删除，通常无法恢复！**</li>
+            <li>需要**管理员权限**并且不能在**只读模式**下运行。</li>
+            <li>卸载过程可能因文件权限等问题失败。</li>
+        </ul>
+        <p><strong>操作前请三思！确认无误后再执行！</strong></p>
+    </div>
+
+    <h2>实现</h2>
+    <ul>
+        <li>后端路由: <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/router.go" target="_blank">siyuan/kernel/api/router.go</a></li>
+        <li>处理函数: <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/bazaar.go" target="_blank">siyuan/kernel/api/bazaar.go</a> (<code>uninstallBazaarTemplate</code> 函数)</li>
+        <li>核心逻辑: <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/model/bazzar.go" target="_blank">siyuan/kernel/model/bazzar.go</a> (<code>UninstallBazaarTemplate</code> 函数)</li>
+    </ul>
+
+    <h2>请求体 (JSON)</h2>
+    <pre><code class="language-json">{
+  "packageName": "要卸载的模板名称",
+  "keyword": "可选的关键词"
+}
+</code></pre>
+    <ul>
+        <li><code>packageName</code>: (<code>string</code>) 必填。要卸载的模板的名称。通常从 <code>getInstalledTemplate</code> API 获取。</li>
+        <li><code>keyword</code>: (<code>string</code>) 可选。用于卸载成功后刷新集市模板列表时的过滤。可以留空。</li>
+    </ul>
+
+    <h2>响应体 (JSON)</h2>
+    <p>卸载请求成功后，返回标准响应体，`data` 字段包含刷新后的集市模板列表。</p>
+    <pre><code class="language-json">{
+  "code": 0, // 0 表示卸载成功
+  "msg": "", // 成功时为空，失败时包含错误信息
+  "data": {
+    "packages": [
+      // 卸载后刷新得到的 *所有* 集市可用模板列表 (针对指定 keyword)...
+      // (结构同 getBazaarTemplate 返回的 packages)
+    ]
+  }
+}
+</code></pre>
+    <p><strong>注意:</strong></p>
+    <ul>
+        <li>如果 <code>packageName</code> 不存在或卸载失败，<code>code</code> 将为非 0 值，<code>msg</code> 包含错误信息。</li>
+    </ul>
+
+    <!-- Add Tabs for examples -->
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="request-example-tab">请求示例</div>
+            <div class="tab" data-target="response-example-tab">返回示例</div>
+        </div>
+
+        <div id="request-example-tab" class="tab-content active">
+            <h3>请求示例</h3>
+             <pre><code class="language-json">{
+  "packageName": "template-name-to-uninstall",
+  "keyword": ""
+}
+</code></pre>
+        </div>
+
+        <div id="response-example-tab" class="tab-content">
+            <h3>返回示例 (成功)</h3>
+            <pre><code class="language-json">{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "packages": [
+      // ... updated list of available templates ...
+    ]
+  }
+}
+</code></pre>
+        </div>
+    </div>
+
+
+ 
+    <blockquote class="important-note">
+        <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+        <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+    </blockquote>
+
+    <!-- Add Test Area -->
+    <div class="test-area">
+        <h3>在线测试</h3>
+        <form id="api-test-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记中的 设置-关于 中查看 API Token">
+            </div>
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/bazaar/uninstallBazaarTemplate">
+            </div>
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly>
+            </div>
+            <div class="form-group">
+                <label for="api-params">请求参数 (JSON):</label>
+                <textarea id="api-params" rows="4">{
+  "packageName": "",
+  "keyword": ""
+}</textarea>
+            </div>
+            <button type="submit" class="btn">发送请求</button>
+        </form>
+        <div id="api-result" class="result"></div>
+    </div>
+
+    <script src="../api-tester.js"></script>
+
+</body></html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/system/loginAuth">
+    <title>访问授权码登录 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../common/css/styles.css">
+</head>
+<body>
+    <header class="api-header">
+        <h1>访问授权码登录 (LoginAuth)</h1>
+        <nav>
+            <a href="../index.html">首页</a> |
+            <a href="index.html">System API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/model/session.go#L51" target="_blank">GitHub Source (model/session.go L51)</a>
+        </nav>
+        <div class="endpoint-container">
+            <span class="endpoint">POST /api/system/loginAuth</span>
+        </div>
+    </header>
+    <main>
+        <section id="description">
+            <h2>接口描述</h2>
+            <p>此 API 端点 <code>POST /api/system/loginAuth</code> 用于通过用户设置的"访问授权码"进行登录认证。</p>
+            <p>当思源笔记配置了"访问授权码" (在 <code>conf.json</code> 中的 <code>accessAuthCode</code> 字段) 后，此接口用于验证用户提交的授权码。在多次尝试失败后，系统可能会要求输入验证码。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体为一个 JSON 对象，包含以下字段：</p>
+            <ul>
+                <li><strong><code>authCode</code></strong> (string, 必需): 用户输入的访问授权码。</li>
+                <li><strong><code>captcha</code></strong> (string, 可选): 用户输入的验证码。仅当系统因多次登录失败而要求验证码时 (<code>util.NeedCaptcha()</code> 返回 <code>true</code>)，此字段才会被处理。</li>
+            </ul>
+            <p><strong>请求示例:</strong></p>
+            <pre><code class="language-json">{
+    "authCode": "your_access_auth_code",
+    "captcha": "user_entered_captcha_if_needed"
+}</code></pre>
+            <p>如果不需要验证码，可以省略 <code>captcha</code> 字段或留空：</p>
+            <pre><code class="language-json">{
+    "authCode": "your_access_auth_code"
+}</code></pre>
+        </section>
+
+        <section id="response-body">
+            <h2>响应体</h2>
+            <p><strong>成功响应 (HTTP 200 OK):</strong></p>
+            <p>授权码正确且验证码（如果需要）也正确时，API 返回：</p>
+            <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": null
+}</code></pre>
+            <p>此时，服务器会更新会话状态，标记用户已通过访问授权码认证。</p>
+
+            <p><strong>失败响应 (HTTP 200 OK, 但 code 非 0):</strong></p>
+            <ul>
+                <li><strong>验证码错误/缺失 (当需要时):</strong>
+                    <pre><code class="language-json">{
+    "code": 1,
+    "msg": "验证码不能为空", // 或 "验证码不正确"
+    "data": null
+}</code></pre>
+                    <p><code>code: 1</code> 是一个特殊状态，通常指示客户端需要处理验证码逻辑（例如，刷新验证码图片或提示用户验证码错误）。</p>
+                </li>
+                <li><strong>访问授权码错误:</strong>
+                    <pre><code class="language-json">{
+    "code": -1, // 如果当前不需要验证码
+    // 或者
+    "code": 1,  // 如果因为此次错误导致开始需要验证码
+    "msg": "访问授权码不正确",
+    "data": null
+}</code></pre>
+                </li>
+                 <li><strong>访问授权码未设置时的尝试登录 (非预期的直接调用):</strong>
+                    <p>如果系统中并未设置访问授权码 (<code>conf.System.AccessAuthCode</code> 为空)，理论上不应调用此接口进行"登录"。但如果调用，根据 <code>LogoutAuth</code> 的逻辑推断，可能会收到类似提示授权码未设置的错误，但 `LoginAuth` 中未直接体现此场景，通常是授权码为空直接校验失败。</p>
+                 </li>
+            </ul>
+             <p><em>注意: 服务器内部错误 (如会话保存失败) 可能导致 HTTP 500 错误。</em></p>
+        </section>
+
+        <section id="authentication">
+            <h2>认证与授权</h2>
+            <p>此 API 端点本身用于执行"访问授权码"认证流程。它不依赖于 API Token (<code>Authorization</code> 头) 或其他登录状态。</p>
+            <p>调用此接口的目的是建立一个基于访问授权码的会话。</p>
+        </section>
+
+        <section id="notes">
+            <h2>备注</h2>
+            <ul>
+                <li>此接口主要配合思源笔记的"访问授权码"安全设置使用。</li>
+                <li>当用户连续多次输错访问授权码 (由 <code>util.WrongAuthCount</code> 计数)，系统会自动启用验证码机制 (<code>util.NeedCaptcha()</code> 会返回 <code>true</code>)，此时登录时必须同时提供正确的验证码。</li>
+                <li>成功登录后，错误的授权码尝试计数器会清零。</li>
+                <li>验证码图片通过 <code>/api/system/getCaptcha</code> 接口获取。</li>
+            </ul>
+        </section>
+
+        <div class="test-area">
+            <h2>在线测试</h2>
+            <p>您可以使用下面的表单来测试此 API。如果您的思源笔记已设置访问授权码，并可能因多次尝试错误而需要验证码，请填写对应信息。</p>
+            <form id="loginAuthForm">
+                <div>
+                    <label for="authCode">访问授权码:</label>
+                    <input type="password" id="authCode" name="authCode" required>
+                </div>
+                <div>
+                    <label for="captchaInput">验证码 (如果需要):</label>
+                    <input type="text" id="captchaInput" name="captcha">
+                    <img id="captchaImage" src="/api/system/getCaptcha" alt="验证码" onclick="refreshCaptchaLoginAuth()" style="cursor: pointer; vertical-align: middle; margin-left: 10px; border: 1px solid #ccc;" title="点击刷新验证码">
+                    <button type="button" onclick="refreshCaptchaLoginAuth()" style="margin-left: 5px;">刷新验证码</button>
+                </div>
+                <button type="button" onclick="sendLoginAuthRequest()">登录</button>
+            </form>
+            <h3>响应:</h3>
+            <pre><code id="loginAuthResponse" class="language-json">点击"登录"按钮查看响应</code></pre>
+        </div>
+    </main>
+    <blockquote>
+        <p>感谢您对思源笔记的关注与支持！</p>
+        <p><a href="https://afdian.com/a/leolee9086?tab=feed" target="_blank">在爱发电上赞助我们</a></p>
+    </blockquote>
+    <footer>
+        <p>&copy; 2024-2025 <a href="https://b3log.org/siyuan">思源笔记 B3log.org</a>. All rights reserved.</p>
+    </footer>
+    <script>
+        function refreshCaptchaLoginAuth() {
+            const captchaImg = document.getElementById('captchaImage');
+            if (captchaImg) {
+                captchaImg.src = '/api/system/getCaptcha?v=' + new Date().getTime();
+            }
+        }
+
+        async function sendLoginAuthRequest() {
+            const authCodeInput = document.getElementById('authCode');
+            const captchaInput = document.getElementById('captchaInput');
+            const responseCode = document.getElementById('loginAuthResponse');
+
+            const payload = {
+                authCode: authCodeInput.value,
+            };
+            if (captchaInput.value) {
+                payload.captcha = captchaInput.value;
+            }
+
+            responseCode.textContent = '正在登录...';
+
+            try {
+                const response = await fetch('/api/system/loginAuth', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                responseCode.textContent = JSON.stringify(result, null, 2);
+                
+                if (result.code === 0) {
+                    alert('登录成功！');
+                    // 登录成功后通常会刷新页面或跳转
+                    // window.location.reload(); 
+                } else {
+                    alert('登录失败: ' + result.msg);
+                    // 如果 code 为 1，通常意味着验证码相关问题，刷新验证码
+                    if (result.code === 1) {
+                        refreshCaptchaLoginAuth();
+                    }
+                }
+            } catch (error) {
+                console.error('Error during loginAuth:', error);
+                responseCode.textContent = JSON.stringify({ code: -1, msg: '登录请求失败: ' + error.message }, null, 2);
+                alert('登录请求失败: ' + error.message);
+            }
+        }
+
+        // Initial captcha refresh if the image element exists
+        document.addEventListener('DOMContentLoaded', () => {
+           refreshCaptchaLoginAuth();
+        });
+    </script>
+    <script src="../common/js/theme-toggle.js"></script>
+</body>
+</html> 

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>/api/setting/setEditor - Siyuan Kernel API</title>
+    <link rel="stylesheet" href="../style.min.css?20231218">
+    <link rel="icon" type="image/png" href="../favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="../favicon-16x16.png" sizes="16x16">
+</head>
+<body>
+<div class="markdown-body">
+    <h1>/api/setting/setEditor</h1>
+    <p>设置编辑器相关配置。请求体应为一个完整的 <code>conf.Editor</code> 对象。</p>
+    <p><span class="warning">该 API 需要进行身份验证，请在请求头中包含 <code>Authorization</code> 字段，并确保用户角色为管理员且非只读模式。</span></p>
+    <h2>请求</h2>
+    <p><code>POST</code></p>
+    <h3>参数 (JSON Body)</h3>
+    <p>一个代表编辑器配置的 JSON 对象 (<code>conf.Editor</code>)。字段详情如下：</p>
+    <ul>
+        <li><code>allowHTMLBLockScript</code>: <code>boolean</code> - 允许执行 HTML 块内脚本</li>
+        <li><code>fontSize</code>: <code>integer</code> - 字体大小</li>
+        <li><code>fontSizeScrollZoom</code>: <code>boolean</code> - 字体大小是否支持滚轮缩放</li>
+        <li><code>fontFamily</code>: <code>string</code> - 字体</li>
+        <li><code>codeSyntaxHighlightLineNum</code>: <code>boolean</code> - 代码块是否显示行号</li>
+        <li><code>codeTabSpaces</code>: <code>integer</code> - 代码块中 Tab 转换空格数 (0 表示不转换)</li>
+        <li><code>codeLineWrap</code>: <code>boolean</code> - 代码块是否自动折行</li>
+        <li><code>codeLigatures</code>: <code>boolean</code> - 代码块是否连字</li>
+        <li><code>displayBookmarkIcon</code>: <code>boolean</code> - 是否显示书签图标</li>
+        <li><code>displayNetImgMark</code>: <code>boolean</code> - 是否显示网络图片角标</li>
+        <li><code>generateHistoryInterval</code>: <code>integer</code> - 生成历史时间间隔 (分钟)</li>
+        <li><code>historyRetentionDays</code>: <code>integer</code> - 历史保留天数</li>
+        <li><code>emoji</code>: <code>array</code> of <code>string</code> - 常用表情</li>
+        <li><code>virtualBlockRef</code>: <code>boolean</code> - 是否启用虚拟引用</li>
+        <li><code>virtualBlockRefExclude</code>: <code>string</code> - 虚拟引用关键字排除列表 (逗号分隔)</li>
+        <li><code>virtualBlockRefInclude</code>: <code>string</code> - 虚拟引用关键字包含列表 (逗号分隔)</li>
+        <li><code>blockRefDynamicAnchorTextMaxLen</code>: <code>integer</code> - 块引动态锚文本最大长度</li>
+        <li><code>plantUMLServePath</code>: <code>string</code> - PlantUML 伺服地址</li>
+        <li><code>fullWidth</code>: <code>boolean</code> - 是否使用最大宽度</li>
+        <li><code>kaTexMacros</code>: <code>string</code> - KaTeX 宏定义 (JSON 字符串)</li>
+        <li><code>readOnly</code>: <code>boolean</code> - 只读模式 (注意: 此 API 更新的是全局配置中的编辑器只读，另有 `/api/setting/setEditorReadOnly` 可单独快速切换 UI 只读状态)</li>
+        <li><code>embedBlockBreadcrumb</code>: <code>boolean</code> - 嵌入块是否显示面包屑</li>
+        <li><code>listLogicalOutdent</code>: <code>boolean</code> - 列表逻辑反向缩进</li>
+        <li><code>listItemDotNumberClickFocus</code>: <code>boolean</code> - 单击列表项标记聚焦</li>
+        <li><code>floatWindowMode</code>: <code>integer</code> - 浮窗触发模式 (0: 光标悬停, 1: Ctrl+悬停, 2: 不触发)</li>
+        <li><code>dynamicLoadBlocks</code>: <code>integer</code> - 块动态加载数量 (48-1024)</li>
+        <li><code>justify</code>: <code>boolean</code> - 是否两端对齐</li>
+        <li><code>rtl</code>: <code>boolean</code> - 是否从右到左显示</li>
+        <li><code>spellcheck</code>: <code>boolean</code> - 是否启用拼写检查</li>
+        <li><code>onlySearchForDoc</code>: <code>boolean</code> - [[ 是否仅搜索文档块</li>
+        <li><code>backlinkExpandCount</code>: <code>integer</code> - 反向链接默认展开数量</li>
+        <li><code>backmentionExpandCount</code>: <code>integer</code> - 反链提及默认展开数量</li>
+        <li><code>backlinkContainChildren</code>: <code>boolean</code> - 反向链接是否包含子块进行计算</li>
+        <li><code>markdown</code>: <code>object</code> - Markdown 相关配置 (参考 <code>util.Markdown</code> 结构)
+            <ul>
+                <li><code>autoSpace</code>: <code>boolean</code></li>
+                <li><code>chineseParagraphBeginningSpace</code>: <code>boolean</code></li>
+                <li><code>gfmAutoLink</code>: <code>boolean</code></li>
+                <li><code>hardLineBreak</code>: <code>boolean</code></li>
+                <li><code>listIndent</code>: <code>integer</code></li>
+                <li><code>paragraphBeginningSpace</code>: <code>boolean</code></li>
+                <li><code>eastAsianLineBreak</code>: <code>boolean</code></li>
+                <li><code>listItemIndent</code>: <code>integer</code></li>
+                <li><code>toc</code>: <code>boolean</code></li>
+                <li><code>codeBlockPreview</code>: <code>boolean</code></li>
+                <li><code>footnotes</code>: <code>boolean</code></li>
+                <li><code>sanitize</code>: <code>boolean</code></li>
+                <li><code>linkify</code>: <code>boolean</code></li>
+                <li><code>inlineMathAllowDigitAfterOpenMarker</code>: <code>boolean</code></li>
+                <li><code>mathEngine</code>: <code>integer</code> (0: KaTeX, 1: MathJax)</li>
+                <li><code>mark</code>: <code>boolean</code></li>
+                <li><code>sup</code>: <code>boolean</code></li>
+                <li><code>sub</code>: <code>boolean</code></li>
+                <li><code>kbd</code>: <code>boolean</code></li>
+                <li><code>tag</code>: <code>boolean</code></li>
+                <li><code>blockRef</code>: <code>boolean</code></li>
+                <li><code>fileAnnotationRef</code>: <code>boolean</code></li>
+                <li><code>setext</code>: <code>boolean</code></li>
+                <li><code>listStyle</code>: <code>boolean</code></li>
+                <li><code>paragraph</code>: <code>boolean</code></li>
+                <li><code>heading</code>: <code>boolean</code></li>
+                <li><code>codeBlock</code>: <code>boolean</code></li>
+                <li><code>mathBlock</code>: <code>boolean</code></li>
+                <li><code>table</code>: <code>boolean</code></li>
+                <li><code>htmlBlock</code>: <code>boolean</code></li>
+                <li><code>link</code>: <code>boolean</code></li>
+                <li><code>autoLink</code>: <code>boolean</code></li>
+                <li><code>textMark</code>: <code>boolean</code></li>
+                <li><code>reference</code>: <code>boolean</code></li>
+                <li><code>escape</code>: <code>boolean</code></li>
+                <li><code>protyleMarkNetImg</code>: <code>boolean</code></li>
+                <li><code>headingID</code>: <code>boolean</code></li>
+                <li><code>autoPairPunctuation</code>: <code>boolean</code></li>
+                <li><code>autoPairParentheses</code>: <code>boolean</code></li>
+                <li><code>autoPairBrackets</code>: <code>boolean</code></li>
+                <li><code>autoPairBraces</code>: <code>boolean</code></li>
+                <li><code>autoPairQuotes</code>: <code>boolean</code></li>
+                <li><code>autoPairBackticks</code>: <code>boolean</code></li>
+                <li><code>autoPairEmphasis</code>: <code>boolean</code></li>
+                <li><code>autoPairUnderscore</code>: <code>boolean</code></li>
+                <li><code>autoPairDollar</code>: <code>boolean</code></li>
+                <li><code>fixTermTypo</code>: <code>boolean</code></li>
+            </ul>
+        </li>
+    </ul>
+    <p><em>注意: 这是一个非常复杂的对象，建议先通过 <code>/api/system/getConf</code> 获取当前配置，在此基础上修改。</em></p>
+    <h3>示例请求 (部分字段)</h3>
+    <div class="language-json HIDE">
+    <pre class="highlight"><code><span class="p">{</span>
+    <span class="nt">"fontSize"</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span>
+    <span class="nt">"fontFamily"</span><span class="p">:</span> <span class="s2">"霞鹜文楷"</span><span class="p">,</span>
+    <span class="nt">"codeLineWrap"</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nt">"virtualBlockRef"</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nt">"markdown"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">"autoSpace"</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="nt">"hardLineBreak"</span><span class="p">:</span> <span class="kc">false</span>
+    <span class="p">}</span>
+    <span class="c1">// ... 其他 editor 配置项</span>
+<span class="p">}</span>
+</code></pre>
+    </div>
+
+    <h2>响应</h2>
+    <p>如果操作成功，将返回包含更新后编辑器配置对象 (<code>conf.Editor</code>) 的 JSON 数据。</p>
+    <div class="language-json HIDE">
+    <pre class="highlight"><code><span class="p">{</span>
+    <span class="nt">"code"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">"msg"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+    <span class="nt">"data"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">"allowHTMLBLockScript"</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+        <span class="nt">"fontSize"</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span>
+        <span class="nt">"fontFamily"</span><span class="p">:</span> <span class="s2">"霞鹜文楷"</span><span class="p">,</span>
+        <span class="c1">// ... 其他所有 editor 配置项 ...</span>
+        <span class="nt">"markdown"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">"autoSpace"</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+            <span class="nt">"hardLineBreak"</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+            <span class="c1">// ... 其他 markdown 配置项 ...</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+    </div>
+    <p>如果操作失败，<code>code</code> 将是非零值，<code>msg</code> 中会包含错误信息。</p>
+
+    <h2>在线测试</h2>
+    <p>
+        <label>API Token: (从思源"设置-关于"中获取，或通过登录下方测试区的登录按钮获取)<br>
+            <input type="text" id="apiTokenInput" style="width: 100%;" placeholder="粘贴你的 API Token">
+        </label>
+    </p>
+    <p>
+        <label>请求体 (JSON - <code>conf.Editor</code> 对象):<br>
+            <button onclick="loadCurrentConf()">从 /api/system/getConf 加载当前配置到下方</button><br>
+            <textarea id="requestBody" rows="15" style="width: 100%;" placeholder="在此输入完整的 conf.Editor JSON 对象"></textarea>
+        </label>
+    </p>
+    <p><button onclick="testAPI()">发送请求</button></p>
+    <p><label>响应:<br><textarea id="responseArea" rows="15" style="width: 100%;" readonly></textarea></label></p>
+</div>
+<script>
+    let currentToken = localStorage.getItem('siyuanUserToken') || '';
+    if (currentToken) {
+        document.getElementById('apiTokenInput').value = currentToken;
+    }
+
+    document.getElementById('apiTokenInput').addEventListener('input', (event) => {
+        currentToken = event.target.value;
+        localStorage.setItem('siyuanUserToken', currentToken);
+    });
+
+    function getToken() {
+        const storedToken = localStorage.getItem('siyuanUserToken');
+        const inputToken = document.getElementById('apiTokenInput').value;
+        if (inputToken && inputToken !== storedToken) {
+            localStorage.setItem('siyuanUserToken', inputToken);
+            return inputToken;
+        }
+        return storedToken || inputToken;
+    }
+
+    async function loadCurrentConf() {
+        const token = getToken();
+        if (!token) {
+            document.getElementById('responseArea').value = '错误：请先提供 API Token。';
+            return;
+        }
+        try {
+            const response = await fetch('/api/system/getConf', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Token ' + token,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({}) // getConf不需要body
+            });
+            const data = await response.json();
+            if (data.code === 0 && data.data && data.data.conf && data.data.conf.editor) {
+                document.getElementById('requestBody').value = JSON.stringify(data.data.conf.editor, null, 2);
+                document.getElementById('responseArea').value = '当前编辑器配置已加载到请求体。';
+            } else {
+                document.getElementById('responseArea').value = '加载配置失败: ' + JSON.stringify(data, null, 2);
+            }
+        } catch (error) {
+            document.getElementById('responseArea').value = '加载配置请求失败: ' + error;
+        }
+    }
+
+    async function testAPI() {
+        const token = getToken();
+        if (!token) {
+            document.getElementById('responseArea').value = '错误：API Token 未设置。请在输入框中提供或先登录。';
+            return;
+        }
+
+        const requestBodyStr = document.getElementById('requestBody').value;
+        let parsedBody;
+        try {
+            parsedBody = JSON.parse(requestBodyStr);
+        } catch (e) {
+            document.getElementById('responseArea').value = '错误：请求体不是有效的 JSON。\n' + e;
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/setting/setEditor', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Token ' + token
+                },
+                body: JSON.stringify(parsedBody)
+            });
+            const data = await response.json();
+            document.getElementById('responseArea').value = JSON.stringify(data, null, 2);
+        } catch (error) {
+            document.getElementById('responseArea').value = '请求失败：\n' + error;
+        }
+    }
+</script>
+<script src="../style.js?20231218"></script>
+</body>
+</html> 

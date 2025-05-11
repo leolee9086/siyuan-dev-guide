@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>回滚单个文档历史 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        /* Reusing warning box style from rollbackNotebookHistory */
+        .warning-box {
+            background-color: #fff3cd; /* Light yellow */
+            border: 1px solid #ffeeba; /* Yellow border */
+            color: #856404; /* Dark yellow text */
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .warning-box h4 {
+            margin-top: 0;
+            color: #d9534f; /* Red heading for emphasis */
+        }
+        .warning-box ul {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            padding-left: 20px;
+        }
+        .warning-box strong {
+             color: #c9302c; /* Darker red for strong tags */
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+    
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/history/rollbackDocHistory</span>
+    </div>
+    
+    <h1>回滚单个文档历史</h1>
+    
+    <div class="github-source">
+        <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/model/history.go#L228" target="_blank" title="查看源文件 (推测)">源文件 (GitHub, 推测位置)</a>
+    </div>
+    
+    <div class="auth-tags">
+        <span class="chip auth-required">需要认证</span>
+        <span class="chip admin-required">需要管理员权限</span>
+        <span class="chip readonly-check">只读模式下不可用</span>
+    </div>
+    
+    <h2>接口描述</h2>
+    <p>将<strong>单个文档</strong>恢复到其在指定历史快照中的状态。此操作会将指定的历史 <code>.sy</code> 文件复制到当前工作空间，<strong>覆盖</strong>具有相同文档 ID 的现有文件（如果存在）。</p>
+    <p><strong>重要注意事项：</strong></p>
+    <ul>
+        <li>此操作仅恢复文档本身的 <code>.sy</code> 文件，<strong>不会</strong>恢复该文档可能引用的图片或其他资源文件。</li>
+        <li>它会<strong>直接覆盖</strong>当前工作区中的同 ID 文档，<strong>没有合并机制</strong>。当前文档的内容将丢失。</li>
+        <li>此操作<strong>不会删除任何历史记录</strong>，与回滚整个工作空间的操作不同。</li>
+        <li>建议在执行此操作前，先使用 <code>/api/history/getDocHistoryContent</code> 预览历史内容。</li>
+    </ul>
+    <p><strong>请谨慎使用，建议在操作前备份相关文档。</strong></p>
+    
+    <h2>请求参数 (JSON Body)</h2>
+    <table class="param-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>必选</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>notebook</td>
+                <td>string</td>
+                <td><span class="required">是</span></td>
+                <td>目标文档当前（或应该恢复到）所属的笔记本 ID。</td>
+            </tr>
+            <tr>
+                <td>historyPath</td>
+                <td>string</td>
+                <td><span class="required">是</span></td>
+                <td>要恢复的目标历史文档文件的绝对路径（相对于工作空间 <code>data/</code> 目录），例如: <code>/history/20231027110000/20231027105900-abcdefg/20231027105901-hijklmn.sy</code>。</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <h2>返回值</h2>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>code</td>
+                <td>number</td>
+                <td>返回码，0 表示成功，非 0 表示失败。</td>
+            </tr>
+            <tr>
+                <td>msg</td>
+                <td>string</td>
+                <td>错误信息，成功时为空字符串。</td>
+            </tr>
+            <tr>
+                <td>data</td>
+                <td>object</td>
+                <td>包含操作结果信息。</td>
+            </tr>
+             <tr>
+                <td class="indent-1">data.box</td>
+                <td>string</td>
+                <td>操作的笔记本 ID。</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-target="example-tab">请求示例</div>
+            <div class="tab" data-target="response-tab">返回示例</div>
+        </div>
+        
+        <div id="example-tab" class="tab-content active">
+            <h3>请求示例</h3>
+            <pre><code>POST /api/history/rollbackDocHistory HTTP/1.1
+Host: 127.0.0.1:6806
+Content-Type: application/json
+Authorization: Token your-api-token
+
+{
+  "notebook": "20231027105900-abcdefg",
+  "historyPath": "/history/20231027110000/20231027105900-abcdefg/20231027105901-hijklmn.sy"
+}</code></pre>
+        </div>
+        
+        <div id="response-tab" class="tab-content">
+            <h3>返回示例 (成功)</h3>
+            <pre><code>{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "box": "20231027105900-abcdefg"
+  }
+}</code></pre>
+             <h3>返回示例 (失败 - 历史文件不存在)</h3>
+             <pre><code>{
+  "code": 0,  
+  "msg": "", 
+  "data": {
+    "box": "20231027105900-abcdefg"
+  }
+} 
+</code></pre>
+ <p><em>注意：即使历史文件不存在，此 API 目前也可能返回成功 (code 0)，因为底层函数未返回错误。建议通过后续检查确认文档是否真的被恢复。</em></p>
+        </div>
+    </div>
+
+    <blockquote class="important-note">
+        <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+        <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+    </blockquote>
+    
+    <div class="test-area">
+        <h3>在线测试</h3>
+         <div class="warning-box">
+            <h4>⚠️ 操作风险警告 ⚠️</h4>
+            <p><strong>回滚单个文档历史会覆盖当前工作区中的同 ID 文档！</strong></p>
+            <ul>
+                <li>当前文档的内容将会丢失，被历史版本替代。</li>
+                <li>此操作仅恢复文档本身，不恢复相关资源。</li>
+            </ul>
+            <p><strong>请在执行前确认您了解后果，并建议先备份。</strong></p>
+            <p><strong>【免责声明】此在线测试功能仅供演示。您必须完全理解此操作的后果，并自行承担所有风险。文档提供者不对使用此功能造成的任何数据丢失或损坏负责。</strong></p>
+        </div>
+        <form id="api-test-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记中的'设置-关于'中查看API token (需要管理员权限)">
+            </div>
+            
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/history/rollbackDocHistory">
+            </div>
+            
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly>
+            </div>
+            
+            <div class="form-group">
+                <label for="api-params">请求参数 (JSON):</label>
+                <textarea id="api-params">{
+  "notebook": "notebook_id",
+  "historyPath": "/history/YYYYMMDDHHMMSS/notebook_id/doc_id.sy"
+}</textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-warning">发送请求 (覆盖警告)</button> <!-- Warning level button -->
+        </form>
+        
+        <div id="api-result" class="result"></div>
+    </div>
+    
+    <div class="nav-links">
+        <a href="../index.html">返回首页</a>
+        <a href="getDocHistoryContent.html">上一个接口: 获取文档历史内容</a>
+        <a href="clearWorkspaceHistory.html">下一个接口: 清空工作空间历史</a> 
+    </div>
+    
+    <script src="../api-tester.js"></script>
+    <script>
+    // Inline script for single confirmation on this specific page
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('api-test-form');
+        if (form) {
+            form.addEventListener('submit', async (event) => {
+                // Check if the event is already handled to prevent double firing if api-tester.js also adds listener
+                if (event.defaultPrevented) return;
+                event.preventDefault(); 
+
+                const confirm1 = confirm("【覆盖警告】\n您确定要用指定的历史版本覆盖当前文档吗？\n当前文档的内容将丢失，且此操作无法撤销！\n(此操作仅恢复文档本身，不恢复资源文件)");
+                if (!confirm1) return;
+                
+                // Manually trigger API call (Replicating essential logic from api-tester.js)
+                const tokenInput = document.getElementById('api-token');
+                const endpointInput = document.getElementById('api-endpoint');
+                const methodInput = document.getElementById('api-method');
+                const paramsTextarea = document.getElementById('api-params');
+                const resultDiv = document.getElementById('api-result');
+
+                const token = tokenInput ? tokenInput.value : '';
+                const endpoint = endpointInput ? endpointInput.value : '';
+                const method = methodInput ? methodInput.value : 'POST';
+                const params = paramsTextarea ? paramsTextarea.value : '{}';
+                resultDiv.innerHTML = '<p>正在发送请求...</p>';
+                resultDiv.className = 'result'; 
+
+                try {
+                    let body = null;
+                    if (method !== 'GET' && method !== 'HEAD') {
+                       try {
+                           JSON.parse(params); 
+                           body = params;
+                       } catch (e) {
+                           throw new Error('请求参数不是有效的 JSON 格式。');
+                       }
+                    }
+                    
+                    const headers = {
+                        'Content-Type': 'application/json'
+                    };
+                    if (token) {
+                        headers['Authorization'] = `Token ${token}`;
+                    }
+
+                    const response = await fetch(endpoint, {
+                        method: method,
+                        headers: headers,
+                        body: body 
+                    });
+
+                    const responseData = await response.json();
+                    
+                    resultDiv.innerHTML = `<h4>响应状态: ${response.status} ${response.statusText}</h4><pre><code>${JSON.stringify(responseData, null, 2)}</code></pre>`;
+                    
+                    if (!response.ok || responseData.code !== 0) {
+                        console.error('API request failed:', responseData);
+                        resultDiv.classList.add('error'); 
+                    } else {
+                         resultDiv.classList.remove('error');
+                    }
+
+                } catch (error) {
+                    console.error('Error sending API request:', error);
+                    resultDiv.innerHTML = `<p class="error">请求失败: ${error.message}</p>`;
+                    resultDiv.classList.add('error');
+                }
+            });
+        }
+    });
+    </script>
+</body>
+</html>

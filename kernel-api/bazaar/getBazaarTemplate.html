@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>getBazaarTemplate API</title>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../github-markdown.css">
+<link rel="stylesheet" href="../styles.css">
+<style>
+    .markdown-body {
+        box-sizing: border-box;
+        min-width: 200px;
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 45px;
+    }
+    @media (max-width: 767px) {
+        .markdown-body {
+            padding: 15px;
+        }
+    }
+    .package-list { list-style: none; padding-left: 0; }
+    .package-item { margin-bottom: 1em; border: 1px solid #eee; padding: 1em; }
+    .package-item h4 { margin-top: 0; }
+</style>
+</head>
+<body class="markdown-body">
+<blockquote>
+<p>本文档非官方出品，主要由 AI 辅助编写，不保证绝对准确。如有疑问，请以 <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/bazaar.go">kernel/api/bazaar.go</a> 中的源码为准。</p>
+<p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<h1>getBazaarTemplate</h1>
+<p class="api-path-display"><strong>方法：</strong><span class="method">POST</span> <strong>路径：</strong><span class="endpoint">/api/bazaar/getBazaarTemplate</span></p>
+<p>获取集市中可用的模板包列表。模板包就是你在思源笔记中新建文档时可以选择套用的那些模板。</p>
+<p><strong>新手提示：</strong> 这个 API 可以帮你列出所有能从集市下载的模板，就像你在思源笔记"设置"->"集市"->"模板"里看到的那样。你还可以输入关键词来快速查找特定类型的模板。</p>
+<p><strong>注意</strong>: 此 API 需要认证。</p>
+<h2>地址</h2>
+<p><code>POST /api/bazaar/getBazaarTemplate</code></p>
+<h2>请求体 (JSON)</h2>
+<pre><code class="language-json">{
+  "keyword": "可选的关键词"
+}
+</code></pre>
+<ul>
+<li><code>keyword</code>: (<code>string</code>) 可选。用于搜索模板包名称、作者或描述的关键词。如果为空或不提供，则返回所有可用的模板包。</li>
+</ul>
+<h2>响应体 (JSON)</h2>
+<p>标准响应体，其中 `data.packages` 字段是一个数组，包含模板包对象。</p>
+<pre><code class="language-json">{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "packages": [
+      {
+        "name": "模板包名称",
+        "author": "作者",
+        "version": "版本号",
+        "repoURL": "仓库地址",
+        "repoHash": "仓库哈希",
+        "description": "描述",
+        "iconURL": "预览图 URL",
+        "displayName": "显示名称",
+        "funding": [], // 赞助信息
+        // ... 可能还有其他字段
+      }
+      // ... 更多模板包
+    ]
+  }
+}
+</code></pre>
+<p><strong>注意:</strong> `packages` 数组中每个对象的具体字段和结构取决于后端 `model.BazaarTemplates` 函数的实现，请以实际返回为准（通常和图标包、插件包的结构类似）。</p>
+<h2>示例</h2>
+<pre><code class="language-javascript">// 获取所有可用的模板包
+fetch('/api/bazaar/getBazaarTemplate', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Token YOUR_API_TOKEN' // 替换为你的 API Token
+  },
+  body: JSON.stringify({ keyword: "" })
+})
+.then(response => response.json())
+.then(data => {
+  if (data.code === 0) {
+    console.log('获取集市模板包列表成功:', data.data.packages);
+    // 在界面上渲染 data.data.packages 列表
+  } else {
+    console.error('获取集市模板包列表失败:', data.msg);
+  }
+})
+.catch(error => console.error('请求错误:', error));
+
+// 搜索包含 "report" 关键词的模板包
+fetch('/api/bazaar/getBazaarTemplate', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Token YOUR_API_TOKEN' // 替换为你的 API Token
+  },
+  body: JSON.stringify({ keyword: "report" })
+})
+// ... 后续处理同上
+</code></pre>
+
+<!-- 在线测试区域 -->
+<div class="test-area">
+    <h3>在线测试</h3>
+    <form id="api-test-form">
+        <div class="form-group">
+            <label for="api-token">API Token:</label>
+            <input type="text" id="api-token" placeholder="在思源笔记中的"设置-关于"中查看API token">
+        </div>
+        <div class="form-group">
+            <label for="api-endpoint">接口地址:</label>
+            <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/bazaar/getBazaarTemplate">
+        </div>
+        <div class="form-group">
+            <label for="api-method">请求方法:</label>
+            <input type="text" id="api-method" value="POST" readonly>
+        </div>
+        <div class="form-group">
+            <label for="api-params">请求参数 (JSON):</label>
+            <textarea id="api-params">{
+  "keyword": ""
+}</textarea>
+        </div>
+        <button type="submit" class="btn">发送请求</button>
+    </form>
+    <div id="api-result" class="result"></div>
+</div>
+
+<script src="../api-tester.js"></script>
+
+</body>
+</html> 

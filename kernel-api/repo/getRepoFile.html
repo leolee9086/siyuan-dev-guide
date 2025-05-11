@@ -1,0 +1,216 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/repo/getRepoFile"> <!-- API Endpoint Meta Tag -->
+    <title>获取本地快照文件内容 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <h1>获取本地快照文件内容 (getRepoFile)</h1>
+        <nav>
+            <a href="../index.html">首页</a> | 
+            <a href="index.html">Repo API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/repo.go#L32" target="_blank">GitHub Source</a>
+        </nav>
+    </header>
+    <main>
+        <section id="description">
+            <h2>功能描述</h2>
+            <p>此 API 端点 <code>POST /api/repo/getRepoFile</code> 用于获取当前工作空间本地版本库中某个特定快照里的指定文件内容。</p>
+            <p>该 API 主要用于查看历史版本的文件。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体必须是 JSON 格式，包含以下参数：</p>
+            <ul>
+                <li><code>id</code> (string): <strong>必填</strong>。要获取的文件的唯一 ID。此 ID 由快照 ID 和文件路径组成，格式为 <code>&lt;snapshot-id&gt;:&lt;file-path-in-snapshot&gt;</code>。</li>
+                <li>例如：<code>20240315200000-uvwxyz0:data/documents/20231027100000-abcdefg.sy</code> 表示获取快照 `20240315200000-uvwxyz0` 中的文件 `data/documents/20231027100000-abcdefg.sy`。</li>
+            </ul>
+            <p><strong>请求示例:</strong></p>
+            <pre><code class="language-json">
+{
+  "id": "20240315200000-uvwxyz0:data/documents/20231027100000-abcdefg.sy"
+}
+            </code></pre>
+        </section>
+
+        <section id="response-format">
+            <h2>响应结果</h2>
+            <p><strong>重要：</strong>此 API 不返回 JSON 数据。成功的请求将直接返回文件的原始二进制数据。</p>
+            <p>响应头中的 <code>Content-Type</code> 会根据文件的实际类型自动设置（例如 <code>image/png</code>, <code>application/json</code>, <code>text/plain; charset=utf-8</code> 等）。如果无法识别文件类型，则默认为 <code>application/octet-stream</code>。</p>
+            <p>如果发生错误（例如文件 ID 无效、快照不存在、读取文件失败等），将返回标准的 JSON 错误响应：</p>
+            <pre><code class="language-json">
+{
+  "code": -1, // 或其他非零错误码
+  "msg": "具体的错误信息",
+  "data": null
+}
+            </code></pre>
+        </section>
+
+        <section id="online-testing">
+            <h2>在线测试</h2>
+            <p>您可以在下方输入文件的 ID 进行在线测试。</p>
+            <p><strong>注意：</strong>由于此 API 直接返回文件内容，在线测试器可能无法直接显示非文本文件的内容（如图片、压缩包等）。浏览器可能会尝试下载文件或显示乱码。对于文本文件（如 .sy, .md, .txt, .json），通常可以正常显示。</p>
+            <div class="api-tester">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="请输入您的 API Token (可选)" value=""><br>
+
+                <label for="endpoint">Endpoint:</label>
+                <input type="text" id="endpoint" value="/api/repo/getRepoFile" readonly=""><br>
+
+                <label for="method">Method:</label>
+                <input type="text" id="method" value="POST" readonly=""><br>
+
+                <label for="params">Parameters (JSON):</label><br>
+                <textarea id="params" rows="5" placeholder="{
+  &quot;id&quot;: &quot;<snapshot-id>:<file-path>&quot;
+}"></textarea><br>
+
+                <button onclick="sendRequest(true)">发送请求 (尝试显示文本)</button> 
+                <button onclick="downloadResponse()">发送请求 (尝试下载)</button>
+
+                <h3>响应结果 (尝试文本预览):</h3>
+                <pre id="response-output"></pre>
+                <p id="download-link-container" style="display: none;">无法直接显示，尝试 <a id="download-link" href="#">下载文件</a>。</p>
+
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>思源笔记 API 文档 | 最后更新时间：<span id="last-updated"></span></p>
+    </footer>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        // 更新最后更新时间
+        document.getElementById('last-updated').textContent = new Date().toLocaleString();
+
+        // 特殊处理文件下载
+        let lastResponseBlob = null;
+        let lastResponseFilename = 'downloaded_file'; // Default filename
+
+        async function sendRequest(tryText = false) {
+            const token = document.getElementById('api-token').value.trim();
+            const endpoint = document.getElementById('endpoint').value;
+            const method = document.getElementById('method').value;
+            let params;
+            try {
+                params = JSON.parse(document.getElementById('params').value);
+            } catch (e) {
+                document.getElementById('response-output').textContent = '请求参数 JSON 格式错误: ' + e.message;
+                return;
+            }
+            const outputElement = document.getElementById('response-output');
+            const downloadContainer = document.getElementById('download-link-container');
+            const downloadLink = document.getElementById('download-link');
+            outputElement.textContent = '正在发送请求...';
+            downloadContainer.style.display = 'none';
+            lastResponseBlob = null;
+
+            const headers = {
+                'Content-Type': 'application/json',
+            };
+            if (token) {
+                headers['Authorization'] = `Token ${token}`;
+            }
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: method,
+                    headers: headers,
+                    body: JSON.stringify(params),
+                });
+
+                const contentType = response.headers.get('content-type') || 'application/octet-stream';
+                const contentDisposition = response.headers.get('content-disposition');
+                
+                // 尝试从 Content-Disposition 获取文件名
+                if (contentDisposition) {
+                    const filenameMatch = contentDisposition.match(/filename\*?=(?:UTF-8'')?([^;]+)/i);
+                    if (filenameMatch && filenameMatch[1]) {
+                        lastResponseFilename = decodeURIComponent(filenameMatch[1].replace(/^"|"$/g, ''));
+                    } else {
+                         const filenameMatchBasic = contentDisposition.match(/filename="?([^;"]+)"?/i);
+                         if (filenameMatchBasic && filenameMatchBasic[1]) {
+                             lastResponseFilename = filenameMatchBasic[1];
+                         }
+                    }
+                } else {
+                    // 尝试从路径猜测文件名
+                     const pathParts = params.id ? params.id.split(':') : [];
+                     if (pathParts.length > 1) {
+                        const filePathParts = pathParts[1].split('/');
+                        lastResponseFilename = filePathParts[filePathParts.length - 1] || 'downloaded_file';
+                     } else {
+                         lastResponseFilename = 'downloaded_file';
+                     }
+                }
+
+
+                if (!response.ok) {
+                    // 尝试解析 JSON 错误
+                    try {
+                        const errorData = await response.json();
+                        outputElement.textContent = JSON.stringify(errorData, null, 2);
+                    } catch (jsonError) {
+                        // 如果不是 JSON 错误，显示状态码和文本
+                        const errorText = await response.text();
+                        outputElement.textContent = `错误: ${response.status} ${response.statusText}\n${errorText}`;
+                    }
+                    return;
+                }
+
+                // 请求成功，处理返回的文件内容
+                const blob = await response.blob();
+                lastResponseBlob = blob;
+
+                if (tryText && (contentType.startsWith('text/') || contentType.includes('json') || contentType.includes('xml') || contentType.includes('html') || contentType.includes('javascript'))) {
+                    const text = await blob.text();
+                    outputElement.textContent = text;
+                } else if (tryText) {
+                    outputElement.textContent = `文件类型 (${contentType}) 可能无法直接预览。请尝试"发送请求 (尝试下载)"。`;
+                    downloadLink.href = URL.createObjectURL(blob);
+                    downloadLink.download = lastResponseFilename;
+                    downloadContainer.style.display = 'block';
+                } else {
+                     outputElement.textContent = `文件准备就绪，类型: ${contentType}, 文件名: ${lastResponseFilename}。请点击下方链接下载。`;
+                     downloadLink.href = URL.createObjectURL(blob);
+                     downloadLink.download = lastResponseFilename;
+                     downloadContainer.style.display = 'block';
+                }
+
+            } catch (error) {
+                outputElement.textContent = '网络请求错误: ' + error;
+                console.error('API request failed:', error);
+            }
+        }
+
+        function downloadResponse() {
+            if (lastResponseBlob) {
+                const url = URL.createObjectURL(lastResponseBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = lastResponseFilename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } else {
+                // 如果还没有响应，先发送请求但不尝试预览
+                sendRequest(false);
+                // 注意：立即下载可能不可行，因为 sendRequest 是异步的
+                // 最好是让用户在看到下载链接后再点击
+                document.getElementById('response-output').textContent += '\n请在请求完成后点击下载链接。';
+            }
+        }
+
+    </script>
+
+ </body></html>

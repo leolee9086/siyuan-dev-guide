@@ -1,0 +1,114 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/system/checkWorkspaceDir"> <!-- API Endpoint Meta Tag -->
+    <title>检查工作空间目录 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <h1>检查工作空间目录 (checkWorkspaceDir)</h1>
+        <nav>
+            <a href="../index.html">首页</a> | 
+            <a href="index.html">System API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/workspace.go#L35" target="_blank">GitHub Source (workspace.go)</a>
+        </nav>
+    </header>
+    <main>
+        <section id="description">
+            <h2>功能描述</h2>
+            <p>此 API 端点 <code>POST /api/system/checkWorkspaceDir</code> 用于检查指定的目录路径是否为一个有效的思源笔记工作空间。</p>
+            <p>它主要用于在尝试打开或创建工作空间之前的验证步骤，确保目录结构基本符合要求。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体必须是 JSON 格式，包含以下参数：</p>
+            <ul>
+                <li><code>path</code> (string): <strong>必填</strong>。需要检查的目录的绝对路径。</li>
+            </ul>
+            <p><strong>请求示例:</strong></p>
+            <pre><code class="language-json">
+{
+  "path": "/path/to/your/siyuan/workspace"
+}
+            </code></pre>
+        </section>
+
+        <section id="response-format">
+            <h2>响应结果</h2>
+            <p>成功的请求将返回一个 JSON 对象，<code>code</code> 为 0，<code>data</code> 包含一个名为 <code>isWorkspace</code> 的布尔值。</p>
+            <ul>
+                <li>如果指定的路径是一个有效的工作空间（包含 <code>data</code> 目录和 <code>conf/conf.json</code> 文件），则 <code>isWorkspace</code> 为 <code>true</code>。</li>
+                <li>如果路径有效但不是一个完整的工作空间结构，则 <code>isWorkspace</code> 为 <code>false</code>。</li>
+            </ul>
+             <p><strong>响应示例 (有效的工作空间):</strong></p>
+            <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "isWorkspace": true
+  }
+}
+            </code></pre>
+             <p><strong>响应示例 (路径存在但不是工作空间):</strong></p>
+            <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "isWorkspace": false
+  }
+}
+            </code></pre>
+            <p>如果操作失败（例如路径不存在、路径名称非法、无读取权限等），将返回非 0 的 <code>code</code> 和具体的错误信息 <code>msg</code>，此时 <code>data</code> 为 <code>null</code>。</p>
+            <pre><code class="language-json">
+{
+  "code": -1,
+  "msg": "This workspace does not exist", // 示例错误信息
+  "data": null
+}
+            </code></pre>
+        </section>
+
+        <section id="online-testing">
+            <h2>在线测试</h2>
+            <p>您可以在下方输入要检查的目录路径进行在线测试。</p>
+            <div class="api-tester">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="请输入您的 API Token (可选)" value=""><br>
+
+                <label for="endpoint">Endpoint:</label>
+                <input type="text" id="endpoint" value="/api/system/checkWorkspaceDir" readonly=""><br>
+
+                <label for="method">Method:</label>
+                <input type="text" id="method" value="POST" readonly=""><br>
+
+                <label for="params">Parameters (JSON):</label><br>
+                <textarea id="params" rows="4" placeholder="{
+  &quot;path&quot;: &quot;&quot;
+}"></textarea><br>
+
+                <button onclick="sendRequest()">发送请求</button>
+
+                <h3>响应结果:</h3>
+                <pre id="response-output"></pre>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>思源笔记 API 文档 | 最后更新时间：<span id="last-updated"></span></p>
+    </footer>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        // 更新最后更新时间
+        document.getElementById('last-updated').textContent = new Date().toLocaleString();
+    </script>
+
+ </body></html>

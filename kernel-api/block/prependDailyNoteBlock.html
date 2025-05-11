@@ -1,0 +1,129 @@
+<!DOCTYPE html><html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>prependDailyNoteBlock API</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="../static/css/prism.css">
+    <script src="../static/js/prism.js"></script>
+    <script src="../static/js/fetch.js"></script>
+    <script src="../static/js/script.js"></script>
+</head>
+<body>
+<header>
+    <span class="header-item">
+        <button class="header-btn" onclick="goBack()">←</button>
+    </span>
+    <span class="header-item">
+        <div class="header-title">prependDailyNoteBlock</div>
+    </span>
+    <span class="header-item">
+        <button class="header-btn" onclick="goHome()">⌂</button>
+    </span>
+</header>
+<main>
+    <h2>prependDailyNoteBlock</h2>
+    <p><code class="language-text">POST /api/block/prependDailyNoteBlock</code></p>
+    <p>在指定笔记本的日记开头插入块。</p>
+    <p>如果日记不存在，将会自动创建日记。</p>
+    <p>鉴权：需要管理员角色 <code class="language-text">admin</code> 和写权限 <code class="language-text">w</code>。</p>
+    <p><b>请求体参数</b></p>
+    <table>
+        <thead>
+        <tr>
+            <th>参数</th>
+            <th>类型</th>
+            <th>描述</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><code class="language-text">notebook</code></td>
+            <td><code class="language-text">string</code></td>
+            <td>必需。笔记本 ID</td>
+        </tr>
+        <tr>
+            <td><code class="language-text">data</code></td>
+            <td><code class="language-text">string</code></td>
+            <td>必需。要插入的数据块，可以是 Markdown 或 DOM 字符串</td>
+        </tr>
+        <tr>
+            <td><code class="language-text">dataType</code></td>
+            <td><code class="language-text">string</code></td>
+            <td>必需。数据类型，必须是 <code class="language-text">"markdown"</code> 或 <code class="language-text">"dom"</code></td>
+        </tr>
+        </tbody>
+    </table>
+    <p><b>返回值</b></p>
+    <p>成功时：</p>
+    <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": [ // 返回事务对象数组
+        {
+            "doOperations": [
+                {
+                    "action": "prependInsert", // 操作类型为前插
+                    "data": "&lt;div data-type="NodeParagraph" data-node-id="20240801100000-abcdefgh" updated="20240801100000"&gt;&lt;div contenteditable="true" spellcheck="false"&gt;这是日记开头插入的段落&lt;/div&gt;&lt;/div&gt;",
+                    "parentID": "20240801100000-xxxxxxx" // 日记文档块 ID
+                }
+            ],
+            "undoOperations": [
+                {
+                    "action": "delete",
+                    "id": "20240801100000-abcdefgh" // 新插入块的 ID
+                }
+            ]
+        }
+    ]
+}</code></pre>
+    <p>失败时：</p>
+    <pre><code class="language-json">{
+    "code": -1,
+    "msg": "错误信息",
+    "data": null
+}</code></pre>
+    <p><b>请求示例</b></p>
+    <p>使用 Markdown 插入：</p>
+    <pre><code class="language-json">{
+    "notebook": "20200812220555-l1rk1xa",
+    "dataType": "markdown",
+    "data": "这是日记开头插入的段落"
+}</code></pre>
+    <p>使用 DOM 字符串插入：</p>
+    <pre><code class="language-json">{
+    "notebook": "20200812220555-l1rk1xa",
+    "dataType": "dom",
+    "data": "&lt;div data-type="NodeParagraph" data-node-id="20240801100000-abcdefgh" updated="20240801100000"&gt;&lt;div contenteditable="true" spellcheck="false"&gt;这是日记开头插入的段落&lt;/div&gt;&lt;/div&gt;"
+}</code></pre>
+    <h2>在线测试</h2>
+    <div class="api-tester">
+        <p>服务器地址: <code id="serverAddress"></code></p>
+        <p>API Token: <input type="text" id="apiToken" placeholder="请输入 API Token"></p>
+        <p>API 路径: <input type="text" id="apiPath" value="/api/block/prependDailyNoteBlock" readonly=""></p>
+        <p>请求方法: <input type="text" id="apiMethod" value="POST" readonly=""></p>
+        <p>请求体:</p>
+        <textarea id="apiRequestBody" rows="10" placeholder="{
+    &quot;notebook&quot;: &quot;笔记本ID&quot;,
+    &quot;dataType&quot;: &quot;markdown&quot;,
+    &quot;data&quot;: &quot;要插入的内容&quot;
+}"></textarea>
+        <button onclick="sendRequest()">发送请求</button>
+        <p>响应结果:</p>
+        <pre><code id="apiResponse" class="language-json"></code></pre>
+    </div>
+    <p class="link-container">
+        <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/block_op.go" target="_blank">查看源代码</a> |
+        <a href="../pages/block.html">返回 Block API 列表</a> |
+        <a href="../index.html">返回 API 首页</a>
+    </p>
+</main>
+<footer>
+    <p>© 2024 Siyuan Note API Documentation</p>
+</footer>
+
+ 
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+</body></html>

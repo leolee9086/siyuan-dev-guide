@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/system/setAccessAuthCode">
+    <title>设置访问授权码 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../common/css/styles.css">
+</head>
+<body>
+    <header class="api-header">
+        <h1>设置访问授权码 (setAccessAuthCode)</h1>
+        <nav>
+            <a href="../index.html">首页</a> |
+            <a href="index.html">System API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/system.go#L558" target="_blank">GitHub Source (api/system.go L558)</a>
+        </nav>
+        <div class="endpoint-container">
+            <span class="endpoint">POST /api/system/setAccessAuthCode</span>
+        </div>
+    </header>
+    <main>
+        <section id="description">
+            <h2>接口描述</h2>
+            <p>此 API 端点 <code>POST /api/system/setAccessAuthCode</code> 用于设置或更新思源笔记的"访问授权码"。</p>
+            <p>访问授权码用于在没有 API Token 的情况下，通过一个独立的密码来保护对思源笔记的访问 (通过 <code>/api/system/loginAuth</code> 接口登录)。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体为一个 JSON 对象，包含以下字段：</p>
+            <ul>
+                <li><strong><code>accessAuthCode</code></strong> (string, 必需): 新的访问授权码字符串。
+                    <ul>
+                        <li>如果提供一个空字符串 (<code>""</code>)，则会清除当前的访问授权码，禁用基于授权码的登录。</li>
+                        <li>如果在前端UI中并未修改此项，前端可能会提交一个固定的掩码字符串 (如 <code>******</code>，具体值由 <code>model.MaskedAccessAuthCode</code> 定义)。在这种情况下，后端会识别此掩码并保持现有的授权码不变。</li>
+                    </ul>
+                </li>
+            </ul>
+            <p><strong>请求示例 (设置新授权码):</strong></p>
+            <pre><code class="language-json">{
+    "accessAuthCode": "your_strong_auth_code"
+}</code></pre>
+            <p><strong>请求示例 (清除授权码):</strong></p>
+            <pre><code class="language-json">{
+    "accessAuthCode": ""
+}</code></pre>
+            <p><strong>请求示例 (从UI提交未修改的授权码，假设掩码为"******"):</strong></p>
+            <pre><code class="language-json">{
+    "accessAuthCode": "******"
+}</code></pre>
+        </section>
+
+        <section id="response-body">
+            <h2>响应体</h2>
+            <p><strong>成功响应 (HTTP 200 OK):</strong></p>
+            <p>访问授权码成功设置、更新或按掩码规则保持不变后，API 返回：</p>
+            <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": null
+}</code></pre>
+            <p>成功操作后，后端还会异步延迟约 200 毫秒后触发UI重新加载。</p>
+
+            <p><strong>失败响应 (HTTP 200 OK, 但 code 非 0):</strong></p>
+            <ul>
+                <li>如果请求体不是有效的 JSON，或者缺少必需的 <code>accessAuthCode</code> 字段，将返回类似：
+                    <pre><code class="language-json">{
+    "code": -1,
+    "msg": "Request body is not valid JSON", // 或 "accessAuthCode is missing"
+    "data": null
+}</code></pre>
+                </li>
+            </ul>
+            <p><em>注意: 认证失败 (如未提供当前有效的 API Token 进行此操作、非管理员等) 会由中间件处理，并返回相应的 HTTP 错误状态码 (如 401, 403)。</em></p>
+        </section>
+
+        <section id="authentication">
+            <h2>认证与授权</h2>
+            <p>调用此 API 端点需要有效的用户认证 (通过 <code>Authorization</code> HTTP头部传递 API Token)。</p>
+            <p>此外，执行此操作需要：</p>
+            <ul>
+                <li><strong>管理员角色 (<code>model.CheckAdminRole</code>):</strong> 只有管理员用户才能设置访问授权码。</li>
+                <li><strong>非只读模式 (<code>model.CheckReadonly</code>):</strong> 不能在只读模式下执行此操作。</li>
+            </ul>
+        </section>
+
+        <section id="notes">
+            <h2>备注</h2>
+            <ul>
+                <li>设置或更改访问授权码后，当前的会话也会同步更新此授权码。</li>
+                <li>为了使更改在前端完全生效，操作成功后后端会安排一个轻微延迟的 UI 重新加载。</li>
+                <li>访问授权码在保存到配置前会进行清理 (去除首尾空格和无效字符)。</li>
+                <li>如果清空访问授权码，则 <code>/api/system/loginAuth</code> 接口将无法用于登录。</li>
+                <li><code>model.MaskedAccessAuthCode</code> 的具体值是 <code>******</code>。</li>
+            </ul>
+        </section>
+
+        <div class="test-area">
+            <h2>在线测试</h2>
+            <p>您可以使用下面的表单来测试此 API。请输入新的访问授权码。如果需要清除，请将输入框留空。</p>
+            <p><strong>警告:</strong> 此操作会更改您的访问授权码，请谨慎操作。您需要使用有效的 API Token 来授权此更改操作。</p>
+            <form id="setAccessAuthCodeForm">
+                <div>
+                    <label for="apiTokenForAuth">API Token (用于授权):</label>
+                    <input type="password" id="apiTokenForAuthSetAac" name="apiTokenForAuth" required>
+                </div>
+                <div>
+                    <label for="newAccessAuthCode">新的访问授权码 (留空以清除，输入 ****** 以测试不修改逻辑):</label>
+                    <input type="text" id="newAccessAuthCode" name="newAccessAuthCode">
+                </div>
+                <button type="button" onclick="sendSetAccessAuthCodeRequest()">设置/更新访问授权码</button>
+            </form>
+            <h3>响应:</h3>
+            <pre><code id="setAccessAuthCodeResponse" class="language-json">点击按钮查看响应</code></pre>
+        </div>
+    </main>
+    <blockquote>
+        <p>感谢您对思源笔记的关注与支持！</p>
+        <p><a href="https://afdian.com/a/leolee9086?tab=feed" target="_blank">在爱发电上赞助我们</a></p>
+    </blockquote>
+    <footer>
+        <p>&copy; 2024-2025 <a href="https://b3log.org/siyuan">思源笔记 B3log.org</a>. All rights reserved.</p>
+    </footer>
+    <script>
+        async function sendSetAccessAuthCodeRequest() {
+            const apiTokenInput = document.getElementById('apiTokenForAuthSetAac');
+            const newAccessAuthCodeInput = document.getElementById('newAccessAuthCode');
+            const responseCode = document.getElementById('setAccessAuthCodeResponse');
+
+            const apiToken = apiTokenInput.value;
+            if (!apiToken) {
+                alert('请输入 API Token 以授权此操作！');
+                responseCode.textContent = '操作取消：未提供 API Token。';
+                return;
+            }
+
+            const payload = {
+                accessAuthCode: newAccessAuthCodeInput.value 
+            };
+
+            responseCode.textContent = '正在设置访问授权码...';
+
+            try {
+                const response = await fetch('/api/system/setAccessAuthCode', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Token ' + apiToken
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                responseCode.textContent = JSON.stringify(result, null, 2);
+                
+                if (result.code === 0) {
+                    if (payload.accessAuthCode === "") {
+                        alert('访问授权码已成功清除！UI稍后将重新加载。');
+                    } else if (payload.accessAuthCode === "******") {
+                        alert('访问授权码未更改 (因传入掩码)。UI稍后将重新加载。');
+                    } else {
+                        alert('访问授权码已成功设置为: ' + payload.accessAuthCode + '！UI稍后将重新加载。');
+                    }
+                } else {
+                    alert('设置访问授权码失败: ' + result.msg);
+                }
+            } catch (error) {
+                console.error('Error during setAccessAuthCode request:', error);
+                responseCode.textContent = JSON.stringify({ code: -1, msg: '设置访问授权码请求失败: ' + error.message, data:null }, null, 2);
+                alert('设置访问授权码请求失败: ' + error.message);
+            }
+        }
+    </script>
+    <script src="../common/js/theme-toggle.js"></script>
+</body>
+</html> 

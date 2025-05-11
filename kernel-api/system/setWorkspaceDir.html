@@ -1,0 +1,125 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/system/setWorkspaceDir"> <!-- API Endpoint Meta Tag -->
+    <title>设置工作空间目录 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <h1>设置工作空间目录 (setWorkspaceDir)</h1>
+        <nav>
+            <a href="../index.html">首页</a> | 
+            <a href="index.html">System API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/workspace.go#L265" target="_blank">GitHub Source</a>
+        </nav>
+    </header>
+    <main>
+        <section id="description">
+            <h2>功能描述</h2>
+            <p>此 API 端点 <code>POST /api/system/setWorkspaceDir</code> 用于设置要切换到的下一个工作空间目录。</p>
+            <p><strong>重要：</strong>此 API <strong>不会立即切换</strong>工作空间。它主要负责更新工作空间列表文件 (`conf/workspaces.json`)，将指定的工作空间路径移动到列表末尾，表明它是"预定"要切换到的工作空间。</p>
+            <p>实际的切换操作通常需要用户在界面上确认，或者在应用重启后完成（尤其是在移动端，此 API 会尝试触发应用关闭以进行切换）。</p>
+            <p>此 API 会进行多项检查，例如不允许将当前工作空间、云盘同步目录或（Windows下）安装目录设置为目标工作空间。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体必须是 JSON 格式，包含以下参数：</p>
+            <ul>
+                <li><code>path</code> (string): <strong>必填</strong>。目标工作空间的绝对路径。</li>
+            </ul>
+            <p><strong>请求示例:</strong></p>
+            <pre><code class="language-json">
+{
+  "path": "/path/to/your/target/workspace"
+}
+            </code></pre>
+            <p>在 Windows 上，路径格式可能像这样：</p>
+            <pre><code class="language-json">
+{
+  "path": "D:\\MyWorkspaces\\AnotherSiyuan"
+}
+            </code></pre>
+        </section>
+
+        <section id="response-format">
+            <h2>响应结果</h2>
+            <p>成功的请求将返回一个 JSON 对象，<code>code</code> 为 0，<code>data</code> 为 <code>null</code>。</p>
+            <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": null
+}
+            </code></pre>
+            <p>如果操作失败（例如路径无效、是当前工作空间、位于禁止的目录下等），将返回非 0 的 <code>code</code> 和具体的错误信息 <code>msg</code>。某些错误下还会返回 `data` 对象包含 `closeTimeout`，提示前端显示错误消息的时长。</p>
+            <pre><code class="language-json">
+{
+  "code": -1,
+  "msg": "Cannot switch to current workspace", // 示例错误信息
+  "data": {
+    "closeTimeout": 3000
+  }
+}
+            </code></pre>
+            <pre><code class="language-json">
+{
+  "code": -1,
+  "msg": "Workspace cannot be created in cloud drive synchronization directory", // 示例错误信息
+  "data": {
+    "closeTimeout": 7000
+  }
+}
+            </code></pre>
+            <pre><code class="language-json">
+{
+  "code": -1,
+  "msg": "Workspace cannot be created in the installation directory", // 示例错误信息
+  "data": {
+    "closeTimeout": 5000
+  }
+}
+            </code></pre>
+        </section>
+
+        <section id="online-testing">
+            <h2>在线测试</h2>
+            <p>您可以在下方输入目标工作空间的绝对路径进行在线测试。请确保路径有效且符合要求。</p>
+            <div class="api-tester">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="请输入您的 API Token (可选)" value=""><br>
+
+                <label for="endpoint">Endpoint:</label>
+                <input type="text" id="endpoint" value="/api/system/setWorkspaceDir" readonly=""><br>
+
+                <label for="method">Method:</label>
+                <input type="text" id="method" value="POST" readonly=""><br>
+
+                <label for="params">Parameters (JSON):</label><br>
+                <textarea id="params" rows="4" placeholder="{
+  &quot;path&quot;: &quot;/absolute/path/to/workspace&quot;
+}"></textarea><br>
+
+                <button onclick="sendRequest()">发送请求</button>
+
+                <h3>响应结果:</h3>
+                <pre id="response-output"></pre>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>思源笔记 API 文档 | 最后更新时间：<span id="last-updated"></span></p>
+    </footer>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        // 更新最后更新时间
+        document.getElementById('last-updated').textContent = new Date().toLocaleString();
+    </script>
+
+ </body></html>

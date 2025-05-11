@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>API: /api/sync/setSyncMode</title>
+    <link rel="stylesheet" href="../style.css">
+    <script src="../script.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>API: /api/sync/setSyncMode</h1>
+        <p><strong>HTTP Method:</strong> POST</p>
+        <p><strong>认证:</strong> 需要登录 (<code>model.CheckAuth</code>), 管理员权限 (<code>model.CheckAdminRole</code>), 非只读模式 (<code>model.CheckReadonly</code>)</p>
+
+        <h2>功能描述</h2>
+        <p>设置数据同步的操作模式。不同的模式决定了数据上传和下载的行为。</p>
+
+        <h2>请求参数 (JSON Body)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>参数名</th>
+                    <th>类型</th>
+                    <th>是否必需</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>mode</code></td>
+                    <td>number</td>
+                    <td>是</td>
+                    <td>
+                        同步模式的值:
+                        <ul>
+                            <li><code>1</code>: 自动双向同步。本地和云端的更改会自动同步。</li>
+                            <li><code>2</code>: 手动同步。需要用户手动触发同步操作，通常为双向同步。</li>
+                            <li><code>3</code>: 完全手动同步。可能提供更细致的上传/下载控制，具体行为依赖客户端实现。</li>
+                            <li>(注：<code>0</code> 为内部未设置状态，通常会被初始化为 <code>1</code>)</li>
+                        </ul>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>请求示例 (设置为自动同步)</h3>
+        <pre><code class="language-json">{
+    "mode": 1
+}</code></pre>
+
+        <h3>请求示例 (设置为手动同步)</h3>
+        <pre><code class="language-json">{
+    "mode": 2
+}</code></pre>
+
+        <h2>响应</h2>
+        <p>成功时，HTTP 状态码为 200，响应体中的 <code>code</code> 为 0，<code>msg</code> 为空，<code>data</code> 为 <code>null</code>。</p>
+
+        <h3>响应示例 (成功)</h3>
+        <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": null
+}</code></pre>
+
+        <h2>在线测试</h2>
+        <div class="api-test">
+            <label for="param-mode">同步模式 (<code>mode</code>):</label>
+            <select id="param-mode">
+                <option value="1" selected>自动 (1)</option>
+                <option value="2">手动 (2)</option>
+                <option value="3">完全手动 (3)</option>
+            </select>
+            <button onclick="testSetSyncMode()">发送请求</button>
+            <h3>响应:</h3>
+            <pre id="response-output">等待请求...</pre>
+        </div>
+    </div>
+
+    <script>
+        function testSetSyncMode() {
+            const modeValue = document.getElementById('param-mode').value;
+            const mode = parseInt(modeValue, 10);
+            const outputDiv = document.getElementById('response-output');
+            outputDiv.textContent = '正在发送请求...';
+
+            fetch('/api/sync/setSyncMode', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // 'Authorization': 'Token YOUR_API_TOKEN_HERE' // 如果需要认证
+                },
+                body: JSON.stringify({ mode: mode })
+            })
+            .then(response => response.json())
+            .then(data => {
+                outputDiv.textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                outputDiv.textContent = '请求失败: ' + error;
+                console.error('Error:', error);
+            });
+        }
+        // 确保代码高亮
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+        });
+    </script>
+</body>
+</html> 

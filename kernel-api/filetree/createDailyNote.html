@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创建每日笔记 (createDailyNote)</title>
+    <link rel="stylesheet" href="../common/css/styles.css">
+    <link rel="stylesheet" href="../common/css/prism.css">
+</head>
+<body>
+    <header class="api-header">
+        <h1>创建每日笔记 (createDailyNote)</h1>
+        <p class="endpoint-container">
+            <span class="method post">POST</span>
+            <span class="endpoint">/api/filetree/createDailyNote</span>
+        </p>
+        <nav class="nav-links">
+            <a href="#description">接口描述</a>
+            <a href="#request-parameters">请求参数</a>
+            <a href="#response-body">响应体</a>
+            <a href="#example-request">请求示例</a>
+            <a href="#example-response">响应示例</a>
+            <a href="#error-codes">错误码</a>
+            <a href="#source-code">源码定位</a>
+            <a href="../index.html" class="back-to-index">返回分类索引</a>
+            <a href="../../index.html" class="back-to-main-index">返回总索引</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="description">
+            <h2>接口描述</h2>
+            <p>本接口用于创建或打开今天的每日笔记文档。如果文档已存在，将返回现有文档的 ID；如果不存在，则会根据笔记本的每日笔记设置创建新文档，然后返回新创建文档的 ID。</p>
+            <p>每日笔记的创建路径由笔记本配置中的 <code>dailyNoteSavePath</code> 模板决定，默认值为 <code>/daily note/{{now | date "2006/01"}}/{{now | date "2006-01-02"}}</code>。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体为一个 JSON 对象，包含以下字段：</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>参数名</th>
+                        <th>类型</th>
+                        <th>必需</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>notebook</code></td>
+                        <td>string</td>
+                        <td>是</td>
+                        <td>笔记本 ID，用于指定在哪个笔记本中创建每日笔记。</td>
+                    </tr>
+                    <tr>
+                        <td><code>app</code></td>
+                        <td>string</td>
+                        <td>否</td>
+                        <td>客户端应用标识，用于事件推送。</td>
+                    </tr>
+                    <tr>
+                        <td><code>callback</code></td>
+                        <td>string</td>
+                        <td>否</td>
+                        <td>用于事件回调的标识符。</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="response-body">
+            <h2>响应体</h2>
+            <p>成功时，响应体为一个 JSON 对象，包含以下字段：</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>参数名</th>
+                        <th>类型</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>code</code></td>
+                        <td>number</td>
+                        <td>状态码，0 表示成功。</td>
+                    </tr>
+                    <tr>
+                        <td><code>msg</code></td>
+                        <td>string</td>
+                        <td>错误信息，成功时为空字符串。</td>
+                    </tr>
+                    <tr>
+                        <td><code>data</code></td>
+                        <td>object</td>
+                        <td>包含 <code>id</code> 字段，表示创建或获取的每日笔记的文档 ID。</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="example-request">
+            <h2>请求示例</h2>
+            <pre><code class="language-json">
+{
+  "notebook": "20200812223209-lj3enxa"
+}
+            </code></pre>
+        </section>
+
+        <section id="example-response">
+            <h2>响应示例</h2>
+            <p>成功响应：</p>
+            <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "id": "20200915111353-az8ppkf"
+  }
+}
+            </code></pre>
+            <p>失败响应（笔记本不存在）：</p>
+            <pre><code class="language-json">
+{
+  "code": 1,
+  "msg": "notebook not found",
+  "data": null
+}
+            </code></pre>
+            <p>失败响应（未配置每日笔记保存路径）：</p>
+            <pre><code class="language-json">
+{
+  "code": -1,
+  "msg": "未设置每日笔记存放路径，请在 [设置 - 资源文件] 中配置",
+  "data": null
+}
+            </code></pre>
+        </section>
+
+        <section id="error-codes">
+            <h2>错误码</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>错误码</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>0</code></td>
+                        <td>成功</td>
+                    </tr>
+                    <tr>
+                        <td><code>1</code></td>
+                        <td>笔记本不存在（ErrBoxNotFound）</td>
+                    </tr>
+                    <tr>
+                        <td><code>-1</code></td>
+                        <td>其他错误，如未设置每日笔记存放路径、模板渲染失败等</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="source-code">
+            <h2>源码定位</h2>
+            <p>后端实现相关的核心逻辑可以在以下文件中找到：</p>
+            <ul>
+                <li>路由定义：<code>siyuan/kernel/api/router.go</code>（路由 <code>/api/filetree/createDailyNote</code>）</li>
+                <li>API 处理函数：<code>siyuan/kernel/api/filetree.go</code>（函数 <code>createDailyNote</code>）</li>
+                <li>模型层实现：<code>siyuan/kernel/model/file.go</code>（函数 <code>CreateDailyNote</code>）</li>
+            </ul>
+        </section>
+
+        <section class="test-area">
+            <h2>在线测试</h2>
+            <p>请在下方输入请求 JSON，然后点击"发送请求"按钮。</p>
+            <textarea id="request-payload" rows="3" placeholder='{ "notebook": "your_notebook_id" }'></textarea>
+            <button id="send-request-btn">发送请求</button>
+            <h3>响应:</h3>
+            <pre><code id="response-output" class="language-json"></code></pre>
+        </section>
+    </main>
+
+    <blockquote class="important-note">
+        <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+        <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+    </blockquote>
+
+    <footer>
+        <p>&copy; 2024 社区贡献者们. <a href="https://github.com/siyuan-note/siyuan-kernelApi-docs">本文档源码</a></p>
+    </footer>
+    <script src="../common/js/prism.js"></script>
+    <script src="../common/js/api-tester.js"></script>
+</body>
+</html> 

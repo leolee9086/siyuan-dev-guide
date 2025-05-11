@@ -1,0 +1,173 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>带动作的 AI 对话 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../index.html" class="home-link">← 返回首页</a>
+    
+    <div class="api-header">
+        <span class="method">POST</span>
+        <span class="endpoint">/api/ai/chatGPTWithAction</span>
+    </div>
+    
+    <h1>带动作的 AI 对话</h1>
+
+    <div class="github-source">
+        <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/ai.go#L38" target="_blank" title="查看源文件">源文件 (GitHub)</a>
+    </div>
+    
+    <div class="auth-tags">
+        <span class="chip auth-required">需要认证</span>
+        <span class="chip auth-admin">需要管理员</span>
+    </div>
+    
+    <h2>接口描述</h2>
+    <p>向配置好的 AI 服务发送消息，并可以指定对一组块（通过 ID）执行特定的动作（如总结、润色、翻译等）。</p>
+    <p>具体的动作（`action`）类型可能取决于思源笔记的版本和配置。常见的动作可能包括：</p>
+    <ul>
+        <li>`summarize`: 总结选中的块内容</li>
+        <li>`polish`: 润色选中的块内容</li>
+        <li>`translate`: 翻译选中的块内容 (可能需要额外参数指定目标语言)</li>
+        <li>`ask`: 基于选中的块内容向 AI 提问</li>
+        <li>... (更多动作类型待补充)</li>
+    </ul>
+    
+    <h2>请求参数</h2>
+    <table class="param-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>必选</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+             <tr>
+                <td>ids</td>
+                <td>string[]</td>
+                <td><span class="required">是</span></td>
+                <td>要进行操作的块 ID 列表。</td>
+            </tr>
+             <tr>
+                <td>action</td>
+                <td>string</td>
+                <td><span class="required">是</span></td>
+                <td>要执行的动作类型（如 `summarize`, `polish`, `ask` 等）。</td>
+            </tr>
+             <tr>
+                <td>msg</td>
+                <td>string</td>
+                <td><span class="optional">否</span></td>
+                <td>可选的附加消息。例如，在执行 `ask` 动作时，这里是具体的问题。</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <h2>返回值</h2>
+     <p>返回 AI 的处理结果或回复内容。</p>
+    <table class="response-table">
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>code</td><td>number</td><td>返回码，0表示成功</td></tr>
+            <tr><td>msg</td><td>string</td><td>返回信息</td></tr>
+            <tr><td>data</td><td>any</td><td>AI 处理后的结果。具体类型取决于 `action`。可能是文本字符串（如总结、润色、翻译结果），也可能是其他结构。</td></tr>
+        </tbody>
+    </table>
+    
+    <!-- 示例和测试区域 -->
+    <div class="tab-container">
+        <div class="tabs">
+            <button class="tab-button active" data-tab="request-example">请求示例</button>
+            <button class="tab-button" data-tab="response-example">返回示例</button>
+            <button class="tab-button" data-tab="test-area">在线测试</button>
+        </div>
+        <div id="request-example" class="tab-content active">
+            <p>总结两个块:</p>
+            <pre><code class="language-json">{
+  "ids": [
+    "20230101090000-xxxxxxxx",
+    "20230101090100-yyyyyyyy"
+  ],
+  "action": "summarize",
+  "msg": ""
+}</code></pre>
+            <p>基于一个块提问:</p>
+            <pre><code class="language-json">{
+  "ids": [
+    "20230101090200-zzzzzzzz"
+  ],
+  "action": "ask",
+  "msg": "请解释这个块中的关键概念。"
+}</code></pre>
+        </div>
+        <div id="response-example" class="tab-content">
+             <p>成功总结:</p>
+            <pre><code class="language-json">{
+  "code": 0,
+  "msg": "",
+  "data": "这两个块主要讨论了AI在自然语言处理中的应用及其未来发展方向。"
+}</code></pre>
+            <p>错误示例 (例如动作类型不支持):</p>
+            <pre><code class="language-json">{
+  "code": -1,
+  "msg": "Unsupported action type: invalidAction",
+  "data": null
+}</code></pre>
+        </div>
+        <div id="test-area" class="tab-content">
+            <div class="test-area-inner">
+                <form id="api-test-form">
+                    <div class="form-group">
+                        <label for="api-token">API Token:</label>
+                        <input type="text" id="api-token" placeholder="在思源笔记中的'设置-关于'中查看API token" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="api-endpoint">接口地址:</label>
+                        <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/ai/chatGPTWithAction" readonly="">
+                    </div>
+                    <div class="form-group">
+                        <label for="api-method">请求方法:</label>
+                        <input type="text" id="api-method" value="POST" readonly="">
+                    </div>
+                    <div class="form-group">
+                        <label for="api-params">请求参数 (JSON):</label>
+                        <textarea id="api-params">{
+  "ids": [
+    "块ID_1",
+    "块ID_2"
+  ],
+  "action": "summarize",
+  "msg": ""
+}</textarea>
+                    </div>
+                    <button type="submit" class="btn">发送请求</button>
+                </form>
+                <div id="api-result" class="result"></div>
+            </div>
+        </div>
+    </div>
+
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<div class="nav-links">
+        <a href="../index.html">返回首页</a>
+        <a href="../pages/ai.html">返回 AI API</a>
+        <a href="chatGPT.html">上一个接口: 基础 AI 对话</a>
+        <a href="../setting/setAI.html">下一个接口: 配置 AI 设置</a> <!-- 指向 setting 目录 -->
+    </div>
+    
+    <script src="../api-tester.js"></script>
+
+ </body></html>

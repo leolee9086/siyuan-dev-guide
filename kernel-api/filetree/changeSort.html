@@ -1,0 +1,104 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>更改文件树排序 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../pages/filetree.html" class="back-link">← 返回 FileTree API 列表</a>
+    <h1>更改文件树排序</h1>
+    <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/filetree.go#L809" target="_blank" class="github-link">在 GitHub 上查看源码</a>
+
+    <p class="endpoint"><code>POST /api/filetree/changeSort</code></p>
+
+    <h2>描述</h2>
+    <p>更改指定笔记本中文件（文档）或文件夹的手动排序。传入的路径列表的顺序即为新的排序顺序。</p>
+    <p><strong>注意：</strong> 此 API 仅在笔记本或文件夹的排序方式设置为"手动排序"时生效。对于按其他方式（如修改时间、标题等）排序的目录，此 API 不会产生效果。</p>
+
+    <h2>请求参数</h2>
+    <p>请求体需要是 JSON 格式。</p>
+    <table>
+        <thead>
+            <tr>
+                <th>参数名</th>
+                <th>类型</th>
+                <th>描述</th>
+                <th>必需</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>notebook</code></td>
+                <td><code>string</code></td>
+                <td>目标笔记本的 ID</td>
+                <td>是</td>
+            </tr>
+            <tr>
+                <td><code>paths</code></td>
+                <td><code>array</code> of <code>string</code></td>
+                <td>要排序的文件或文件夹路径列表，路径相对于笔记本根目录。列表的顺序即为新的排序顺序。例如：<code>["/doc-b.sy", "/folder-a", "/doc-c.sy"]</code></td>
+                <td>是</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>响应结果</h2>
+    <p>响应体是 JSON 格式。<code>code</code> 为 0 表示成功。<code>data</code> 始终为 <code>null</code>。</p>
+    <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": null
+}
+    </code></pre>
+
+    <h2>补充说明</h2>
+    <p>此操作会修改笔记本配置文件（<code>notebook.json</code>）中的排序信息。操作成功后，文件树界面会相应更新。</p>
+
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<div class="test-area">
+        <h3>在线测试</h3>
+        <form id="api-test-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记中的" 设置-关于"中查看api="" token"="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/filetree/changeSort" readonly="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-params">请求参数 (JSON):</label>
+                <textarea id="api-params">{
+    "notebook": "笔记本ID",
+    "paths": [
+        "/path/to/doc-b.sy",
+        "/path/to/folder-a",
+        "/path/to/doc-c.sy"
+    ]
+}</textarea>
+            </div>
+
+            <button type="submit" class="btn">发送请求</button>
+        </form>
+
+        <div id="api-result" class="result"></div>
+    </div>
+
+    <footer>
+        <p>思源笔记 API 文档</p>
+    </footer>
+    <script src="../api-tester.js"></script>
+
+ </body></html>

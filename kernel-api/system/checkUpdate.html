@@ -1,0 +1,91 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>检查更新 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../pages/system.html" class="back-link">← 返回 System API 列表</a>
+    <h1>检查更新</h1>
+    <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/system.go" target="_blank" class="github-link">在 GitHub 上查看源码</a>
+
+    <p class="endpoint"><code>POST /api/system/checkUpdate</code></p>
+
+    <h2>描述</h2>
+    <p>检查思源笔记是否有新版本可用。该 API 会从官方服务器获取最新版本信息，并与当前安装的版本进行比较，判断是否需要更新。同时也会获取更新日志和下载链接。</p>
+
+    <h2>请求参数</h2>
+    <p>请求体需要是 JSON 格式，但不需要特定参数。可以是一个空的 JSON 对象 <code>{}</code>。</p>
+
+    <h2>响应结果</h2>
+    <p>响应体是 JSON 格式。<code>code</code> 为 0 表示成功。<code>data</code> 包含更新信息。</p>
+    <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "currentVer": "2.7.7",           // 当前版本
+    "latestVer": "2.7.8",            // 最新版本
+    "needUpdate": true,              // 是否需要更新
+    "changelogs": "## 改进功能\\n- 改进A\\n- 改进B",  // 更新日志
+    "downloads": {                   // 各平台下载链接
+      "windows": {
+        "downloadURL": "https://example.com/siyuan-2.7.8-win.exe"
+      },
+      "macOS": {
+        "downloadURL": "https://example.com/siyuan-2.7.8-mac.dmg"
+      },
+      "linux": {
+        "downloadURL": "https://example.com/siyuan-2.7.8-linux.AppImage"
+      },
+      "android": {
+        "downloadURL": "https://example.com/siyuan-2.7.8.apk"
+      },
+      "ios": {
+        "downloadURL": "https://apps.apple.com/app/siyuan/id1583226508"
+      }
+    }
+  }
+}
+    </code></pre>
+
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<div class="test-area">
+        <h3>在线测试</h3>
+        <form id="api-test-form">
+            <div class="form-group">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="在思源笔记中的" 设置-关于"中查看api="" token"="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-endpoint">接口地址:</label>
+                <input type="text" id="api-endpoint" value="http://127.0.0.1:6806/api/system/checkUpdate" readonly="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-method">请求方法:</label>
+                <input type="text" id="api-method" value="POST" readonly="">
+            </div>
+
+            <div class="form-group">
+                <label for="api-params">请求参数 (JSON):</label>
+                <textarea id="api-params">{}</textarea>
+            </div>
+
+            <button type="submit" class="btn">发送请求</button>
+        </form>
+
+        <div id="api-result" class="result"></div>
+    </div>
+
+    <footer>
+        <p>思源笔记 API 文档</p>
+    </footer>
+    <script src="../api-tester.js"></script>
+
+ </body></html>

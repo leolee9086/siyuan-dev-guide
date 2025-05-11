@@ -1,0 +1,130 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>removeFile API 文档</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>删除文件/目录 API (`/api/file/removeFile`)</h1>
+            <nav>
+                <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/file.go#L324" target="_blank">在 GitHub 上查看源码</a>
+                <a href="../pages/file.html">返回文件 API 列表</a>
+                <a href="../index.html">返回 API 主页</a>
+            </nav>
+        </header>
+        <main>
+            <section id="description">
+                <h2>接口描述</h2>
+                <p>删除工作空间中的指定文件或目录。</p>
+                <p class="important-note"><strong>注意:</strong> 路径参数相对于工作空间根目录。要删除 <code>data</code> 目录下的文件/目录，路径必须以 <code>data/</code> 开头。要删除临时目录 <code>temp</code> 下的文件/目录，路径必须以 <code>temp/</code> 开头。删除其他受限目录可能会失败。</p>
+                <p><strong>警告:</strong> 删除操作是不可逆的，请谨慎使用！</p>
+            </section>
+
+            <section id="request">
+                <h2>请求</h2>
+                <p><strong>方法:</strong> POST</p>
+                <p><strong>路径:</strong> `/api/file/removeFile`</p>
+                <p><strong>认证:</strong> 需要 Token</p>
+                <h3>请求体 (JSON)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>参数</th>
+                            <th>类型</th>
+                            <th>必需</th>
+                            <th>描述</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>`path`</td>
+                            <td>string</td>
+                            <td>是</td>
+                            <td>要删除的文件或目录路径，相对于工作空间根目录。例如 <code>data/assets/image-to-delete.png</code> 或 <code>temp/old-archive.zip</code>。<strong>必须包含正确的路径前缀 (如 <code>data/</code> 或 <code>temp/</code>)。</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h3>请求示例</h3>
+                <p>删除数据目录下的文件:</p>
+                <pre><code class="language-json">{
+    "path": "data/assets/obsolete-image.jpg"
+}</code></pre>
+                <p>删除临时目录下的目录 (会删除目录及其所有内容):</p>
+                 <pre><code class="language-json">{
+    "path": "temp/unzipped-files"
+}</code></pre>
+            </section>
+
+            <section id="response">
+                <h2>响应</h2>
+                <h3>成功响应 (200 OK)</h3>
+                <p>成功删除后，返回一个空数据对象。</p>
+                <pre><code class="language-json">{
+    "code": 0,
+    "msg": "",
+    "data": null
+}</code></pre>
+                <h3>失败响应</h3>
+                <p>如果请求失败（例如，路径无效、文件或目录不存在、权限不足等），将返回错误信息。</p>
+                <pre><code class="language-json">{
+    "code": -1,
+    "msg": "Remove file failed: remove [...] The system cannot find the file specified.", // 或 "Invalid path [...]"
+    "data": null
+}</code></pre>
+            </section>
+
+            <section id="online-test">
+                <h2>在线测试</h2>
+                <form id="test-form">
+                     <div class="form-group">
+                        <label for="param-path">path (必填):</label>
+                        <input type="text" id="param-path" name="path" required="" placeholder="e.g., data/assets/obsolete-image.jpg">
+                    </div>
+                    <button type="submit">发送请求</button>
+                </form>
+                <h3>测试结果:</h3>
+                <pre><code id="test-result"></code></pre>
+            </section>
+        </main>
+        <footer>
+            <p>© 2023 Siyuan Note API 文档</p>
+        </footer>
+    </div>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        document.getElementById('test-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const path = document.getElementById('param-path').value;
+            const resultContainer = document.getElementById('test-result');
+            
+            if (!confirm(`确定要删除路径 "${path}" 吗？此操作可能无法恢复！`)) {
+                return;
+            }
+            
+            resultContainer.textContent = '请求中...';
+
+            try {
+                const response = await fetch('/api/file/removeFile', { // Updated API path
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Token ${getAuthToken()}` // 从 localStorage 或其他地方获取 Token
+                    },
+                    body: JSON.stringify({ path })
+                });
+                const result = await response.json();
+                resultContainer.textContent = JSON.stringify(result, null, 2);
+            } catch (error) {
+                resultContainer.textContent = `请求失败: ${error}`;
+            }
+        });
+    </script>
+
+ </body></html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>/api/setting/setEmoji - Siyuan Kernel API</title>
+    <link rel="stylesheet" href="../style.min.css?20231218">
+    <link rel="icon" type="image/png" href="../favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="../favicon-16x16.png" sizes="16x16">
+</head>
+<body>
+<div class="markdown-body">
+    <h1>/api/setting/setEmoji</h1>
+    <p>设置编辑器中常用的表情符号列表。</p>
+    <p>此 API 会更新全局配置 <code>conf.Editor.Emoji</code> 的值并保存。成功后会广播 <code>setEmoji</code> 事件通知 UI 更新。</p>
+    <p><span class="warning">该 API 需要进行身份验证，请在请求头中包含 <code>Authorization</code> 字段，并确保用户角色为管理员且非只读模式。</span></p>
+    <h2>请求</h2>
+    <p><code>POST</code></p>
+    <h3>参数 (JSON Body)</h3>
+    <ul>
+        <li><code>emojis</code>: <code>array</code> of <code>string</code> (必需) - 一个包含常用表情字符的字符串数组。例如：<code>["😀", "🎉", "👍"]</code>。</li>
+    </ul>
+    <div class="language-json HIDE">
+    <pre class="highlight"><code><span class="p">{</span>
+    <span class="nt">"emojis"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"😀"</span><span class="p">,</span> <span class="s2">"🎉"</span><span class="p">,</span> <span class="s2">"👍"</span><span class="p">,</span> <span class="s2">"💡"</span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre>
+    </div>
+    <h3>示例 CURL</h3>
+    <div class="language-shell HIDE">
+    <pre class="highlight"><code>curl -X POST -H "Content-Type: application/json" -H "Authorization: Token YOUR_API_TOKEN" -d '{
+    "emojis": ["😀", "🎉", "👍", "💡"]
+}' http://127.0.0.1:6806/api/setting/setEmoji
+</code></pre>
+    </div>
+    <h2>响应</h2>
+    <p>操作成功时，通常返回如下：</p>
+    <div class="language-json HIDE">
+    <pre class="highlight"><code><span class="p">{</span>
+    <span class="nt">"code"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">"msg"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+    <span class="nt">"data"</span><span class="p">:</span> <span class="kc">null</span>
+<span class="p">}</span>
+</code></pre>
+    </div>
+    <p>如果操作失败，<code>code</code> 将是非零值，<code>msg</code> 中会包含错误信息。</p>
+
+    <h2>在线测试</h2>
+    <p>
+        <label>API Token: (从思源"设置-关于"中获取)<br>
+            <input type="text" id="apiTokenInput" style="width: 100%;" placeholder="粘贴你的 API Token">
+        </label>
+    </p>
+    <p>
+        <label>常用表情 (emojis - JSON 字符串数组, 例如: <code>["😀", "✨"]</code>):<br>
+            <textarea id="requestEmojis" rows="3" style="width: 100%;">["😀", "🎉", "👍", "💡", "😊", "🤔"]</textarea>
+        </label>
+    </p>
+    <p><button onclick="loadCurrentEmojis()">从 /api/system/getConf 加载当前表情</button> <button onclick="testAPI()">发送请求</button></p>
+    <p><label>响应:<br><textarea id="responseArea" rows="8" style="width: 100%;" readonly></textarea></label></p>
+</div>
+<script>
+    let currentToken = localStorage.getItem('siyuanUserToken') || '';
+    if (currentToken) {
+        document.getElementById('apiTokenInput').value = currentToken;
+    }
+
+    document.getElementById('apiTokenInput').addEventListener('input', (event) => {
+        currentToken = event.target.value;
+        localStorage.setItem('siyuanUserToken', currentToken);
+    });
+
+    function getToken() {
+        const storedToken = localStorage.getItem('siyuanUserToken');
+        const inputToken = document.getElementById('apiTokenInput').value;
+        if (inputToken && inputToken !== storedToken) {
+            localStorage.setItem('siyuanUserToken', inputToken);
+            return inputToken;
+        }
+        return storedToken || inputToken;
+    }
+    
+    async function loadCurrentEmojis() {
+        const token = getToken();
+        if (!token) {
+            document.getElementById('responseArea').value = '错误：请先提供 API Token。';
+            return;
+        }
+        try {
+            const response = await fetch('/api/system/getConf', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Token ' + token,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({}) 
+            });
+            const data = await response.json();
+            if (data.code === 0 && data.data && data.data.conf && data.data.conf.editor && data.data.conf.editor.emoji) {
+                document.getElementById('requestEmojis').value = JSON.stringify(data.data.conf.editor.emoji, null, 2);
+                document.getElementById('responseArea').value = '当前常用表情已加载。';
+            } else {
+                document.getElementById('requestEmojis').value = '[]'; // Fallback to empty array
+                document.getElementById('responseArea').value = '加载当前表情失败或未设置: ' + JSON.stringify(data, null, 2);
+            }
+        } catch (error) {
+            document.getElementById('responseArea').value = '加载配置请求失败: ' + error;
+        }
+    }
+
+    async function testAPI() {
+        const token = getToken();
+        if (!token) {
+            document.getElementById('responseArea').value = '错误：API Token 未设置。';
+            return;
+        }
+
+        const emojisStr = document.getElementById('requestEmojis').value;
+        let parsedEmojis;
+        try {
+            parsedEmojis = JSON.parse(emojisStr);
+            if (!Array.isArray(parsedEmojis) || !parsedEmojis.every(item => typeof item === 'string')) {
+                document.getElementById('responseArea').value = '错误：emojis 必须是一个 JSON 字符串数组。例如：["😀", "✨"]';
+                return;
+            }
+        } catch (e) {
+            document.getElementById('responseArea').value = '错误：请求的 emojis 不是有效的 JSON 数组。\n' + e;
+            return;
+        }
+
+        const requestBody = { emojis: parsedEmojis };
+
+        try {
+            const response = await fetch('/api/setting/setEmoji', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Token ' + token
+                },
+                body: JSON.stringify(requestBody)
+            });
+            const data = await response.json();
+            document.getElementById('responseArea').value = JSON.stringify(data, null, 2);
+            if(data.code === 0) {
+                alert("常用表情已更新！");
+            }
+        } catch (error) {
+            document.getElementById('responseArea').value = '请求失败：\n' + error;
+        }
+    }
+</script>
+<script src="../style.js?20231218"></script>
+</body>
+</html> 

@@ -1,0 +1,134 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/snippet/setSnippet"> <!-- API Endpoint Meta Tag -->
+    <title>创建/更新代码片段 - 思源笔记 API 文档</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <h1>创建/更新代码片段 (setSnippet)</h1>
+        <nav>
+            <a href="../index.html">首页</a> | 
+            <a href="index.html">Snippet API</a> |
+            <a href="https://github.com/siyuan-note/siyuan/blob/master/kernel/api/snippet.go#L78" target="_blank">GitHub Source</a>
+        </nav>
+    </header>
+    <main>
+        <section id="description">
+            <h2>功能描述</h2>
+            <p>此 API 端点 <code>POST /api/snippet/setSnippet</code> 用于创建新的代码片段 (Snippet) 或更新已有的代码片段。</p>
+            <p>可以通过在请求中提供一个包含代码片段对象的数组，来批量创建或更新多个片段。</p>
+        </section>
+
+        <section id="request-parameters">
+            <h2>请求参数</h2>
+            <p>请求体必须是 JSON 格式，包含一个名为 <code>snippets</code> 的数组：</p>
+            <ul>
+                <li><code>snippets</code> (array of objects): <strong>必填</strong>。包含一个或多个代码片段对象的数组。每个对象应包含以下字段：
+                    <ul>
+                        <li><code>id</code> (string): 片段的唯一 ID。
+                            <ul>
+                                <li><strong>更新现有片段</strong>：提供要更新片段的准确 ID。</li>
+                                <li><strong>创建新片段</strong>：将此字段设置为空字符串 <code>""</code>。API 会自动为新片段生成唯一 ID。</li>
+                            </ul>
+                        </li>
+                        <li><code>name</code> (string): <strong>必填</strong>。代码片段的名称。</li>
+                        <li><code>type</code> (string): <strong>必填</strong>。代码片段的类型，必须是 <code>"js"</code> 或 <code>"css"</code>。</li>
+                        <li><code>content</code> (string): <strong>必填</strong>。代码片段的实际内容（JavaScript 或 CSS 代码）。</li>
+                        <li><code>enabled</code> (boolean): <strong>必填</strong>。设置代码片段是否启用 (<code>true</code> 表示启用, <code>false</code> 表示禁用)。</li>
+                    </ul>
+                </li>
+            </ul>
+            <p><strong>请求示例 (创建一个新的 JS 片段并更新一个现有的 CSS 片段):</strong></p>
+            <pre><code class="language-json">
+{
+  "snippets": [
+    {
+      "id": "", // 创建新片段，ID 留空
+      "name": "My New Utility Functions",
+      "type": "js",
+      "content": "function helper() { console.log('Helper!'); }",
+      "enabled": true
+    },
+    {
+      "id": "20230115100000-abcdefg", // 更新现有片段，提供 ID
+      "name": "My Updated Custom CSS",
+      "type": "css",
+      "content": "body { background-color: #f0f0f0; }", // 新内容
+      "enabled": false // 更新为禁用
+    }
+  ]
+}
+            </code></pre>
+        </section>
+
+        <section id="response-format">
+            <h2>响应结果</h2>
+            <p>成功的请求将返回一个 JSON 对象，<code>code</code> 为 0，<code>data</code> 为 <code>null</code>。</p>
+            <pre><code class="language-json">
+{
+  "code": 0,
+  "msg": "",
+  "data": null
+}
+            </code></pre>
+            <p>如果操作失败（例如参数无效、保存失败等），将返回非 0 的 <code>code</code> 和具体的错误信息 <code>msg</code>。</p>
+            <pre><code class="language-json">
+{
+  "code": -1,
+  "msg": "set snippet failed: invalid snippet type", // 示例错误信息
+  "data": null
+}
+            </code></pre>
+        </section>
+
+        <section id="online-testing">
+            <h2>在线测试</h2>
+            <p>您可以在下方输入要创建或更新的代码片段信息进行在线测试。请确保 JSON 格式正确。</p>
+            <div class="api-tester">
+                <label for="api-token">API Token:</label>
+                <input type="text" id="api-token" placeholder="请输入您的 API Token (可选)" value=""><br>
+
+                <label for="endpoint">Endpoint:</label>
+                <input type="text" id="endpoint" value="/api/snippet/setSnippet" readonly=""><br>
+
+                <label for="method">Method:</label>
+                <input type="text" id="method" value="POST" readonly=""><br>
+
+                <label for="params">Parameters (JSON):</label><br>
+                <textarea id="params" rows="15" placeholder="{
+  &quot;snippets&quot;: [
+    {
+      &quot;id&quot;: &quot;&quot;, // 创建则留空, 更新则填入 ID
+      &quot;name&quot;: &quot;&quot;,
+      &quot;type&quot;: &quot;css&quot;, // &quot;js&quot; or &quot;css&quot;
+      &quot;content&quot;: &quot;&quot;,
+      &quot;enabled&quot;: true // true or false
+    }
+    // 可以添加更多片段对象...
+  ]
+}"></textarea><br>
+
+                <button onclick="sendRequest()">发送请求</button>
+
+                <h3>响应结果:</h3>
+                <pre id="response-output"></pre>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>思源笔记 API 文档 | 最后更新时间：<span id="last-updated"></span></p>
+    </footer>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+    <script>
+        // 更新最后更新时间
+        document.getElementById('last-updated').textContent = new Date().toLocaleString();
+    </script>
+
+ </body></html>

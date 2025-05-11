@@ -1,0 +1,103 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="siyuan-api-endpoint" content="/api/block/getDocsInfo">
+    <title>/api/block/getDocsInfo - 获取文档信息</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <header>
+        <h1>/api/block/getDocsInfo</h1>
+        <nav>
+            <a href="./index.html">返回 Block API 索引</a>&nbsp;&nbsp; | &nbsp;&nbsp;
+            <a href="../index.html">返回 API 总索引</a>&nbsp;&nbsp; | &nbsp;&nbsp;
+            <a href="https://github.com/siyuan-note/siyuan/blob/e47b8efc2f2611163beca9fad4ee5424001515ff/kernel/api/block.go#L34" target="_blank">查看源码</a>
+        </nav>
+    </header>
+    <main>
+        <h2>功能描述</h2>
+        <p>根据提供的文档根块 ID 列表，批量获取这些文档的相关信息。</p>
+
+        <h2>请求</h2>
+        <p><strong>方法：</strong> POST</p>
+        <p><strong>路径：</strong> <code>/api/block/getDocsInfo</code></p>
+        <p><strong>请求体 (Body)：</strong></p>
+        <p>需要发送一个 JSON 对象，包含以下键：</p>
+        <ul>
+            <li><code>ids</code> (string[]): 必须。一个包含文档根块 ID 的字符串数组。</li>
+        </ul>
+        <p><strong>请求示例：</strong></p>
+        <pre><code class="language-json">{
+  "ids": ["20200812220409-ps9q5gn", "20210812220409-abcdefg"]
+}</code></pre>
+
+        <h2>响应</h2>
+        <p><strong>成功响应 (<code>code: 0</code>)：</strong></p>
+        <p>返回一个 JSON 对象，<code>data</code> 字段是一个以文档 ID 为键，文档信息对象为值的 Map。</p>
+        <pre><code class="language-json">{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "20200812220409-ps9q5gn": {
+      "id": "20200812220409-ps9q5gn",
+      "rootID": "20200812220409-ps9q5gn",
+      "name": "文档标题1", // 文档名
+      "name1": "",         // 文档别名
+      "alias": "",         // 文档别名
+      "memo": "",          // 文档备注
+      "tag": "",           // 文档标签
+      "bookmark": "",      // 文档书签
+      "icon": "icon-name1",// 文档图标
+      "path": "/笔记本名/文档标题1.sy", // 文档路径 (HPath)
+      "box": "20230501100000-abcdefg", // 所属笔记本 ID
+      "created": "20200812220409", // 创建时间戳 (内部格式)
+      "updated": "20231115103000", // 更新时间戳 (内部格式)
+      "sort": 0,           // 排序号
+      "subFileCount": 10,  // 子文档数量
+      "refCount": 5,       // 引用数量
+      "size": 10240,       // 文档大小 (字节)
+      "type": "d"          // 类型 ('d' for document)
+      // ... 可能还有其他字段
+    },
+    "20210812220409-abcdefg": {
+      "id": "20210812220409-abcdefg",
+      "rootID": "20210812220409-abcdefg",
+      "name": "文档标题2",
+      "icon": "icon-name2",
+      "path": "/笔记本名/子目录/文档标题2.sy",
+      "box": "20230501100000-abcdefg",
+      // ... 其他字段
+    }
+  }
+}</code></pre>
+        <p><strong>失败响应 (<code>code != 0</code>)：</strong></p>
+        <p>如果请求参数错误或处理过程中发生异常，将返回包含错误信息的 JSON 对象。</p>
+        <pre><code class="language-json">{
+  "code": -1,
+  "msg": "具体的错误信息",
+  "data": null
+}</code></pre>
+
+        <h2>在线测试</h2>
+        <div class="api-tester">
+            <textarea id="requestBody" placeholder="输入请求体 JSON...">{
+  "ids": ["在此处填入有效的文档ID", "例如: 20200812220409-ps9q5gn"]
+}</textarea>
+            <button onclick="sendRequest()">发送请求</button>
+            <div class="response-area">
+                <h3>响应结果:</h3>
+                <pre><code id="responseBody"></code></pre>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>思源笔记 API 文档 | 最后更新时间：<span id="last-updated"></span></p>
+    </footer>
+    
+<blockquote class="important-note">
+    <p>注意：这是一个社区维护的文档，可能与官方最新版本存在差异。</p>
+    <p>如果您觉得本文档有帮助，可以考虑赞助支持：<a href="https://afdian.com/a/leolee9086?tab=feed">爱发电</a></p>
+</blockquote>
+<script src="../script.js"></script>
+
+ </body></html>
