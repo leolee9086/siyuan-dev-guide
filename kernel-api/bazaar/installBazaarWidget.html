@@ -29,9 +29,9 @@
 </blockquote>
 <h1>installBazaarWidget</h1>
 <p>从集市下载并安装指定的挂件 (Widget)。</p>
-<p><strong>新手提示：</strong> 这个 API 就是你在思源集市里点击挂件"安装"按钮时背后执行的操作。</p>
+<p><strong>新手提示：</strong> 这个 API 主要供<strong>第三方工具开发者或有特殊自动化需求的开发者</strong>使用。普通用户通过思源笔记界面直接操作集市通常更方便和安全。此 API 模拟了在思源集市界面点击挂件"安装"按钮时的后端操作。</p>
 <div class="critical-warning">
-    <p><strong>🚨🚨🚨 严重风险警告！请务必仔细阅读！ 🚨🚨🚨</strong></p>
+    <p><strong>🚨🚨🚨 严重风险警告！请务必仔细阅读并充分理解！ 🚨🚨🚨</strong></p>
     <ul>
         <li>安装挂件是**高风险操作**！挂件代码（通常是 HTML/CSS/JavaScript）可以访问你的笔记数据、执行任意脚本，甚至可能连接互联网。</li>
         <li><strong>请仅安装来自你完全信任的、声誉良好的开发者的挂件！</strong> 在安装前尽可能了解挂件的功能和来源。</li>
@@ -40,9 +40,9 @@
         <li>需要**管理员权限**并且不能在**只读模式**下运行。</li>
         <li>安装过程可能因网络、仓库或挂件本身的问题而失败。</li>
     </ul>
-    <p><strong>后果自负！如果您不确定挂件的安全性，请不要安装！</strong></p>
+    <p><strong>请务必在完全理解风险并信任挂件来源的情况下才执行此操作！后果自负！如果您不确定挂件的安全性，请绝对不要安装！</strong></p>
 </div>
-<p><strong>注意</strong>: 此 API 需要认证、管理员权限且非只读模式。</p>
+<p><strong>注意</strong>: 此 API 需要认证、<strong>管理员权限</strong>且<strong>非只读模式</strong>。</p>
 <h2>地址</h2>
 <p><code>POST /api/bazaar/installBazaarWidget</code></p>
 <h2>请求体 (JSON)</h2>
@@ -54,19 +54,20 @@
 }
 </code></pre>
 <ul>
-<li><code>repoURL</code>: (<code>string</code>) 必填。挂件的来源 Git 仓库 URL。通常从 <code>getBazaarWidget</code> API 获取。</li>
-<li><code>repoHash</code>: (<code>string</code>) 必填。仓库的特定 commit 哈希值，代表要安装的版本。通常从 <code>getBazaarWidget</code> API 获取。</li>
-<li><code>packageName</code>: (<code>string</code>) 必填。要安装的挂件的名称。</li>
-<li><code>keyword</code>: (<code>string</code>) 可选。用于安装成功后刷新集市挂件列表时的过滤，对安装操作本身影响不大。可以留空。</li>
+<li><code>repoURL</code>: (<code>string</code>) <strong>必填</strong>。挂件的来源 Git 仓库 URL。通常从 <code>getBazaarWidget</code> API 获取。</li>
+<li><code>repoHash</code>: (<code>string</code>) <strong>必填</strong>。仓库的特定 commit 哈希值，代表要安装的版本。通常从 <code>getBazaarWidget</code> API 获取。</li>
+<li><code>packageName</code>: (<code>string</code>) <strong>必填</strong>。要安装的挂件的名称。</li>
+<li><code>keyword</code>: (<code>string</code>) <strong>可选</strong>。此关键词用于在安装成功后，API 返回的刷新后的集市挂件列表中进行过滤。如果主要目的是安装挂件而非立即获取特定过滤条件的列表，此参数可以留空或省略。它对实际的安装过程没有直接影响。</li>
 </ul>
 <h2>响应体 (JSON)</h2>
-<p>安装请求成功后，返回标准响应体，`data` 字段包含刷新后的集市挂件列表。</p>
+<p>安装请求成功后，返回标准响应体，<code>data</code> 字段包含刷新后的集市挂件列表（会应用请求中的 <code>keyword</code> 进行过滤）。</p>
 <pre><code class="language-json">{
   "code": 0, // 0 表示安装任务启动成功
   "msg": "", // 成功时为空，失败时包含错误信息
   "data": {
     "packages": [
-      // 安装后刷新得到的 *所有* 集市可用挂件列表 (针对指定 keyword)...
+      // 安装后刷新得到的 *所有* 集市可用挂件列表 (如果请求中提供了 keyword，则会基于此 keyword 过滤)。
+      // 调用方可以使用此列表更新其界面，而无需再次调用 getBazaarWidget。
       // (结构同 getBazaarWidget 返回的 packages)
     ]
   }
@@ -74,9 +75,9 @@
 </code></pre>
 <p><strong>注意:</strong></p>
 <ul>
-    <li><code>code: 0</code> 仅表示后端接受了安装请求。实际下载和安装过程可能失败。</li>
-    <li>如果安装失败，<code>code</code> 会是非 0 值，<code>msg</code> 会包含错误信息。</li>
-    <li>安装挂件后，可能需要刷新挂件列表或相关文档才能看到。</li>
+    <li><code>code: 0</code> 仅表示后端已成功接收并开始处理安装请求。实际的下载和安装过程仍然可能因为网络问题、仓库问题或挂件本身的问题而失败。</li>
+    <li>如果安装失败（例如，下载失败、解压失败、写入文件失败等），<code>code</code> 会是非 0 值，<code>msg</code> 会包含具体的错误信息。</li>
+    <li>安装挂件后，思源笔记可能需要刷新挂件列表或重启相关文档才能正确加载和显示新安装的挂件。</li>
 </ul>
 <h2>示例</h2>
 <div style="position: relative;">
@@ -109,7 +110,10 @@ fetch('/api/bazaar/installBazaarWidget', {
     // 向用户显示错误信息 data.msg
   }
 })
-.catch(error => console.error('请求错误:', error));
+.catch(error => {
+    console.error('请求发起失败:', error);
+    // 此处通常是网络问题或API服务未运行，提示用户检查网络连接和API服务状态
+});
 </code></pre>
 <button class="copy-button" onclick="copyCode('example-fetch-code')">复制</button>
 </div>
@@ -117,8 +121,8 @@ fetch('/api/bazaar/installBazaarWidget', {
 <!-- 在线测试区域 -->
 <div class="test-area">
     <h3>在线测试</h3>
-    <p>你需要先通过 <code>getBazaarWidget</code> 获取到一个具体挂件的 <code>repoURL</code>, <code>repoHash</code> 和 <code>packageName</code> 才能测试此接口。</p>
-    <div class="critical-warning"><strong>极其危险！</strong> 在此测试会实际下载并安装挂件！请确保你完全信任要安装的挂件来源和代码！<strong>不要随意安装未知挂件！</strong></div>
+    <p>你需要先通过 <a href="./getBazaarWidget.html"><code>getBazaarWidget</code></a> API 获取到一个具体挂件的 <code>repoURL</code>, <code>repoHash</code> 和 <code>packageName</code> 才能有效测试此安装接口。</p>
+    <div class="critical-warning"><strong>极其危险！</strong> 在此测试会实际下载并安装挂件！请确保你完全信任要安装的挂件来源和代码！<strong>不要随意安装未知挂件！</strong> 强烈建议在测试环境中进行，并使用来自官方或你完全信任的开发者提供的挂件信息。</div>
     <form id="api-test-form">
         <div class="form-group">
             <label for="api-token">API Token (管理员):</label>
@@ -158,6 +162,7 @@ fetch('/api/bazaar/installBazaarWidget', {
 <script src="../api-tester.js"></script>
 <script>
 // 复制按钮的 JavaScript 函数
+// 注意：如果将来多个页面都需要此功能，应考虑将其提取到公共的 .js 文件中。
 function copyCode(elementId) {
     const codeElement = document.getElementById(elementId);
     if (codeElement) {
